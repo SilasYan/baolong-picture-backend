@@ -1,0 +1,120 @@
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+  # cookie 30天过期
+  reactive:
+    session:
+      timeout: 2592000
+
+# Spring 配置
+spring:
+  application:
+    name: bl-picture-backend
+  profiles:
+    # 开发环境文件后缀 local/prod
+    active: local
+  session:
+    store-type: redis
+    # session 30 天过期
+    timeout: 2592000
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${mysql.url}
+    username: ${mysql.username}
+    password: ${mysql.password}
+  redis:
+    host: ${redis.host}
+    port: ${redis.port}
+    database: ${redis.database}
+    password: ${redis.password}
+    # 连接超时时间
+    timeout: 10000
+    # 配置连接池
+    jedis:
+      pool:
+        enabled: true
+        # 最小空闲连接数
+        min-idle: 1
+        # 最大空闲连接数
+        max-idle: 10
+        # 最大连接数，-1表示没有限制
+        max-active: 50
+        # 最大等待时间，-1表示没有限制
+        max-wait: -1ms
+        # 断开连接的间隔时间
+        time-between-eviction-runs: 5000
+  # 开放更大的上传大小
+  servlet:
+    multipart:
+      max-file-size: 100MB
+  # 发送邮件配置（QQ邮箱）
+  mail:
+    host: ${email.host}
+    port: ${email.port}
+    nickname: 暴龙图库
+    username: ${email.username}
+    password: ${email.password}
+    protocol: ${email.protocol}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+          socketFactory:
+            port: ${email.port}
+            class: javax.net.ssl.SSLSocketFactory
+
+############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: token
+  # token 前缀
+  token-prefix: Bearer
+  # jwt秘钥
+  jwt-secret-key: baolong_picture
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: true
+
+
+# MyBatisPlus 配置
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml # mapper 文件位置
+  configuration:
+    map-underscore-to-camel-case: true # 驼峰命名
+    # 仅在开发环境开启日志
+    log-impl: ${mybatis-plus.log-impl}
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
+      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+      table-underline: true # 表名是否使用下划线命名
+    banner: false # 关闭 mybatis-plus 启动打印的 banner
+
+# 接口文档配置
+knife4j:
+  enable: true
+  openapi:
+    title: "接口文档"
+    version: 1.0
+    group:
+      default:
+        api-rule: package
+        api-rule-resources:
+          - com.baolong.pictures.interfaces.controller

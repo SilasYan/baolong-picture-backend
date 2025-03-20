@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baolong.pictures.infrastructure.repository.RoleOperateRepository">
+
+    <resultMap id="BaseResultMap" type="com.baolong.pictures.domain.operate.entity.RoleOperate">
+            <id property="roleKey" column="role_key" jdbcType="VARCHAR"/>
+            <id property="operateId" column="operate_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        role_key,operate_id
+    </sql>
+</mapper>

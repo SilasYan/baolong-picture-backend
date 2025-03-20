@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baolong.pictures.infrastructure.repository.OperateRepository">
+
+    <resultMap id="BaseResultMap" type="com.baolong.pictures.domain.operate.entity.Operate">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="operateName" column="operate_name" jdbcType="VARCHAR"/>
+            <result property="operateKey" column="operate_key" jdbcType="VARCHAR"/>
+            <result property="operateDesc" column="operate_desc" jdbcType="VARCHAR"/>
+            <result property="isDisabled" column="is_disabled" jdbcType="TINYINT"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+            <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,operate_name,operate_key,
+        operate_desc,is_disabled,is_delete,
+        edit_time,create_time,update_time
+    </sql>
+</mapper>
