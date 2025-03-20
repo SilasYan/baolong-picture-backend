@@ -13,9 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 用户表
- *
- * @TableName user
+ * 用户领域模型
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
