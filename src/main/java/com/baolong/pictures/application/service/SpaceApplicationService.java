@@ -1,17 +1,17 @@
 package com.baolong.pictures.application.service;
 
 import com.baolong.pictures.domain.space.entity.Space;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.interfaces.dto.space.SpaceActivateRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceAddRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceEditRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceQueryRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceUpdateRequest;
-import com.baolong.pictures.interfaces.vo.space.SpaceDetailVO;
-import com.baolong.pictures.interfaces.vo.space.SpaceLevelVO;
-import com.baolong.pictures.interfaces.vo.space.SpaceVO;
+import com.baolong.pictures.interfaces.web.request.space.SpaceActivateRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceAddRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceEditRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceQueryRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUpdateRequest;
+import com.baolong.pictures.interfaces.web.response.space.SpaceDetailVO;
+import com.baolong.pictures.interfaces.web.response.space.SpaceLevelVO;
+import com.baolong.pictures.interfaces.web.response.space.SpaceVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import java.util.List;

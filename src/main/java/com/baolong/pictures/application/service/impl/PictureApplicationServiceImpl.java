@@ -7,7 +7,6 @@ import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.application.service.CategoryApplicationService;
 import com.baolong.pictures.application.service.PictureApplicationService;
 import com.baolong.pictures.application.service.SpaceApplicationService;
-import com.baolong.pictures.application.service.UserApplicationService;
 import com.baolong.pictures.domain.category.entity.Category;
 import com.baolong.pictures.domain.picture.entity.Picture;
 import com.baolong.pictures.domain.picture.entity.PictureInteraction;
@@ -17,7 +16,7 @@ import com.baolong.pictures.domain.picture.enums.PictureShareStatusEnum;
 import com.baolong.pictures.domain.picture.service.PictureDomainService;
 import com.baolong.pictures.domain.picture.service.PictureInteractionDomainService;
 import com.baolong.pictures.domain.space.entity.Space;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.api.cos.CosManager;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
@@ -25,18 +24,18 @@ import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.exception.BusinessException;
 import com.baolong.pictures.infrastructure.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.exception.ThrowUtils;
-import com.baolong.pictures.interfaces.assembler.PictureAssembler;
-import com.baolong.pictures.interfaces.dto.picture.PictureBatchEditRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureEditRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureGrabRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureInteractionRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureQueryRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureReviewRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureUpdateRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureUploadRequest;
-import com.baolong.pictures.interfaces.vo.picture.PictureDetailVO;
-import com.baolong.pictures.interfaces.vo.picture.PictureHomeVO;
-import com.baolong.pictures.interfaces.vo.picture.PictureVO;
+import com.baolong.pictures.interfaces.web.assembler.PictureAssembler;
+import com.baolong.pictures.interfaces.web.request.picture.PictureBatchEditRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureEditRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureGrabRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureInteractionRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureQueryRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureReviewRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureUpdateRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureUploadRequest;
+import com.baolong.pictures.interfaces.web.response.picture.PictureDetailVO;
+import com.baolong.pictures.interfaces.web.response.picture.PictureHomeVO;
+import com.baolong.pictures.interfaces.web.response.picture.PictureVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -134,7 +133,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 	@Override
 	public PictureDetailVO uploadPicture(Object pictureInputSource, PictureUploadRequest pictureUploadRequest) {
 		Picture picture = PictureAssembler.toPictureEntity(pictureUploadRequest);
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		Long userId = loginUser.getId();
 		picture.setUserId(userId);
 
@@ -194,7 +193,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 		// 查询是否存在
 		Picture picture = pictureDomainService.getPictureById(deleteRequest.getId());
 		ThrowUtils.throwIf(picture == null, ErrorCode.PARAMS_ERROR, "图片不存在");
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		// 校验图片操作权限
 		this.checkPictureChangeAuth(picture, loginUser);
 		// 跟空间相关, 则需要校验空间权限
@@ -232,7 +231,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 		// 判断图片是否存在
 		Boolean existed = pictureDomainService.existPictureById(pictureUpdateRequest.getId());
 		ThrowUtils.throwIf(!existed, ErrorCode.NOT_FOUND_ERROR, "图片不存在");
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		// 校验图片操作权限
 		this.checkPictureChangeAuth(picture, loginUser);
 		// 校验并填充审核参数
@@ -275,7 +274,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 		// 判断图片是否存在
 		Picture oldPicture = pictureDomainService.getPictureById(pictureEditRequest.getId());
 		ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR, "图片不存在");
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		System.out.println(loginUser);
 		// 校验图片操作权限
 		this.checkPictureChangeAuth(oldPicture, loginUser);
@@ -317,7 +316,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public Boolean editPictureBatch(PictureBatchEditRequest pictureBatchEditRequest) {
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		// 跟空间相关, 则需要校验空间权限
 		Long spaceId = pictureBatchEditRequest.getSpaceId();
 		spaceApplicationService.checkSpaceUploadAuth(spaceId, loginUser);
@@ -359,7 +358,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 	@Override
 	public Boolean reviewPicture(PictureReviewRequest pictureReviewRequest) {
 		List<Picture> pictureList = PictureAssembler.toPictureEntityList(pictureReviewRequest);
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		pictureList.forEach(picture -> picture.setReviewerUser(loginUser.getId()));
 		Boolean flag = pictureDomainService.reviewPicture(pictureList);
 		ThrowUtils.throwIf(!flag, ErrorCode.OPERATION_ERROR, "审核图片失败");
@@ -402,7 +401,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 			pictureDetailVO = PictureAssembler.toPictureDetailVO(picture);
 		}
 		// 查询图片的用户信息
-		User user = userApplicationService.getUserInfoById(picture.getUserId());
+		User user = userApplicationService.getUserDetailById(picture.getUserId());
 		if (user != null) {
 			pictureDetailVO.setUserName(user.getUserName());
 			pictureDetailVO.setUserAvatar(user.getUserAvatar());
@@ -471,7 +470,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 		if (!simpleVOS.isEmpty()) {
 			// 查询图片的用户信息
 			Set<Long> userIds = simpleVOS.stream().map(PictureHomeVO::getUserId).collect(Collectors.toSet());
-			Map<Long, List<User>> userListMap = userApplicationService.getUserListByIds(userIds)
+			Map<Long, List<User>> userListMap = userApplicationService.getUserListByUserIds(userIds)
 					.stream()
 					.collect(Collectors.groupingBy(User::getId));
 			// 查询当前登录用户对该图片的 点赞和收藏 信息
@@ -535,7 +534,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 		if (!pictureVOS.isEmpty()) {
 			// 查询图片的用户信息
 			Set<Long> userIds = pictureVOS.stream().map(PictureVO::getUserId).collect(Collectors.toSet());
-			Map<Long, List<User>> userListMap = userApplicationService.getUserListByIds(userIds)
+			Map<Long, List<User>> userListMap = userApplicationService.getUserListByUserIds(userIds)
 					.stream().collect(Collectors.groupingBy(User::getId));
 			// 查询分类信息
 			Set<Long> categoryIds = pictureVOS.stream().map(PictureVO::getCategoryId).collect(Collectors.toSet());
@@ -568,7 +567,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 	 */
 	@Override
 	public PageVO<PictureVO> getPicturePageListAsPersonSpace(PictureQueryRequest pictureQueryRequest) {
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		// 查询当前登录用户是否创建了空间
 		Space space = spaceApplicationService.getSpaceInfoByUserId(loginUser.getId());
 		ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR, "当前用户未创建个人空间");
@@ -722,7 +721,7 @@ public class PictureApplicationServiceImpl implements PictureApplicationService 
 		if (picture == null) {
 			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "图片不存在!");
 		}
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		Long userId = loginUser.getId();
 		LambdaQueryWrapper<PictureInteraction> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(PictureInteraction::getPictureId, pictureId);

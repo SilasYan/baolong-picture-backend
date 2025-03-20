@@ -3,7 +3,6 @@ package com.baolong.pictures.application.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baolong.pictures.application.service.SpaceApplicationService;
-import com.baolong.pictures.application.service.UserApplicationService;
 import com.baolong.pictures.domain.space.entity.Space;
 import com.baolong.pictures.domain.space.entity.SpaceUser;
 import com.baolong.pictures.domain.space.enums.SpaceLevelEnum;
@@ -11,21 +10,21 @@ import com.baolong.pictures.domain.space.enums.SpaceRoleEnum;
 import com.baolong.pictures.domain.space.enums.SpaceTypeEnum;
 import com.baolong.pictures.domain.space.service.SpaceDomainService;
 import com.baolong.pictures.domain.space.service.SpaceUserDomainService;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.exception.BusinessException;
 import com.baolong.pictures.infrastructure.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.exception.ThrowUtils;
-import com.baolong.pictures.interfaces.assembler.SpaceAssembler;
-import com.baolong.pictures.interfaces.dto.space.SpaceActivateRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceAddRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceEditRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceQueryRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceUpdateRequest;
-import com.baolong.pictures.interfaces.vo.space.SpaceDetailVO;
-import com.baolong.pictures.interfaces.vo.space.SpaceLevelVO;
-import com.baolong.pictures.interfaces.vo.space.SpaceVO;
+import com.baolong.pictures.interfaces.web.assembler.SpaceAssembler;
+import com.baolong.pictures.interfaces.web.request.space.SpaceActivateRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceAddRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceEditRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceQueryRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUpdateRequest;
+import com.baolong.pictures.interfaces.web.response.space.SpaceDetailVO;
+import com.baolong.pictures.interfaces.web.response.space.SpaceLevelVO;
+import com.baolong.pictures.interfaces.web.response.space.SpaceVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -172,7 +171,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 		space.fillSpaceDefaultValue();
 		// 校验参数
 		space.validSpaceActivateAndAddRequest();
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		Long userId = loginUser.getId();
 		// 校验空间和权限
 		this.checkSpaceAddAuth(space, loginUser, loginUser);
@@ -191,7 +190,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 	@Override
 	public Long addSpace(SpaceAddRequest spaceAddRequest) {
 		// 查询要给那个用户新增空间
-		User changeUser = userApplicationService.getUserInfoById(spaceAddRequest.getUserId());
+		User changeUser = userApplicationService.getUserDetailById(spaceAddRequest.getUserId());
 		ThrowUtils.throwIf(changeUser == null, ErrorCode.NOT_FOUND_ERROR, "用户不存在");
 		Long changeUserId = changeUser.getId();
 		Space space = SpaceAssembler.toSpaceEntity(spaceAddRequest);
@@ -199,7 +198,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 		space.fillSpaceDefaultValue();
 		// 校验参数
 		space.validSpaceActivateAndAddRequest();
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		// 校验空间和权限
 		this.checkSpaceAddAuth(space, changeUser, loginUser);
 		space.setUserId(changeUserId);
@@ -248,7 +247,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 	public Boolean deleteSpace(DeleteRequest deleteRequest) {
 		Space space = spaceDomainService.getSpaceById(deleteRequest.getId());
 		ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR, "空间不存在");
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		this.checkSpaceChangeAuth(space, loginUser);
 		return spaceDomainService.deleteSpace(deleteRequest.getId());
 	}
@@ -263,7 +262,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 	public Boolean updateSpace(SpaceUpdateRequest spaceUpdateRequest) {
 		this.checkSpaceExisted(spaceUpdateRequest.getId());
 		Space space = SpaceAssembler.toSpaceEntity(spaceUpdateRequest);
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		this.checkSpaceChangeAuth(space, loginUser);
 		return spaceDomainService.updateSpace(space);
 	}
@@ -278,7 +277,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 	public Boolean editSpace(SpaceEditRequest spaceEditRequest) {
 		this.checkSpaceExisted(spaceEditRequest.getId());
 		Space space = SpaceAssembler.toSpaceEntity(spaceEditRequest);
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		this.checkSpaceChangeAuth(space, loginUser);
 		return spaceDomainService.updateSpace(space);
 	}
@@ -311,7 +310,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 	 */
 	@Override
 	public SpaceDetailVO getSpaceDetailByLoginUser() {
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		Space space = this.getSpaceInfoByUserId(loginUser.getId());
 		return SpaceAssembler.toSpaceDetailVO(space);
 	}
@@ -382,7 +381,7 @@ public class SpaceApplicationServiceImpl implements SpaceApplicationService {
 		if (CollUtil.isNotEmpty(spaceVOS)) {
 			// 查询用户信息
 			Set<Long> userIds = spaceVOS.stream().map(SpaceVO::getUserId).collect(Collectors.toSet());
-			Map<Long, List<User>> userListMap = userApplicationService.getUserListByIds(userIds)
+			Map<Long, List<User>> userListMap = userApplicationService.getUserListByUserIds(userIds)
 					.stream().collect(Collectors.groupingBy(User::getId));
 			spaceVOS.forEach(space -> {
 				Long userId = space.getUserId();

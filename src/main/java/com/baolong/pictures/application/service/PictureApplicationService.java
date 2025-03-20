@@ -1,21 +1,21 @@
 package com.baolong.pictures.application.service;
 
 import com.baolong.pictures.domain.picture.entity.Picture;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.interfaces.dto.picture.PictureBatchEditRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureEditRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureGrabRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureInteractionRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureQueryRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureReviewRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureUpdateRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureUploadRequest;
-import com.baolong.pictures.interfaces.vo.picture.PictureDetailVO;
-import com.baolong.pictures.interfaces.vo.picture.PictureHomeVO;
-import com.baolong.pictures.interfaces.vo.picture.PictureVO;
+import com.baolong.pictures.interfaces.web.request.picture.PictureBatchEditRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureEditRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureGrabRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureInteractionRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureQueryRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureReviewRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureUpdateRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureUploadRequest;
+import com.baolong.pictures.interfaces.web.response.picture.PictureDetailVO;
+import com.baolong.pictures.interfaces.web.response.picture.PictureHomeVO;
+import com.baolong.pictures.interfaces.web.response.picture.PictureVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.scheduling.annotation.Async;
 

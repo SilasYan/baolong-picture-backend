@@ -1,6 +1,6 @@
 package com.baolong.pictures.application.service;
 
-import com.baolong.pictures.interfaces.vo.CaptchaVO;
+import com.baolong.pictures.interfaces.web.response.CaptchaVO;
 
 /**
  * 公共应用服务接口

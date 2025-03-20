@@ -8,7 +8,7 @@ import com.baolong.pictures.domain.space.service.SpaceUserDomainService;
 import com.baolong.pictures.infrastructure.common.page.PageRequest;
 import com.baolong.pictures.infrastructure.repository.SpaceUserRepository;
 import com.baolong.pictures.infrastructure.utils.SFLambdaUtil;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserQueryRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserQueryRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

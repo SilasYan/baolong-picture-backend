@@ -2,21 +2,20 @@ package com.baolong.pictures.application.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baolong.pictures.application.service.SpaceUserApplicationService;
-import com.baolong.pictures.application.service.UserApplicationService;
 import com.baolong.pictures.domain.space.entity.SpaceUser;
 import com.baolong.pictures.domain.space.enums.SpaceRoleEnum;
 import com.baolong.pictures.domain.space.service.SpaceUserDomainService;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.exception.ThrowUtils;
-import com.baolong.pictures.interfaces.assembler.SpaceUserAssembler;
-import com.baolong.pictures.interfaces.assembler.UserAssembler;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserAddRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserEditRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserQueryRequest;
-import com.baolong.pictures.interfaces.vo.space.SpaceUserVO;
+import com.baolong.pictures.interfaces.web.assembler.SpaceUserAssembler;
+import com.baolong.pictures.interfaces.web.user.assembler.UserAssembler;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserAddRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserEditRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserQueryRequest;
+import com.baolong.pictures.interfaces.web.response.space.SpaceUserVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +50,7 @@ public class SpaceUserApplicationServiceImpl implements SpaceUserApplicationServ
 		SpaceUser spaceUser = spaceUserDomainService.getSpaceUserBySpaceIdAndUserId(spaceUserAddRequest.getSpaceId(), spaceUserAddRequest.getUserId());
 		ThrowUtils.throwIf(spaceUser != null, ErrorCode.OPERATION_ERROR, "当前用户已在该空间");
 		// 校验当前用户是否有权限
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		this.checkSpaceUserAuth(spaceUserAddRequest.getSpaceId(), loginUser);
 		Boolean flag = spaceUserDomainService.addSpaceUserToSpace(SpaceUserAssembler.toSpaceUserEntity(spaceUserAddRequest));
 		ThrowUtils.throwIf(!flag, ErrorCode.OPERATION_ERROR, "空间用户新增失败");
@@ -67,7 +66,7 @@ public class SpaceUserApplicationServiceImpl implements SpaceUserApplicationServ
 	@Override
 	public Boolean editSpaceUserAuth(SpaceUserEditRequest spaceUserEditRequest) {
 		// 校验当前用户是否有权限
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		this.checkSpaceUserAuth(spaceUserEditRequest.getSpaceId(), loginUser);
 		Boolean flag = spaceUserDomainService.editSpaceUserAuth(SpaceUserAssembler.toSpaceUserEntity(spaceUserEditRequest));
 		ThrowUtils.throwIf(!flag, ErrorCode.OPERATION_ERROR, "空间用户权限修改失败");
@@ -85,7 +84,7 @@ public class SpaceUserApplicationServiceImpl implements SpaceUserApplicationServ
 		SpaceUser spaceUser = spaceUserDomainService.getSpaceUserById(deleteRequest.getId());
 		ThrowUtils.throwIf(spaceUser == null, ErrorCode.OPERATION_ERROR, "空间用户不存在");
 		// 校验当前用户是否有权限
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		this.checkSpaceUserAuth(spaceUser.getSpaceId(), loginUser);
 		return spaceUserDomainService.deleteSpaceUser(deleteRequest.getId());
 	}
@@ -113,7 +112,7 @@ public class SpaceUserApplicationServiceImpl implements SpaceUserApplicationServ
 	 */
 	@Override
 	public PageVO<SpaceUserVO> getSpaceUserPageListBySpaceId(SpaceUserQueryRequest spaceUserQueryRequest) {
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		// 校验权限
 		this.checkSpaceUserAuth(spaceUserQueryRequest.getSpaceId(), loginUser);
 		// 查询当前用户在不在这个空间里
@@ -126,7 +125,7 @@ public class SpaceUserApplicationServiceImpl implements SpaceUserApplicationServ
 				.collect(Collectors.toList());
 		// 查询用户名称
 		Set<Long> userIds = spaceUserVO.stream().map(SpaceUserVO::getUserId).collect(Collectors.toSet());
-		List<User> userList = userApplicationService.getUserListByIds(userIds);
+		List<User> userList = userApplicationService.getUserListByUserIds(userIds);
 		Map<Long, List<User>> userListMap = userList.stream().collect(Collectors.groupingBy(User::getId));
 		spaceUserVO.forEach(spaceUser -> {
 			Long userId = spaceUser.getUserId();

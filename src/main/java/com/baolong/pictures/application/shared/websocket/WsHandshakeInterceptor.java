@@ -4,11 +4,11 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.application.service.PictureApplicationService;
 import com.baolong.pictures.application.service.SpaceApplicationService;
-import com.baolong.pictures.application.service.UserApplicationService;
+import com.baolong.pictures.application.service.impl.UserApplicationService;
 import com.baolong.pictures.domain.picture.entity.Picture;
 import com.baolong.pictures.domain.space.entity.Space;
 import com.baolong.pictures.domain.space.enums.SpaceTypeEnum;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -50,7 +50,7 @@ public class WsHandshakeInterceptor implements HandshakeInterceptor {
 				log.error("缺少图片参数，拒绝握手");
 				return false;
 			}
-			User loginUser = userApplicationService.getLoginUser();
+			User loginUser = userApplicationService.getLoginUserDetail();
 			if (ObjUtil.isEmpty(loginUser)) {
 				log.error("用户未登录，拒绝握手");
 				return false;

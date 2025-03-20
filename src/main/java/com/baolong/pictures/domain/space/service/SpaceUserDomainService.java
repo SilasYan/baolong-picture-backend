@@ -1,7 +1,7 @@
 package com.baolong.pictures.domain.space.service;
 
 import com.baolong.pictures.domain.space.entity.SpaceUser;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserQueryRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserQueryRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;

@@ -3,10 +3,10 @@ package com.baolong.pictures.application.service;
 import com.baolong.pictures.domain.category.entity.Category;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.interfaces.dto.category.CategoryAddRequest;
-import com.baolong.pictures.interfaces.dto.category.CategoryQueryRequest;
-import com.baolong.pictures.interfaces.dto.category.CategoryUpdateRequest;
-import com.baolong.pictures.interfaces.vo.category.CategoryVO;
+import com.baolong.pictures.interfaces.web.request.category.CategoryAddRequest;
+import com.baolong.pictures.interfaces.web.request.category.CategoryQueryRequest;
+import com.baolong.pictures.interfaces.web.request.category.CategoryUpdateRequest;
+import com.baolong.pictures.interfaces.web.response.category.CategoryVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import java.util.List;

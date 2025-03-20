@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,6 +31,12 @@ public class EmailManager {
 
 	@Value("${spring.mail.username}")
 	private String from;
+
+	public void sendEmailCode(String to, String subject, String code) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("code", code);
+		sendEmail(to, subject, map);
+	}
 
 	public void sendEmail(String to, String subject, Map<String, Object> contentMap) {
 		try {

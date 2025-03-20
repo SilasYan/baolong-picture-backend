@@ -1,19 +1,18 @@
 package com.baolong.pictures.application.service.impl;
 
 import com.baolong.pictures.application.service.CategoryApplicationService;
-import com.baolong.pictures.application.service.UserApplicationService;
 import com.baolong.pictures.domain.category.entity.Category;
 import com.baolong.pictures.domain.category.service.CategoryDomainService;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.exception.ThrowUtils;
-import com.baolong.pictures.interfaces.assembler.CategoryAssembler;
-import com.baolong.pictures.interfaces.dto.category.CategoryAddRequest;
-import com.baolong.pictures.interfaces.dto.category.CategoryQueryRequest;
-import com.baolong.pictures.interfaces.dto.category.CategoryUpdateRequest;
-import com.baolong.pictures.interfaces.vo.category.CategoryVO;
+import com.baolong.pictures.interfaces.web.assembler.CategoryAssembler;
+import com.baolong.pictures.interfaces.web.request.category.CategoryAddRequest;
+import com.baolong.pictures.interfaces.web.request.category.CategoryQueryRequest;
+import com.baolong.pictures.interfaces.web.request.category.CategoryUpdateRequest;
+import com.baolong.pictures.interfaces.web.response.category.CategoryVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +47,7 @@ public class CategoryApplicationServiceImpl implements CategoryApplicationServic
 	@Override
 	public Boolean addCategory(CategoryAddRequest categoryAddRequest) {
 		Category category = CategoryAssembler.toCategoryEntity(categoryAddRequest);
-		User loginUser = userApplicationService.getLoginUser();
+		User loginUser = userApplicationService.getLoginUserDetail();
 		category.setUserId(loginUser.getId());
 		return categoryDomainService.addCategory(category);
 	}

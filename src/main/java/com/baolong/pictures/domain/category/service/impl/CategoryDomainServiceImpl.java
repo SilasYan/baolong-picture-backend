@@ -8,7 +8,7 @@ import com.baolong.pictures.domain.category.service.CategoryDomainService;
 import com.baolong.pictures.infrastructure.common.page.PageRequest;
 import com.baolong.pictures.infrastructure.repository.CategoryRepository;
 import com.baolong.pictures.infrastructure.utils.SFLambdaUtil;
-import com.baolong.pictures.interfaces.dto.category.CategoryQueryRequest;
+import com.baolong.pictures.interfaces.web.request.category.CategoryQueryRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

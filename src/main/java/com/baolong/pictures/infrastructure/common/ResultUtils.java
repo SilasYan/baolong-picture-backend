@@ -10,6 +10,15 @@ public class ResultUtils {
 	/**
 	 * 成功
 	 *
+	 * @return 响应
+	 */
+	public static BaseResponse<Void> success() {
+		return new BaseResponse<>(0, null, "ok");
+	}
+
+	/**
+	 * 成功
+	 *
 	 * @param data 数据
 	 * @param <T>  数据类型
 	 * @return 响应

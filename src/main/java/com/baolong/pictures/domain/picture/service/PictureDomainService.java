@@ -1,10 +1,10 @@
 package com.baolong.pictures.domain.picture.service;
 
 import com.baolong.pictures.domain.picture.entity.Picture;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
-import com.baolong.pictures.interfaces.dto.picture.PictureGrabRequest;
-import com.baolong.pictures.interfaces.dto.picture.PictureQueryRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureGrabRequest;
+import com.baolong.pictures.interfaces.web.request.picture.PictureQueryRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;

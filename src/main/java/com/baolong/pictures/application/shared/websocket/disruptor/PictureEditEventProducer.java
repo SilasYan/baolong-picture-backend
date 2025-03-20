@@ -1,7 +1,7 @@
 package com.baolong.pictures.application.shared.websocket.disruptor;
 
 import com.baolong.pictures.application.shared.websocket.model.PictureEditRequestMessage;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import lombok.extern.slf4j.Slf4j;

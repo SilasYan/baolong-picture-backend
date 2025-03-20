@@ -1,13 +1,13 @@
 package com.baolong.pictures.application.service;
 
 import com.baolong.pictures.domain.space.entity.SpaceUser;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserAddRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserEditRequest;
-import com.baolong.pictures.interfaces.dto.space.SpaceUserQueryRequest;
-import com.baolong.pictures.interfaces.vo.space.SpaceUserVO;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserAddRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserEditRequest;
+import com.baolong.pictures.interfaces.web.request.space.SpaceUserQueryRequest;
+import com.baolong.pictures.interfaces.web.response.space.SpaceUserVO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 /**

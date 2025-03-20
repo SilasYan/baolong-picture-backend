@@ -14,7 +14,8 @@ public enum ErrorCode {
 	FORBIDDEN_ERROR(400, "禁止访问"),
 	NOT_LOGIN_ERROR(401, "未登录"),
 	NO_AUTH_ERROR(403, "无权限"),
-	NOT_FOUND_ERROR(404, "请求数据不存在"),
+	DATA_ERROR(404, "数据错误"),
+	NOT_FOUND_ERROR(404, "数据不存在"),
 	SYSTEM_ERROR(500, "系统内部异常"),
 	REQUEST_LIMIT_ERROR(505, "访问过于频繁，请稍候再试"),
 	OPERATION_ERROR(501, "操作失败");
