@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baolong.pictures.infrastructure.persistence.picture.picture.mybatis.PictureMapper">
+
+    <resultMap id="BaseResultMap" type="com.baolong.pictures.infrastructure.persistence.picture.picture.mybatis.PictureDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="originName" column="origin_name" jdbcType="VARCHAR"/>
+        <result property="originUrl" column="origin_url" jdbcType="VARCHAR"/>
+        <result property="originSize" column="origin_size" jdbcType="BIGINT"/>
+        <result property="originFormat" column="origin_format" jdbcType="VARCHAR"/>
+        <result property="originWidth" column="origin_width" jdbcType="INTEGER"/>
+        <result property="originHeight" column="origin_height" jdbcType="INTEGER"/>
+        <result property="originScale" column="origin_scale" jdbcType="DOUBLE"/>
+        <result property="originColor" column="origin_color" jdbcType="VARCHAR"/>
+        <result property="originPath" column="origin_path" jdbcType="VARCHAR"/>
+        <result property="picName" column="pic_name" jdbcType="VARCHAR"/>
+        <result property="picDesc" column="pic_desc" jdbcType="VARCHAR"/>
+        <result property="picUrl" column="pic_url" jdbcType="VARCHAR"/>
+        <result property="compressSize" column="compress_size" jdbcType="BIGINT"/>
+        <result property="compressFormat" column="compress_format" jdbcType="VARCHAR"/>
+        <result property="compressPath" column="compress_path" jdbcType="VARCHAR"/>
+        <result property="thumbnailUrl" column="thumbnail_url" jdbcType="VARCHAR"/>
+        <result property="thumbnailPath" column="thumbnail_path" jdbcType="VARCHAR"/>
+        <result property="categoryId" column="category_id" jdbcType="BIGINT"/>
+        <result property="tags" column="tags" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="spaceId" column="space_id" jdbcType="BIGINT"/>
+        <result property="reviewStatus" column="review_status" jdbcType="TINYINT"/>
+        <result property="reviewMessage" column="review_message" jdbcType="VARCHAR"/>
+        <result property="reviewerUser" column="reviewer_user" jdbcType="BIGINT"/>
+        <result property="reviewTime" column="review_time" jdbcType="TIMESTAMP"/>
+        <result property="resourceStatus" column="resource_status" jdbcType="TINYINT"/>
+        <result property="viewQuantity" column="view_quantity" jdbcType="INTEGER"/>
+        <result property="likeQuantity" column="like_quantity" jdbcType="INTEGER"/>
+        <result property="collectQuantity" column="collect_quantity" jdbcType="INTEGER"/>
+        <result property="downloadQuantity" column="download_quantity" jdbcType="INTEGER"/>
+        <result property="shareQuantity" column="share_quantity" jdbcType="INTEGER"/>
+        <result property="isShare" column="is_share" jdbcType="TINYINT"/>
+        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+        <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,origin_name,origin_url,
+        origin_size,origin_format,origin_width,
+        origin_height,origin_scale,origin_color,
+        origin_path,pic_name,pic_desc,
+        pic_url,compress_size,compress_format,
+        compress_path,thumbnail_url,thumbnail_path,
+        category,tags,user_id,
+        space_id,review_status,review_message,
+        reviewer_user,review_time,resource_status,
+        is_share,is_delete,edit_time,create_time,
+        update_time
+    </sql>
+</mapper>

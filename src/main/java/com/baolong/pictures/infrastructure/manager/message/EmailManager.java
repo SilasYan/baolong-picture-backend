@@ -1,7 +1,7 @@
 package com.baolong.pictures.infrastructure.manager.message;
 
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.utils.EmailUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;

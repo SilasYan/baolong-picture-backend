@@ -1,7 +1,7 @@
 package com.baolong.pictures.application.shared.websocket.disruptor;
 
 import cn.hutool.json.JSONUtil;
-import com.baolong.pictures.application.service.impl.UserApplicationService;
+import com.baolong.pictures.application.service.UserApplicationService;
 import com.baolong.pictures.application.shared.websocket.PictureEditHandler;
 import com.baolong.pictures.application.shared.websocket.model.PictureEditMessageTypeEnum;
 import com.baolong.pictures.application.shared.websocket.model.PictureEditRequestMessage;
@@ -59,7 +59,7 @@ public class PictureEditEventWorkHandler implements WorkHandler<PictureEditEvent
                 PictureEditResponseMessage pictureEditResponseMessage = new PictureEditResponseMessage();
                 pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.ERROR.getValue());
                 pictureEditResponseMessage.setMessage("消息类型错误");
-                UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getId()));
+                UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
                 pictureEditResponseMessage.setUser(userDetailVO);
                 session.sendMessage(new TextMessage(JSONUtil.toJsonStr(pictureEditResponseMessage)));
         }

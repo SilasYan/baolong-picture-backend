@@ -10,7 +10,7 @@ server:
 # Spring 配置
 spring:
   application:
-    name: bl-picture-backend
+    name: baolong-picture
   profiles:
     # 开发环境文件后缀 local/prod
     active: local
@@ -117,4 +117,4 @@ knife4j:
       default:
         api-rule: package
         api-rule-resources:
-          - com.baolong.pictures.interfaces.controller
+          - com.baolong.pictures.interfaces.rest

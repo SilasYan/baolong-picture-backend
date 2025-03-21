@@ -14,7 +14,6 @@ import java.util.Date;
  * MyBatisPlus 分页插件配置
  */
 @Configuration
-// @MapperScan("com.baolong.pictures.infrastructure.mapper")  // 这里在启动类时已经注入
 public class MyBatisPlusConfig implements MetaObjectHandler {
 
 	/**

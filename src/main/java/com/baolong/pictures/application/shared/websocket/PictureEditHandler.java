@@ -2,7 +2,7 @@ package com.baolong.pictures.application.shared.websocket;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
-import com.baolong.pictures.application.service.impl.UserApplicationService;
+import com.baolong.pictures.application.service.UserApplicationService;
 import com.baolong.pictures.application.shared.websocket.disruptor.PictureEditEventProducer;
 import com.baolong.pictures.application.shared.websocket.model.PictureEditActionEnum;
 import com.baolong.pictures.application.shared.websocket.model.PictureEditMessageTypeEnum;
@@ -62,14 +62,14 @@ public class PictureEditHandler extends TextWebSocketHandler {
 		String message = String.format("用户【%s】加入编辑", user.getUserName());
 		pictureEditResponseMessage.setMessage(message);
 
-		UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getId()));
+		UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
 		pictureEditResponseMessage.setUser(userDetailVO);
 
 		// 获取到当前正在编辑的用户信息
 		Long inUserId = pictureEditingUsers.get(pictureId);
 		if (inUserId != null) {
 			User inUser = userApplicationService.getUserDetailById(inUserId);
-			UserDetailVO userDetailVO2 = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(inUser.getId()));
+			UserDetailVO userDetailVO2 = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(inUser.getUserId()));
 			pictureEditResponseMessage.setInUser(userDetailVO2);
 		}
 		// 广播给同一张图片的用户
@@ -126,7 +126,7 @@ public class PictureEditHandler extends TextWebSocketHandler {
 		pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.INFO.getValue());
 		String message = String.format("用户【%s】离开编辑", user.getUserName());
 		pictureEditResponseMessage.setMessage(message);
-		UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getId()));
+		UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
 		pictureEditResponseMessage.setUser(userDetailVO);
 		broadcastToPicture(pictureId, pictureEditResponseMessage);
 	}
@@ -144,13 +144,13 @@ public class PictureEditHandler extends TextWebSocketHandler {
 		// 没有用户正在编辑该图片，才能进入编辑
 		if (!pictureEditingUsers.containsKey(pictureId)) {
 			// 设置当前用户为编辑用户
-			pictureEditingUsers.put(pictureId, user.getId());
+			pictureEditingUsers.put(pictureId, user.getUserId());
 			PictureEditResponseMessage pictureEditResponseMessage = new PictureEditResponseMessage();
 			pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.ENTER_EDIT.getValue());
 			String message = String.format("用户【%s】开始编辑图片", user.getUserName());
 			pictureEditResponseMessage.setMessage(message);
 
-			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getId()));
+			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
 			pictureEditResponseMessage.setUser(userDetailVO);
 			broadcastToPicture(pictureId, pictureEditResponseMessage);
 		}
@@ -173,13 +173,13 @@ public class PictureEditHandler extends TextWebSocketHandler {
 			return;
 		}
 		// 确认是当前编辑者
-		if (editingUserId != null && editingUserId.equals(user.getId())) {
+		if (editingUserId != null && editingUserId.equals(user.getUserId())) {
 			PictureEditResponseMessage pictureEditResponseMessage = new PictureEditResponseMessage();
 			pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.EDIT_ACTION.getValue());
 			String message = String.format("用户【%s】执行%s", user.getUserName(), actionEnum.getText());
 			pictureEditResponseMessage.setMessage(message);
 			pictureEditResponseMessage.setEditAction(editAction);
-			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getId()));
+			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
 			pictureEditResponseMessage.setUser(userDetailVO);
 			// 广播给除了当前客户端之外的其他用户，否则会造成重复编辑
 			broadcastToPicture(pictureId, pictureEditResponseMessage, session);
@@ -197,7 +197,7 @@ public class PictureEditHandler extends TextWebSocketHandler {
 	 */
 	public void handleExitEditMessage(PictureEditRequestMessage pictureEditRequestMessage, WebSocketSession session, User user, Long pictureId) throws Exception {
 		Long editingUserId = pictureEditingUsers.get(pictureId);
-		if (editingUserId != null && editingUserId.equals(user.getId())) {
+		if (editingUserId != null && editingUserId.equals(user.getUserId())) {
 			// 移除当前用户的编辑状态
 			pictureEditingUsers.remove(pictureId);
 			// 构造响应，发送退出编辑的消息通知
@@ -206,7 +206,7 @@ public class PictureEditHandler extends TextWebSocketHandler {
 			String message = String.format("用户【%s】退出编辑图片", user.getUserName());
 			pictureEditResponseMessage.setMessage(message);
 
-			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getId()));
+			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
 			pictureEditResponseMessage.setUser(userDetailVO);
 			broadcastToPicture(pictureId, pictureEditResponseMessage);
 		}
@@ -214,14 +214,14 @@ public class PictureEditHandler extends TextWebSocketHandler {
 
 	public void handleCompleteMessage(PictureEditRequestMessage pictureEditRequestMessage, WebSocketSession session, User user, Long pictureId) throws Exception {
 		Long editingUserId = pictureEditingUsers.get(pictureId);
-		if (editingUserId != null && editingUserId.equals(user.getId())) {
+		if (editingUserId != null && editingUserId.equals(user.getUserId())) {
 			// 构造响应，发送完成编辑的消息通知
 			PictureEditResponseMessage pictureEditResponseMessage = new PictureEditResponseMessage();
 			pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.COMPLETE.getValue());
 			String message = String.format("用户【%s】完成图片编辑", user.getUserName());
 			pictureEditResponseMessage.setMessage(message);
 
-			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getId()));
+			UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
 			pictureEditResponseMessage.setUser(userDetailVO);
 			broadcastToPicture(pictureId, pictureEditResponseMessage, session);
 		}

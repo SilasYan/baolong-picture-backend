@@ -7,9 +7,9 @@ import com.baolong.pictures.application.shared.auth.annotation.AuthCheck;
 import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.domain.user.aggregate.enums.UserRoleEnum;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
-import com.baolong.pictures.infrastructure.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
 import com.baolong.pictures.infrastructure.manager.redis.RedisCache;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -50,7 +50,7 @@ public class AuthCheckInterceptor {
 			return joinPoint.proceed();
 		}
 		// 获取当前登录用户
-		String value = redisCache.get(UserConstant.USER_LOGIN_STATE + StpUtil.getTokenInfo().getTokenValue());
+		String value = redisCache.get(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
 		ThrowUtils.throwIf(StrUtil.isEmpty(value), ErrorCode.NOT_LOGIN_ERROR, "请先登录");
 		User loginUser = JSONUtil.toBean(value, User.class);
 		// 校验当前用户的权限

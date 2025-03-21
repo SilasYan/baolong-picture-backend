@@ -5,7 +5,7 @@ import cn.hutool.core.lang.RegexPool;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baolong.pictures.application.service.impl.UserApplicationService;
+import com.baolong.pictures.application.service.UserApplicationService;
 import com.baolong.pictures.application.shared.auth.annotation.AuthCheck;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
@@ -13,9 +13,9 @@ import com.baolong.pictures.infrastructure.common.BaseResponse;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.ResultUtils;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
-import com.baolong.pictures.infrastructure.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
 import com.baolong.pictures.interfaces.web.user.assembler.UserAssembler;
 import com.baolong.pictures.interfaces.web.user.request.UserEditRequest;
 import com.baolong.pictures.interfaces.web.user.request.UserLoginRequest;
@@ -36,6 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 用户表 (user) - 接口
+ *
+ * @author Baolong 2025年03月09 21:06
+ * @version 1.0
+ * @since 1.8
  */
 @RestController
 @RequestMapping("/user")
@@ -43,8 +47,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
 	private final UserApplicationService userApplicationService;
-
-	// region 用户相关
 
 	/**
 	 * 发送邮箱验证码
@@ -85,7 +87,8 @@ public class UserController {
 		if (StrUtil.isEmpty(userEmail) || !ReUtil.isMatch(RegexPool.EMAIL, userEmail)) {
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "邮箱格式错误");
 		}
-		return ResultUtils.success(userApplicationService.userRegister(userEmail, codeKey, codeValue));
+		userApplicationService.userRegister(userEmail, codeKey, codeValue);
+		return ResultUtils.success();
 	}
 
 	/**
@@ -117,7 +120,8 @@ public class UserController {
 	 */
 	@PostMapping("/logout")
 	public BaseResponse<Boolean> userLogout() {
-		return ResultUtils.success(userApplicationService.userLogout());
+		userApplicationService.userLogout();
+		return ResultUtils.success();
 	}
 
 	/**
@@ -128,11 +132,12 @@ public class UserController {
 	@PostMapping("/edit")
 	public BaseResponse<Boolean> editUser(@RequestBody UserEditRequest userEditRequest) {
 		ThrowUtils.throwIf(userEditRequest == null, ErrorCode.PARAMS_ERROR);
-		ThrowUtils.throwIf(ObjectUtil.isEmpty(userEditRequest.getId()), ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(userEditRequest.getUserId()), ErrorCode.PARAMS_ERROR);
 		if (userEditRequest.getUserProfile().length() > 500) {
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户简介过长");
 		}
-		return ResultUtils.success(userApplicationService.editUser(UserAssembler.toUserEntity(userEditRequest)));
+		userApplicationService.editUser(UserAssembler.toDomain(userEditRequest));
+		return ResultUtils.success();
 	}
 
 	/**
@@ -165,22 +170,18 @@ public class UserController {
 	/**
 	 * 根据用户ID获取用户信息详情
 	 *
-	 * @param id 用户ID
+	 * @param userId 用户ID
 	 * @return 用户信息详情
 	 */
 	@GetMapping("/detail")
-	public BaseResponse<UserDetailVO> getUserDetailById(Long id) {
+	public BaseResponse<UserDetailVO> getUserDetailById(Long userId) {
 		if (!StpUtil.isLogin()) {
 			throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, "用户未登录");
 		}
-		ThrowUtils.throwIf(ObjectUtil.isEmpty(id), ErrorCode.PARAMS_ERROR);
-		User user = userApplicationService.getUserDetailById(id);
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(userId), ErrorCode.PARAMS_ERROR);
+		User user = userApplicationService.getUserDetailById(userId);
 		return ResultUtils.success(UserAssembler.toUserDetailVO(user));
 	}
-
-	// endregion 用户相关
-
-	// region 管理员相关
 
 	/**
 	 * 删除用户
@@ -194,7 +195,8 @@ public class UserController {
 		ThrowUtils.throwIf(deleteRequest == null, ErrorCode.PARAMS_ERROR);
 		Long id = deleteRequest.getId();
 		ThrowUtils.throwIf(ObjectUtil.isEmpty(id), ErrorCode.PARAMS_ERROR);
-		return ResultUtils.success(userApplicationService.deleteUser(id));
+		userApplicationService.deleteUser(id);
+		return ResultUtils.success();
 	}
 
 	/**
@@ -207,8 +209,9 @@ public class UserController {
 	@AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
 	public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
 		ThrowUtils.throwIf(userUpdateRequest == null, ErrorCode.PARAMS_ERROR);
-		ThrowUtils.throwIf(ObjectUtil.isEmpty(userUpdateRequest.getId()), ErrorCode.PARAMS_ERROR);
-		return ResultUtils.success(userApplicationService.updateUser(UserAssembler.toUserEntity(userUpdateRequest)));
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(userUpdateRequest.getUserId()), ErrorCode.PARAMS_ERROR);
+		userApplicationService.updateUser(UserAssembler.toDomain(userUpdateRequest));
+		return ResultUtils.success();
 	}
 
 	/**
@@ -221,7 +224,7 @@ public class UserController {
 	@AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
 	public BaseResponse<String> resetPassword(@RequestBody UserUpdateRequest userUpdateRequest) {
 		ThrowUtils.throwIf(userUpdateRequest == null, ErrorCode.PARAMS_ERROR);
-		Long id = userUpdateRequest.getId();
+		Long id = userUpdateRequest.getUserId();
 		ThrowUtils.throwIf(ObjectUtil.isEmpty(id), ErrorCode.PARAMS_ERROR);
 		return ResultUtils.success(userApplicationService.resetPassword(id));
 	}
@@ -236,11 +239,12 @@ public class UserController {
 	@AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
 	public BaseResponse<Boolean> disabledUser(@RequestBody UserUpdateRequest userUpdateRequest) {
 		ThrowUtils.throwIf(userUpdateRequest == null, ErrorCode.PARAMS_ERROR);
-		Long id = userUpdateRequest.getId();
+		Long id = userUpdateRequest.getUserId();
 		ThrowUtils.throwIf(ObjectUtil.isEmpty(id), ErrorCode.PARAMS_ERROR);
 		Integer isDisabled = userUpdateRequest.getIsDisabled();
 		ThrowUtils.throwIf(ObjectUtil.isEmpty(isDisabled), ErrorCode.PARAMS_ERROR);
-		return ResultUtils.success(userApplicationService.disabledUser(id, isDisabled));
+		userApplicationService.disabledUser(id, isDisabled);
+		return ResultUtils.success();
 	}
 
 	/**
@@ -252,46 +256,7 @@ public class UserController {
 	@PostMapping("/manage/page")
 	@AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
 	public BaseResponse<PageVO<UserVO>> getUserPageListAsManage(@RequestBody UserQueryRequest userQueryRequest) {
-		PageVO<User> userPage = userApplicationService.getUserPageListAsManage(UserAssembler.toUserEntity(userQueryRequest));
+		PageVO<User> userPage = userApplicationService.getUserPageListAsManage(UserAssembler.toDomain(userQueryRequest));
 		return ResultUtils.success(UserAssembler.toUserVOPage(userPage));
 	}
-
-	// endregion 管理员相关
-
-	// /**
-	//  * 用户兑换会员
-	//  */
-	// @PostMapping("/exchange/vip")
-	// public BaseResponse<Boolean> userExchangeVip(@RequestBody UserVipExchangeRequest userVipExchangeRequest) {
-	// 	ThrowUtils.throwIf(userVipExchangeRequest == null, ErrorCode.PARAMS_ERROR);
-	// 	// String vipCode = vipExchangeRequest.getVipCode();
-	// 	// User loginUser = userApplicationService.getLoginUser(httpServletRequest);
-	// 	// // 调用 service 层的方法进行会员兑换
-	// 	// boolean result = userApplicationService.exchangeVip(loginUser, vipCode);
-	// 	return ResultUtils.success(userApplicationService.userExchangeVip(userVipExchangeRequest));
-	// }
-
-	//
-	// /**
-	//  * 兑换会员
-	//  */
-	// @PostMapping("/exchange/vip")
-	// public BaseResponse<Boolean> exchangeVip(@RequestBody UserVipExchangeRequest vipExchangeRequest,
-	// 										 HttpServletRequest httpServletRequest) {
-	// 	ThrowUtils.throwIf(vipExchangeRequest == null, ErrorCode.PARAMS_ERROR);
-	// 	String vipCode = vipExchangeRequest.getVipCode();
-	// 	User loginUser = userApplicationService.getLoginUser(httpServletRequest);
-	// 	// 调用 service 层的方法进行会员兑换
-	// 	boolean result = userApplicationService.exchangeVip(loginUser, vipCode);
-	// 	return ResultUtils.success(result);
-	// }
-	//
-	// /**
-	//  * 上传头像
-	//  */
-	// @PostMapping("/uploadAvatar")
-	// public BaseResponse<String> uploadAvatar(@RequestPart("file") MultipartFile avatarFile, HttpServletRequest request) {
-	// 	User loginUser = userApplicationService.getLoginUser(request);
-	// 	return ResultUtils.success(userApplicationService.uploadAvatar(avatarFile, request, loginUser));
-	// }
 }

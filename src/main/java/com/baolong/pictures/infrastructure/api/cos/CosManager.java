@@ -2,8 +2,8 @@ package com.baolong.pictures.infrastructure.api.cos;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONUtil;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.COSObjectInputStream;

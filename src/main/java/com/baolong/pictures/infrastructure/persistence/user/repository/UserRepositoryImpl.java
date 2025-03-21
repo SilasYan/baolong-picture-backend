@@ -3,6 +3,7 @@ package com.baolong.pictures.infrastructure.persistence.user.repository;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.domain.user.repository.UserRepository;
 import com.baolong.pictures.infrastructure.common.page.PageRequest;
@@ -30,51 +31,8 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-	private final UserPersistenceService userPersistenceService;
 
-	/**
-	 * 查询条件对象
-	 *
-	 * @param user 用户领域对象
-	 * @return 查询条件对象
-	 */
-	private QueryWrapper<UserDO> queryWrapper(User user) {
-		QueryWrapper<UserDO> queryWrapper = new QueryWrapper<>();
-		Long id = user.getId();
-		String userName = user.getUserName();
-		String userAccount = user.getUserAccount();
-		String userEmail = user.getUserEmail();
-		String userPhone = user.getUserPhone();
-		String userProfile = user.getUserProfile();
-		String userRole = user.getUserRole();
-		queryWrapper.eq(ObjUtil.isNotNull(id), "id", id);
-		queryWrapper.like(StrUtil.isNotEmpty(userName), "user_name", userName);
-		queryWrapper.eq(StrUtil.isNotEmpty(userAccount), "user_account", userAccount);
-		queryWrapper.eq(StrUtil.isNotEmpty(userEmail), "user_email", userEmail);
-		queryWrapper.eq(StrUtil.isNotEmpty(userPhone), "user_phone", userPhone);
-		queryWrapper.like(StrUtil.isNotEmpty(userProfile), "user_profile", userProfile);
-		queryWrapper.eq(StrUtil.isNotEmpty(userRole), "user_role", userRole);
-		if (user.isMultipleSort()) {
-			List<PageRequest.Sort> sorts = user.getSorts();
-			if (CollUtil.isNotEmpty(sorts)) {
-				sorts.forEach(sort -> {
-					String sortField = sort.getField();
-					boolean sortAsc = sort.isAsc();
-					queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortAsc, sortField);
-				});
-			}
-		} else {
-			PageRequest.Sort sort = user.getSort();
-			if (sort != null) {
-				String sortField = sort.getField();
-				boolean sortAsc = sort.isAsc();
-				queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortAsc, sortField);
-			} else {
-				queryWrapper.orderByDesc("create_time");
-			}
-		}
-		return queryWrapper;
-	}
+	private final UserPersistenceService userPersistenceService;
 
 	/**
 	 * 查询条件对象（Lambda）
@@ -84,7 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
 	 */
 	private LambdaQueryWrapper<UserDO> lambdaQueryWrapper(User user) {
 		LambdaQueryWrapper<UserDO> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-		Long id = user.getId();
+		Long id = user.getUserId();
 		String userName = user.getUserName();
 		String userAccount = user.getUserAccount();
 		String userEmail = user.getUserEmail();

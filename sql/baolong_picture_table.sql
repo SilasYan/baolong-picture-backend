@@ -272,26 +272,3 @@ CREATE TABLE role_menu
     PRIMARY KEY (role_key, menu_id)
 ) COMMENT = '角色菜单关联表';
 
--- 操作表
-CREATE TABLE operate
-(
-    id           BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
-    operate_name VARCHAR(50)  NOT NULL COMMENT '操作名称',
-    operate_key  VARCHAR(255) NOT NULL COMMENT '操作标识',
-    operate_desc VARCHAR(255) NOT NULL COMMENT '操作描述',
-    is_disabled  TINYINT      NOT NULL DEFAULT 0 COMMENT '是否禁用（0-正常, 1-禁用）',
-    is_delete    TINYINT      NOT NULL DEFAULT 0 COMMENT '是否删除（0-正常, 1-删除）',
-    edit_time    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '编辑时间',
-    create_time  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    update_time  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (id)
-) COMMENT = '操作表';
-
--- 角色-操作关联表
-CREATE TABLE role_operate
-(
-    role_key   VARCHAR(20) NOT NULL,
-    operate_id BIGINT      NOT NULL,
-    PRIMARY KEY (role_key, operate_id)
-) COMMENT = '角色操作关联表';
-

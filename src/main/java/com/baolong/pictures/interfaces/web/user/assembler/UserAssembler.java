@@ -26,96 +26,81 @@ import java.util.stream.Collectors;
 public class UserAssembler {
 
 	/**
-	 * 用户添加请求 转为 用户领域模型
+	 * 用户添加请求 转为 用户领域对象
 	 */
-	public static User toUserEntity(UserAddRequest userAddRequest) {
+	public static User toDomain(UserAddRequest userAddRequest) {
 		User user = new User();
-		if (userAddRequest != null) {
-			BeanUtils.copyProperties(userAddRequest, user);
-		}
+		BeanUtils.copyProperties(userAddRequest, user);
 		return user;
 	}
 
 	/**
-	 * 用户更新请求 转为 用户领域模型
+	 * 用户更新请求 转为 用户领域对象
 	 */
-	public static User toUserEntity(UserUpdateRequest userUpdateRequest) {
+	public static User toDomain(UserUpdateRequest userUpdateRequest) {
 		User user = new User();
-		if (userUpdateRequest != null) {
-			BeanUtils.copyProperties(userUpdateRequest, user);
-		}
+		BeanUtils.copyProperties(userUpdateRequest, user);
 		return user;
 	}
 
 	/**
-	 * 用户编辑请求 转为 用户领域模型
+	 * 用户编辑请求 转为 用户领域对象
 	 */
-	public static User toUserEntity(UserEditRequest userEditRequest) {
+	public static User toDomain(UserEditRequest userEditRequest) {
 		User user = new User();
-		if (userEditRequest != null) {
-			BeanUtils.copyProperties(userEditRequest, user);
-		}
+		BeanUtils.copyProperties(userEditRequest, user);
 		return user;
 	}
 
 	/**
-	 * 用户查询请求 转为 用户领域模型
+	 * 用户查询请求 转为 用户领域对象
 	 */
-	public static User toUserEntity(UserQueryRequest userQueryRequest) {
+	public static User toDomain(UserQueryRequest userQueryRequest) {
 		User user = new User();
-		if (userQueryRequest != null) {
-			BeanUtils.copyProperties(userQueryRequest, user);
-		}
+		BeanUtils.copyProperties(userQueryRequest, user);
 		return user;
 	}
 
 	/**
-	 * 用户领域模型 转为 登录用户响应
+	 * 用户领域对象 转为 登录用户响应对象
 	 */
 	public static LoginUserVO toLoginUserVO(User user) {
 		LoginUserVO loginUserVO = new LoginUserVO();
-		if (user != null) {
-			BeanUtils.copyProperties(user, loginUserVO);
-			loginUserVO.setToken(StpUtil.getTokenInfo().getTokenValue());
-		}
+		BeanUtils.copyProperties(user, loginUserVO);
+		loginUserVO.setToken(StpUtil.getTokenInfo().getTokenValue());
 		return loginUserVO;
 	}
 
 	/**
-	 * 用户领域模型 转为 用户详情响应
+	 * 用户领域对象 转为 用户详情响应对象
 	 */
 	public static UserDetailVO toUserDetailVO(User user) {
 		UserDetailVO userDetailVO = new UserDetailVO();
-		if (user != null) {
-			BeanUtils.copyProperties(user, userDetailVO);
-		}
+		BeanUtils.copyProperties(user, userDetailVO);
 		return userDetailVO;
 	}
 
 	/**
-	 * 用户领域模型 转为 用户响应
+	 * 用户领域对象 转为 用户响应对象
 	 */
 	public static UserVO toUserVO(User user) {
 		UserVO userVO = new UserVO();
-		if (user != null) {
-			BeanUtils.copyProperties(user, userVO);
-		}
+		BeanUtils.copyProperties(user, userVO);
 		return userVO;
 	}
 
 	/**
-	 * 用户实体分页 转为 用户响应 分页
+	 * 用户领域对象分页 转为 用户响应对象分页
 	 */
 	public static PageVO<UserVO> toUserVOPage(PageVO<User> userPage) {
-		List<UserVO> userVOList = Optional.ofNullable(userPage.getRecords())
-				.orElse(List.of()).stream()
-				.map(UserAssembler::toUserVO)
-				.collect(Collectors.toList());
 		return new PageVO<>(userPage.getCurrent()
 				, userPage.getPageSize()
 				, userPage.getTotal()
 				, userPage.getPages()
-				, userVOList
+				, Optional.ofNullable(userPage.getRecords())
+				.orElse(List.of()).stream()
+				.map(UserAssembler::toUserVO)
+				.collect(Collectors.toList())
 		);
 	}
 }

@@ -7,8 +7,8 @@ import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baolong.pictures.infrastructure.api.imageSearch.so.model.SoImageSearchResult;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;

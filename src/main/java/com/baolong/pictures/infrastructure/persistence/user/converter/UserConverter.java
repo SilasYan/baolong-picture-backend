@@ -1,10 +1,12 @@
 package com.baolong.pictures.infrastructure.persistence.user.converter;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.map.MapUtil;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.persistence.user.mybatis.UserDO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,14 @@ import java.util.stream.Collectors;
  */
 public class UserConverter {
 
+	private final static CopyOptions toDoOption = CopyOptions.create();
+	private final static CopyOptions toDomainOption = CopyOptions.create();
+
+	static {
+		toDoOption.setFieldMapping(MapUtil.of("userId", "id"));
+		toDomainOption.setFieldMapping(MapUtil.of("id", "userId"));
+	}
+
 	/**
 	 * 领域模型 转为 持久化模型
 	 *
@@ -27,8 +37,18 @@ public class UserConverter {
 	 */
 	public static UserDO toDO(User user) {
 		UserDO userDO = new UserDO();
-		BeanUtils.copyProperties(user, userDO);
+		BeanUtil.copyProperties(user, userDO, toDoOption);
 		return userDO;
+	}
+
+	/**
+	 * 领域模型列表 转为 持久化模型列表
+	 */
+	public static List<UserDO> toDOList(List<User> userList) {
+		return Optional.ofNullable(userList)
+				.orElse(List.of()).stream()
+				.map(UserConverter::toDO)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -39,28 +59,8 @@ public class UserConverter {
 	 */
 	public static User toDomain(UserDO userDO) {
 		User user = new User();
-		BeanUtils.copyProperties(userDO, user);
+		BeanUtil.copyProperties(userDO, user, toDomainOption);
 		return user;
-	}
-
-	/**
-	 * 持久化模型分页 转为 领域模型分页
-	 *
-	 * @param userDOPage 持久化模型分页
-	 * @return 领域模型分页
-	 */
-	public static PageVO<User> toDomainPage(Page<UserDO> userDOPage) {
-		List<User> userList = Optional.ofNullable(userDOPage.getRecords())
-				.orElse(List.of())
-				.stream().map(UserConverter::toDomain)
-				.collect(Collectors.toList());
-		return new PageVO<>(
-				userDOPage.getCurrent()
-				, userDOPage.getSize()
-				, userDOPage.getTotal()
-				, userDOPage.getPages()
-				, userList
-		);
 	}
 
 	/**
@@ -74,5 +74,24 @@ public class UserConverter {
 				.orElse(List.of())
 				.stream().map(UserConverter::toDomain)
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * 持久化模型分页 转为 领域模型分页
+	 *
+	 * @param userDOPage 持久化模型分页
+	 * @return 领域模型分页
+	 */
+	public static PageVO<User> toDomainPage(Page<UserDO> userDOPage) {
+		return new PageVO<>(
+				userDOPage.getCurrent()
+				, userDOPage.getSize()
+				, userDOPage.getTotal()
+				, userDOPage.getPages()
+				, Optional.ofNullable(userDOPage.getRecords())
+				.orElse(List.of())
+				.stream().map(UserConverter::toDomain)
+				.collect(Collectors.toList())
+		);
 	}
 }

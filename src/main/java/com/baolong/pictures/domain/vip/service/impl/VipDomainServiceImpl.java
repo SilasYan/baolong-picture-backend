@@ -2,7 +2,7 @@ package com.baolong.pictures.domain.vip.service.impl;
 
 import com.baolong.pictures.domain.vip.entity.Vip;
 import com.baolong.pictures.domain.vip.service.VipDomainService;
-import com.baolong.pictures.infrastructure.repository.VipRepository;
+import com.baolong.pictures.infrastructure.persistence.vip.mybatis.VipRepository;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

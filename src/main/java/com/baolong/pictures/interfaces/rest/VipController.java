@@ -3,7 +3,7 @@ package com.baolong.pictures.interfaces.rest;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.servlet.ServletUtil;
-import com.baolong.pictures.application.service.VipApplicationService;
+import com.baolong.pictures.application.service.impl.VipApplicationService;
 import com.baolong.pictures.infrastructure.common.BaseResponse;
 import com.baolong.pictures.infrastructure.common.ResultUtils;
 import com.baolong.pictures.infrastructure.function.limit.annotation.Limit;

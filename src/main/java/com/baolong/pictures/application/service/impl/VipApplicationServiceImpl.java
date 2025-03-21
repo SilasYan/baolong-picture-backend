@@ -1,6 +1,5 @@
 package com.baolong.pictures.application.service.impl;
 
-import com.baolong.pictures.application.service.VipApplicationService;
 import org.springframework.stereotype.Service;
 
 /**

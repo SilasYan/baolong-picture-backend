@@ -3,27 +3,27 @@
 <mapper namespace="com.baolong.pictures.infrastructure.persistence.user.mybatis.UserMapper">
 
     <resultMap id="BaseResultMap" type="com.baolong.pictures.infrastructure.persistence.user.mybatis.UserDO">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="userAccount" column="user_account" jdbcType="VARCHAR"/>
-            <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
-            <result property="userEmail" column="user_email" jdbcType="VARCHAR"/>
-            <result property="userPhone" column="user_phone" jdbcType="VARCHAR"/>
-            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
-            <result property="userAvatar" column="user_avatar" jdbcType="VARCHAR"/>
-            <result property="userProfile" column="user_profile" jdbcType="VARCHAR"/>
-            <result property="userRole" column="user_role" jdbcType="VARCHAR"/>
-            <result property="birthday" column="birthday" jdbcType="DATE"/>
-            <result property="vipNumber" column="vip_number" jdbcType="BIGINT"/>
-            <result property="vipExpireTime" column="vip_expire_time" jdbcType="TIMESTAMP"/>
-            <result property="vipCode" column="vip_code" jdbcType="VARCHAR"/>
-            <result property="vipSign" column="vip_sign" jdbcType="VARCHAR"/>
-            <result property="shareCode" column="share_code" jdbcType="VARCHAR"/>
-            <result property="inviteUserId" column="invite_user_id" jdbcType="BIGINT"/>
-            <result property="isDisabled" column="is_disabled" jdbcType="TINYINT"/>
-            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
-            <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userAccount" column="user_account" jdbcType="VARCHAR"/>
+        <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+        <result property="userEmail" column="user_email" jdbcType="VARCHAR"/>
+        <result property="userPhone" column="user_phone" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="userAvatar" column="user_avatar" jdbcType="VARCHAR"/>
+        <result property="userProfile" column="user_profile" jdbcType="VARCHAR"/>
+        <result property="userRole" column="user_role" jdbcType="VARCHAR"/>
+        <result property="birthday" column="birthday" jdbcType="DATE"/>
+        <result property="vipNumber" column="vip_number" jdbcType="BIGINT"/>
+        <result property="vipExpireTime" column="vip_expire_time" jdbcType="TIMESTAMP"/>
+        <result property="vipCode" column="vip_code" jdbcType="VARCHAR"/>
+        <result property="vipSign" column="vip_sign" jdbcType="VARCHAR"/>
+        <result property="shareCode" column="share_code" jdbcType="VARCHAR"/>
+        <result property="inviteUserId" column="invite_user_id" jdbcType="BIGINT"/>
+        <result property="isDisabled" column="is_disabled" jdbcType="TINYINT"/>
+        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+        <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">

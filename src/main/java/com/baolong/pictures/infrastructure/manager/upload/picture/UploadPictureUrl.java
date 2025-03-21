@@ -6,9 +6,9 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
-import com.baolong.pictures.infrastructure.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
 import com.baolong.pictures.infrastructure.manager.upload.UploadPicture;
 import org.springframework.stereotype.Service;
 

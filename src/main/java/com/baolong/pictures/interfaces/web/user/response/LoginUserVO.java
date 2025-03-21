@@ -7,15 +7,15 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 登录用户响应
+ * 登录用户响应对象
  */
 @Data
 public class LoginUserVO implements Serializable {
 
 	/**
-	 * 用户 ID
+	 * 用户ID
 	 */
-	private Long id;
+	private Long userId;
 
 	/**
 	 * Token

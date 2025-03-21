@@ -11,62 +11,64 @@ import java.util.Date;
 
 /**
  * 菜单表
+ *
  * @TableName menu
  */
-@TableName(value ="menu")
+@TableName(value = "menu")
 @Data
 public class Menu implements Serializable {
-    /**
-     * 主键
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
 
-    /**
-     * 菜单名称
-     */
-    private String menuName;
+	/**
+	 * 菜单ID
+	 */
+	@TableId(type = IdType.AUTO)
+	private Long menuId;
 
-    /**
-     * 菜单位置（1-顶部, 2-左侧）
-     */
-    private Integer menuPosition;
+	/**
+	 * 菜单名称
+	 */
+	private String menuName;
 
-    /**
-     * 路由路径（vue-router path）
-     */
-    private String menuPath;
+	/**
+	 * 菜单位置（1-顶部, 2-左侧）
+	 */
+	private Integer menuPosition;
 
-    /**
-     * 父菜单 ID
-     */
-    private Long parentId;
+	/**
+	 * 路由路径（vue-router path）
+	 */
+	private String menuPath;
 
-    /**
-     * 是否禁用（0-正常, 1-禁用）
-     */
-    private Integer isDisabled;
+	/**
+	 * 父菜单 ID
+	 */
+	private Long parentId;
 
-    /**
-     * 是否删除（0-正常, 1-删除）
-     */
-    private Integer isDelete;
+	/**
+	 * 是否禁用（0-正常, 1-禁用）
+	 */
+	private Integer isDisabled;
 
-    /**
-     * 编辑时间
-     */
-    private Date editTime;
+	/**
+	 * 是否删除（0-正常, 1-删除）
+	 */
+	private Integer isDelete;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
+	/**
+	 * 编辑时间
+	 */
+	private Date editTime;
 
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
+	/**
+	 * 创建时间
+	 */
+	private Date createTime;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 更新时间
+	 */
+	private Date updateTime;
+
+	@TableField(exist = false)
+	private static final long serialVersionUID = 1L;
 }

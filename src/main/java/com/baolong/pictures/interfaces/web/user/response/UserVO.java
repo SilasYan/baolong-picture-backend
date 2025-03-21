@@ -6,15 +6,19 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 用户响应
+ * 用户响应对象
+ *
+ * @author Baolong 2025年03月09 21:13
+ * @version 1.0
+ * @since 1.8
  */
 @Data
 public class UserVO implements Serializable {
 
 	/**
-	 * 用户 ID
+	 * 用户ID
 	 */
-	private Long id;
+	private Long userId;
 
 	/**
 	 * 账号

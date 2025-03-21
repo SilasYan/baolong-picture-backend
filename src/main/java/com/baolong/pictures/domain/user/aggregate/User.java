@@ -20,14 +20,12 @@ import java.util.List;
 @Accessors(chain = true)
 public class User extends PageRequest implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
-	// region 属性
+	// region 原始属性
 
 	/**
-	 * 用户 ID
+	 * 用户ID
 	 */
-	private Long id;
+	private Long userId;
 
 	/**
 	 * 账号
@@ -129,6 +127,10 @@ public class User extends PageRequest implements Serializable {
 	 */
 	private Date updateTime;
 
+	// endregion 原始属性
+
+	// region拓展属性
+
 	/**
 	 * Token
 	 */
@@ -149,9 +151,9 @@ public class User extends PageRequest implements Serializable {
 	 */
 	private List<String> otherMenus;
 
-	// endregion 属性
+	// endregion拓展属性
 
-	// region 行为
+	// region 领域方法
 
 	/**
 	 * 填充默认值
@@ -184,5 +186,7 @@ public class User extends PageRequest implements Serializable {
 		return UserRoleEnum.isAdmin(this.getUserRole());
 	}
 
-	// endregion 行为
+	// endregion 领域方法
+
+	private static final long serialVersionUID = 1L;
 }

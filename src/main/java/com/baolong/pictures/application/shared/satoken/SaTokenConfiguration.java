@@ -42,7 +42,7 @@ public class SaTokenConfiguration implements WebMvcConfigurer {
 					// SaRouter.match("/**", r -> StpUtil.checkLogin());
 					SaRouter
 							.match("/**")    // 拦截的 path 列表，可以写多个 */
-							// .notMatch("/st/doLogin", "/st/test", "/error", "/icons/icon_zh_48.png")        // 排除掉的 path 列表，可以写多个
+							.notMatch("/st/doLogin", "/st/test", "/error", "/icons/icon_zh_48.png")        // 排除掉的 path 列表，可以写多个
 							.notMatch("/picture/home/list", "/category/home/list", "/picture/detail")        // 排除掉的 path 列表，可以写多个
 							.check(r -> {
 								// System.out.println("地址: " + ServletUtils.getRequest().getRequestURI());

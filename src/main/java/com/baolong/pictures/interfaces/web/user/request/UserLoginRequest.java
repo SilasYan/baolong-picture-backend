@@ -10,8 +10,6 @@ import java.io.Serializable;
 @Data
 public class UserLoginRequest implements Serializable {
 
-	private static final long serialVersionUID = 3191241716373120793L;
-
 	/**
 	 * 账号
 	 */
@@ -36,4 +34,6 @@ public class UserLoginRequest implements Serializable {
 	 * 图形验证码 验证码
 	 */
 	private String captchaCode;
+
+	private static final long serialVersionUID = 1L;
 }

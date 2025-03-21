@@ -1,8 +1,8 @@
 package com.baolong.pictures.infrastructure.function.limit;
 
 import cn.hutool.extra.servlet.ServletUtil;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.function.limit.annotation.Limit;
 import com.baolong.pictures.infrastructure.function.limit.enums.LimitType;
 import lombok.extern.slf4j.Slf4j;

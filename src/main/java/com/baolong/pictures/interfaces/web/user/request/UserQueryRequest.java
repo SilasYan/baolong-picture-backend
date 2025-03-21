@@ -15,9 +15,9 @@ import java.util.Date;
 public class UserQueryRequest extends PageRequest implements Serializable {
 
 	/**
-	 * 用户 ID
+	 * 用户ID
 	 */
-	private Long id;
+	private Long userId;
 
 	/**
 	 * 账号

@@ -6,15 +6,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 用户详情响应
+ * 用户详情响应对象
  */
 @Data
 public class UserDetailVO implements Serializable {
 
 	/**
-	 * 用户 ID
+	 * 用户ID
 	 */
-	private Long id;
+	private Long userId;
 
 	/**
 	 * 账号

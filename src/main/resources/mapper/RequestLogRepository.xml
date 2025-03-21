@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.baolong.pictures.infrastructure.repository.RequestLogRepository">
+<mapper namespace="com.baolong.pictures.infrastructure.manager.log.RequestLogMapper">
 
-    <resultMap id="BaseResultMap" type="com.baolong.pictures.domain.log.entity.RequestLog">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="opName" column="op_name" jdbcType="VARCHAR"/>
-            <result property="opDesc" column="op_desc" jdbcType="VARCHAR"/>
-            <result property="reqPath" column="req_path" jdbcType="VARCHAR"/>
-            <result property="reqMethod" column="req_method" jdbcType="VARCHAR"/>
-            <result property="qualifiedName" column="qualified_name" jdbcType="VARCHAR"/>
-            <result property="inputParam" column="input_param" jdbcType="VARCHAR"/>
-            <result property="outputParam" column="output_param" jdbcType="VARCHAR"/>
-            <result property="errorMsg" column="error_msg" jdbcType="VARCHAR"/>
-            <result property="reqTime" column="req_time" jdbcType="TIMESTAMP"/>
-            <result property="respTime" column="resp_time" jdbcType="TIMESTAMP"/>
-            <result property="costTime" column="cost_time" jdbcType="BIGINT"/>
-            <result property="reqStatus" column="req_status" jdbcType="INTEGER"/>
-            <result property="logLevel" column="log_level" jdbcType="VARCHAR"/>
-            <result property="userId" column="user_id" jdbcType="BIGINT"/>
-            <result property="source" column="source" jdbcType="VARCHAR"/>
-            <result property="reqIp" column="req_ip" jdbcType="VARCHAR"/>
-            <result property="deviceType" column="device_type" jdbcType="VARCHAR"/>
-            <result property="osType" column="os_type" jdbcType="VARCHAR"/>
-            <result property="osVersion" column="os_version" jdbcType="VARCHAR"/>
-            <result property="browserName" column="browser_name" jdbcType="VARCHAR"/>
-            <result property="browserVersion" column="browser_version" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    <resultMap id="BaseResultMap" type="com.baolong.pictures.infrastructure.persistence.log.entity.RequestLog">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="opName" column="op_name" jdbcType="VARCHAR"/>
+        <result property="opDesc" column="op_desc" jdbcType="VARCHAR"/>
+        <result property="reqPath" column="req_path" jdbcType="VARCHAR"/>
+        <result property="reqMethod" column="req_method" jdbcType="VARCHAR"/>
+        <result property="qualifiedName" column="qualified_name" jdbcType="VARCHAR"/>
+        <result property="inputParam" column="input_param" jdbcType="VARCHAR"/>
+        <result property="outputParam" column="output_param" jdbcType="VARCHAR"/>
+        <result property="errorMsg" column="error_msg" jdbcType="VARCHAR"/>
+        <result property="reqTime" column="req_time" jdbcType="TIMESTAMP"/>
+        <result property="respTime" column="resp_time" jdbcType="TIMESTAMP"/>
+        <result property="costTime" column="cost_time" jdbcType="BIGINT"/>
+        <result property="reqStatus" column="req_status" jdbcType="INTEGER"/>
+        <result property="logLevel" column="log_level" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="source" column="source" jdbcType="VARCHAR"/>
+        <result property="reqIp" column="req_ip" jdbcType="VARCHAR"/>
+        <result property="deviceType" column="device_type" jdbcType="VARCHAR"/>
+        <result property="osType" column="os_type" jdbcType="VARCHAR"/>
+        <result property="osVersion" column="os_version" jdbcType="VARCHAR"/>
+        <result property="browserName" column="browser_name" jdbcType="VARCHAR"/>
+        <result property="browserVersion" column="browser_version" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
