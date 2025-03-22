@@ -34,7 +34,7 @@ public class PictureEditRequest implements Serializable {
 	/**
 	 * 标签列表
 	 */
-	private List<String> tags;
+	private List<String> tagList;
 
 	/**
 	 * 空间 ID

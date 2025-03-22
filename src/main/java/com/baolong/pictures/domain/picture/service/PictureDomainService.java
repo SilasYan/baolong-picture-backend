@@ -1,6 +1,7 @@
 package com.baolong.pictures.domain.picture.service;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -100,6 +101,11 @@ public class PictureDomainService {
 	 * @param picture 图片领域对象
 	 */
 	public void editPicture(Picture picture) {
+		// 转化标签内容
+		List<String> tagList = picture.getTagList();
+		if (CollUtil.isNotEmpty(tagList)) {
+			picture.setTags(String.join(",", tagList));
+		}
 		pictureRepository.updatePicture(picture);
 	}
 
