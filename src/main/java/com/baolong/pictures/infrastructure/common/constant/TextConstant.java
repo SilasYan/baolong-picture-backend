@@ -12,6 +12,11 @@ public interface TextConstant {
 	/**
 	 * 管理员自动过审
 	 */
-	String REVIEW_AUTO = "管理员自动过审";
+	String REVIEW_AUTO_PASS_ADMIN = "管理员自动过审";
+
+	/**
+	 * 个人空间自动过审
+	 */
+	String REVIEW_AUTO_PASS_SPACE = "个人空间自动过审";
 
 }

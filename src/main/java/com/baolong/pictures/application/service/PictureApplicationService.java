@@ -75,7 +75,7 @@ public class PictureApplicationService {
 		// 填充参数
 		picture.setUserId(userId);
 		// 填充审核参数
-		picture.fillReviewParams(loginUser.isAdmin(), userId);
+		picture.fillReviewParams(loginUser.isAdmin(), userId, spaceId);
 
 		// 开启事务执行数据库操作
 		return transactionTemplate.execute(status -> {
@@ -98,8 +98,7 @@ public class PictureApplicationService {
 			}
 			// 更新空间额度
 			if (ObjectUtil.isNotEmpty(spaceId) && !spaceId.equals(0L)) {
-				spaceApplicationService.updateSpaceSizeAndCount(spaceId,
-						size + picture.getOriginSize(), count + 1L);
+				spaceApplicationService.updateSpaceSizeAndCount(spaceId, size, count);
 			}
 			return newPicture;
 		});
@@ -158,7 +157,7 @@ public class PictureApplicationService {
 			spaceApplicationService.canOperateInSpace(spaceId, userId, loginUser.isAdmin());
 		}
 		// 填充审核参数
-		picture.fillReviewParams(loginUser.isAdmin(), userId);
+		picture.fillReviewParams(loginUser.isAdmin(), userId, spaceId);
 		// 操作数据库
 		pictureDomainService.editPicture(picture);
 	}

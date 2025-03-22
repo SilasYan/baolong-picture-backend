@@ -36,6 +36,11 @@ public class CategoryVO implements Serializable {
 	private Integer useNum;
 
 	/**
+	 * 创建用户 ID
+	 */
+	private Long userId;
+
+	/**
 	 * 创建时间
 	 */
 	private Date createTime;

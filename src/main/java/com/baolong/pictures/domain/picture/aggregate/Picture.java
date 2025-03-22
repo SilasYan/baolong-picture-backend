@@ -341,16 +341,24 @@ public class Picture extends PageRequest implements Serializable {
 	 *
 	 * @param isAdmin 是否是管理员
 	 * @param userId  用户ID
+	 * @param spaceId 空间ID
 	 */
-	public void fillReviewParams(boolean isAdmin, Long userId) {
-		if (isAdmin) {
+	public void fillReviewParams(boolean isAdmin, Long userId, Long spaceId) {
+		if ((ObjUtil.isNotEmpty(spaceId) && !spaceId.equals(0L))) {
 			this.setReviewStatus(PictureReviewStatusEnum.PASS.getKey());
-			this.setReviewMessage(TextConstant.REVIEW_AUTO);
+			this.setReviewMessage(TextConstant.REVIEW_AUTO_PASS_SPACE);
 			this.setReviewerUser(userId);
 			this.setReviewTime(new Date());
-		} else {
-			this.setReviewStatus(PictureReviewStatusEnum.REVIEWING.getKey());
+			return;
 		}
+		if (isAdmin) {
+			this.setReviewStatus(PictureReviewStatusEnum.PASS.getKey());
+			this.setReviewMessage(TextConstant.REVIEW_AUTO_PASS_ADMIN);
+			this.setReviewerUser(userId);
+			this.setReviewTime(new Date());
+			return;
+		}
+		this.setReviewStatus(PictureReviewStatusEnum.REVIEWING.getKey());
 	}
 
 	/**
