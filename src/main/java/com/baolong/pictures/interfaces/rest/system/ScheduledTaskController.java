@@ -11,7 +11,7 @@ import com.baolong.pictures.infrastructure.common.ResultUtils;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.interfaces.web.system.task.ScheduledTaskAssembler;
+import com.baolong.pictures.interfaces.web.system.task.assembler.ScheduledTaskAssembler;
 import com.baolong.pictures.interfaces.web.system.task.request.ScheduledTaskAddRequest;
 import com.baolong.pictures.interfaces.web.system.task.request.ScheduledTaskQueryRequest;
 import com.baolong.pictures.interfaces.web.system.task.request.ScheduledTaskUpdateRequest;
