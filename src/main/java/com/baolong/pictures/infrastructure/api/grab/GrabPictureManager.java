@@ -77,24 +77,28 @@ public class GrabPictureManager {
 						continue;
 					}
 					// 处理图片上传地址，防止出现转义问题
-					int questionMarkIndex = originUrl.indexOf("?");
-					if (questionMarkIndex > -1) {
-						originUrl = originUrl.substring(0, questionMarkIndex);
-					}
+					// int questionMarkIndex = originUrl.indexOf("?");
+					// if (questionMarkIndex > -1) {
+					// 	originUrl = originUrl.substring(0, questionMarkIndex);
+					// }
 					GrabPictureResult grabPictureResult = new GrabPictureResult();
 					if (StrUtil.isNotEmpty(originUrl)) {
 						grabPictureResult.setImageUrl(originUrl);
 					} else {
 						grabPictureResult.setImageUrl(thumbnailUrl);
 					}
-					// 处理 imageUrl 的参数
-					String imageUrl = grabPictureResult.getImageUrl();
-					int thumbQMIndex = imageUrl.indexOf("?");
-					if (thumbQMIndex > -1) {
-						imageUrl = imageUrl.substring(0, thumbQMIndex);
-					}
-					String handleImageUrl = imageUrl.replaceAll("\\.thumb\\.\\d+_\\d+", "");
-					grabPictureResult.setHandleImageUrl(handleImageUrl);
+					// // 处理 imageUrl 的参数
+					// String imageUrl = grabPictureResult.getImageUrl();
+					// int thumbQMIndex = imageUrl.indexOf("?");
+					// if (thumbQMIndex > -1) {
+					// 	imageUrl = imageUrl.substring(0, thumbQMIndex);
+					// }
+					// String handleImageUrl = imageUrl.replaceAll("\\.thumb\\.\\d+_\\d+", "");
+
+					/**
+					 * 这里前端也暂时使用这个字段, 原图字段有些网站做了防盗链机制, 所以有问题
+					 */
+					grabPictureResult.setHandleImageUrl(thumbnailUrl);
 					grabPictureResultList.add(grabPictureResult);
 
 				} catch (Exception e) {

@@ -176,7 +176,7 @@ public class UserDomainService {
 		// 路径, 例如: images/public/2025_03_08/
 		String pathPrefix = "avatar/" + userId + "/";
 		// 调用上传图片
-		UploadPictureResult uploadPictureResult = uploadPictureFile.uploadFile(avatarFile, pathPrefix, false);
+		UploadPictureResult uploadPictureResult = uploadPictureFile.uploadFile(avatarFile, pathPrefix, false, null);
 		String avatarUrl = uploadPictureResult.getOriginUrl();
 		if (StrUtil.isEmpty(avatarUrl)) {
 			throw new BusinessException(ErrorCode.OPERATION_ERROR, "头像上传失败");

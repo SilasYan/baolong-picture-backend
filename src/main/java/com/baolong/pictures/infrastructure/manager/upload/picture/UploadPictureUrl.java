@@ -55,6 +55,7 @@ public class UploadPictureUrl extends UploadPicture {
 			if (StrUtil.isEmpty(contentType)) {
 				throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片文件地址格式错误");
 			}
+			System.out.println(contentType);
 			// 校验文件后缀
 			ThrowUtils.throwIf(!checkPictureSuffix(contentType), ErrorCode.PARAMS_ERROR, "图片文件地址类型错误");
 		}

@@ -5,8 +5,8 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baolong.pictures.infrastructure.api.cos.CosManager;
 import com.baolong.pictures.infrastructure.api.cos.CosConfig;
+import com.baolong.pictures.infrastructure.api.cos.CosManager;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.manager.upload.picture.model.UploadPictureResult;
@@ -60,9 +60,10 @@ public abstract class UploadPicture {
 	 * @param fileInputSource 文件输入源
 	 * @param pathPrefix      路径前缀, 例如: images/100001/2025_03_08/
 	 * @param openWx          开启数据万象; true: 开启; false: 关闭
+	 * @param customName      自定义名称, 不包含后缀
 	 * @return 返回对象
 	 */
-	public final UploadPictureResult uploadFile(Object fileInputSource, String pathPrefix, boolean openWx) {
+	public final UploadPictureResult uploadFile(Object fileInputSource, String pathPrefix, boolean openWx, String customName) {
 		// 1. 校验文件
 		this.validFile(fileInputSource);
 		// 2. 获取文件后缀
@@ -72,7 +73,12 @@ public abstract class UploadPicture {
 		File file = null;
 		try {
 			// 获取原图名称, 不包含后缀
-			String originName = getFileNameWithoutSuffix(fileInputSource);
+			String originName;
+			if (StrUtil.isEmpty(customName)) {
+				originName = getFileNameWithoutSuffix(fileInputSource);
+			} else {
+				originName = customName;
+			}
 			// 4. 创建临时文件
 			file = File.createTempFile(uploadPath, null);
 			// 5. 处理文件输入源

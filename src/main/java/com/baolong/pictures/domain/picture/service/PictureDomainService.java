@@ -6,10 +6,10 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.domain.picture.aggregate.PictureInteraction;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureReviewStatusEnum;
+import com.baolong.pictures.domain.picture.aggregate.enums.PictureUploadTypeEnum;
 import com.baolong.pictures.domain.picture.repository.PictureInteractionRepository;
 import com.baolong.pictures.domain.picture.repository.PictureRepository;
 import com.baolong.pictures.infrastructure.api.cos.CosManager;
@@ -62,15 +62,16 @@ public class PictureDomainService {
 	public Picture uploadPicture(Object pictureInputSource, Picture picture) {
 		UploadPicture uploadTemplate = pictureInputSource instanceof String ? this.uploadPictureUrl : this.uploadPictureFile;
 		// 路径, 例如: images/public/2025_03_08/
-		String pathPrefix = "images/%s/" + DateUtil.format(new Date(), "yyyy_MM_dd") + "/";
+		String pathPrefix = "%s/%s/" + DateUtil.format(new Date(), "yyyy_MM_dd") + "/";
+		Long userId = picture.getUserId();
 		Long spaceId = picture.getSpaceId();
 		if (ObjectUtil.isNotEmpty(spaceId) && !spaceId.equals(0L)) {
-			pathPrefix = String.format(pathPrefix, spaceId);
+			pathPrefix = String.format(pathPrefix, PictureUploadTypeEnum.SPACE.getKey(), spaceId);
 		} else {
-			pathPrefix = String.format(pathPrefix, "public");
+			pathPrefix = String.format(pathPrefix, PictureUploadTypeEnum.PUBLIC.getKey(), userId);
 		}
 		// 调用上传图片
-		UploadPictureResult uploadPictureResult = uploadTemplate.uploadFile(pictureInputSource, pathPrefix, true);
+		UploadPictureResult uploadPictureResult = uploadTemplate.uploadFile(pictureInputSource, pathPrefix, true, null);
 		BeanUtils.copyProperties(uploadPictureResult, picture);
 		Long newPictureId;
 		if (ObjUtil.isNotEmpty(picture.getPictureId())) {
@@ -325,7 +326,8 @@ public class PictureDomainService {
 			grabPictureResults = grabPictureManager.grabPictureByBing(
 					grabSource, picture.getKeyword(), randomSeed, grabCount
 			);
-			log.info("第 {} 次爬取, 数据: {}", whileCount++, JSONUtil.parseObj(grabPictureResults));
+			log.info("第 {} 次爬取, 数量: {}", whileCount++, grabPictureResults.size());
+			randomSeed++;
 		}
 		if (grabPictureResults.size() > grabCount) {
 			grabPictureResults = grabPictureResults.subList(0, grabCount);
@@ -342,5 +344,23 @@ public class PictureDomainService {
 			grabPictureResult.setImageName(pictureName);
 		});
 		return grabPictureResults;
+	}
+
+	/**
+	 * 上传爬取图片
+	 *
+	 * @param picture 图片领域对象
+	 */
+	public void uploadPictureByGrab(Picture picture) {
+		Long userId = StpUtil.getLoginIdAsLong();
+		picture.setUserId(userId);
+		// 路径, 例如: images/public/2025_03_08/
+		String pathPrefix = "%s/%s/" + DateUtil.format(new Date(), "yyyy_MM_dd") + "/";
+		pathPrefix = String.format(pathPrefix, PictureUploadTypeEnum.PUBLIC.getKey(), userId);
+		// 调用上传图片
+		UploadPictureResult uploadPictureResult = this.uploadPictureUrl
+				.uploadFile(picture.getPictureUrl(), pathPrefix, true, picture.getPicName());
+		BeanUtils.copyProperties(uploadPictureResult, picture);
+		Long newPictureId = pictureRepository.addPicture(picture);
 	}
 }

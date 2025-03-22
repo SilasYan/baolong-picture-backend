@@ -240,23 +240,6 @@ public class PictureController {
 	}
 
 	/**
-	 * 爬取图片
-	 *
-	 * @param pictureGrabRequest 图片爬取请求
-	 * @return 爬取结果
-	 */
-	@PostMapping("/grab")
-	public BaseResponse<List<GrabPictureResult>> grabPicture(@RequestBody PictureGrabRequest pictureGrabRequest) {
-		ThrowUtils.throwIf(pictureGrabRequest == null, ErrorCode.PARAMS_ERROR);
-		String keyword = pictureGrabRequest.getKeyword();
-		if (StrUtil.isEmpty(keyword)) {
-			throw new BusinessException(ErrorCode.PARAMS_ERROR, "关键词不能为空");
-		}
-		Picture picture = PictureAssembler.toDomain(pictureGrabRequest);
-		return ResultUtils.success(pictureApplicationService.grabPicture(picture));
-	}
-
-	/**
 	 * 审核图片（包含批量审核）
 	 *
 	 * @param pictureReviewRequest 图片审核请求
@@ -284,5 +267,39 @@ public class PictureController {
 		Picture picture = PictureAssembler.toDomain(pictureQueryRequest);
 		PageVO<Picture> picturePageVO = pictureApplicationService.getPicturePageListAsManage(picture);
 		return ResultUtils.success(PictureAssembler.toPicturePageVO(picturePageVO));
+	}
+
+	/**
+	 * 爬取图片
+	 *
+	 * @param pictureGrabRequest 图片爬取请求
+	 * @return 爬取结果
+	 */
+	@PostMapping("/grab")
+	public BaseResponse<List<GrabPictureResult>> grabPicture(@RequestBody PictureGrabRequest pictureGrabRequest) {
+		ThrowUtils.throwIf(pictureGrabRequest == null, ErrorCode.PARAMS_ERROR);
+		String keyword = pictureGrabRequest.getKeyword();
+		if (StrUtil.isEmpty(keyword)) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "关键词不能为空");
+		}
+		Picture picture = PictureAssembler.toDomain(pictureGrabRequest);
+		return ResultUtils.success(pictureApplicationService.grabPicture(picture));
+	}
+
+	/**
+	 * 上传爬取图片
+	 *
+	 * @param pictureUploadRequest 图片上传请求
+	 * @return 上传结果
+	 */
+	@PostMapping("/upload/grab")
+	public BaseResponse<Boolean> uploadPictureByGrab(@RequestBody PictureUploadRequest pictureUploadRequest) {
+		ThrowUtils.throwIf(pictureUploadRequest == null, ErrorCode.PARAMS_ERROR);
+		if (StrUtil.isEmpty(pictureUploadRequest.getPictureUrl())) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片链接不能为空");
+		}
+		Picture picture = PictureAssembler.toDomain(pictureUploadRequest);
+		pictureApplicationService.uploadPictureByGrab(picture);
+		return ResultUtils.success();
 	}
 }

@@ -371,16 +371,6 @@ public class PictureApplicationService {
 	}
 
 	/**
-	 * 爬取图片
-	 *
-	 * @param picture 图片领域对象
-	 * @return 爬取的图片列表
-	 */
-	public List<GrabPictureResult> grabPicture(Picture picture) {
-		return pictureDomainService.grabPicture(picture);
-	}
-
-	/**
 	 * 获取图片管理分页列表
 	 *
 	 * @param picture 图片领域对象
@@ -411,5 +401,24 @@ public class PictureApplicationService {
 			});
 		}
 		return picturePageVO;
+	}
+
+	/**
+	 * 爬取图片
+	 *
+	 * @param picture 图片领域对象
+	 * @return 爬取的图片列表
+	 */
+	public List<GrabPictureResult> grabPicture(Picture picture) {
+		return pictureDomainService.grabPicture(picture);
+	}
+
+	/**
+	 * 上传爬取图片
+	 *
+	 * @param picture 图片领域对象
+	 */
+	public void uploadPictureByGrab(Picture picture) {
+		pictureDomainService.uploadPictureByGrab(picture);
 	}
 }
