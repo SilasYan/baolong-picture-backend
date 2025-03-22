@@ -1,4 +1,4 @@
-package com.baolong.pictures.interfaces.web.system.request;
+package com.baolong.pictures.interfaces.web.system.task.request;
 
 import lombok.Data;
 

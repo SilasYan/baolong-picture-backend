@@ -1,11 +1,11 @@
-package com.baolong.pictures.interfaces.web.system.assembler;
+package com.baolong.pictures.interfaces.web.system.task.assembler;
 
 import com.baolong.pictures.domain.system.task.aggregate.ScheduledTask;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.interfaces.web.system.request.ScheduledTaskAddRequest;
-import com.baolong.pictures.interfaces.web.system.request.ScheduledTaskQueryRequest;
-import com.baolong.pictures.interfaces.web.system.request.ScheduledTaskUpdateRequest;
-import com.baolong.pictures.interfaces.web.system.response.ScheduledTaskVO;
+import com.baolong.pictures.interfaces.web.system.task.request.ScheduledTaskAddRequest;
+import com.baolong.pictures.interfaces.web.system.task.request.ScheduledTaskQueryRequest;
+import com.baolong.pictures.interfaces.web.system.task.request.ScheduledTaskUpdateRequest;
+import com.baolong.pictures.interfaces.web.system.task.response.ScheduledTaskVO;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;

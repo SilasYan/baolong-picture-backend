@@ -1,15 +1,14 @@
-package com.baolong.pictures.interfaces.web.system.response;
+package com.baolong.pictures.interfaces.web.system.task.request;
 
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * 定时任务领域对象
+ * 定时任务更新请求
  */
 @Data
-public class ScheduledTaskVO implements Serializable {
+public class ScheduledTaskUpdateRequest implements Serializable {
 
 	/**
 	 * 任务ID
@@ -45,16 +44,6 @@ public class ScheduledTaskVO implements Serializable {
 	 * 任务状态（0-关闭, 1-开启）
 	 */
 	private Integer taskStatus;
-
-	/**
-	 * 编辑时间
-	 */
-	private Date editTime;
-
-	/**
-	 * 创建时间
-	 */
-	private Date createTime;
 
 	private static final long serialVersionUID = 1L;
 }
