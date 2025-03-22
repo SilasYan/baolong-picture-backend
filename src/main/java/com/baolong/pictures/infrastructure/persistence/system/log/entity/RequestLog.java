@@ -1,4 +1,4 @@
-package com.baolong.pictures.infrastructure.persistence.log.entity;
+package com.baolong.pictures.infrastructure.persistence.system.log.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

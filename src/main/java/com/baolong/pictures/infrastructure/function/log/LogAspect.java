@@ -1,7 +1,7 @@
 package com.baolong.pictures.infrastructure.function.log;
 
 import cn.hutool.json.JSONUtil;
-import com.baolong.pictures.infrastructure.persistence.log.entity.RequestLog;
+import com.baolong.pictures.infrastructure.persistence.system.log.entity.RequestLog;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.function.log.annotation.Log;
 import com.baolong.pictures.infrastructure.utils.ServletUtils;

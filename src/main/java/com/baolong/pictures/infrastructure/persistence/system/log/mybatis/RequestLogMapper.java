@@ -1,6 +1,6 @@
-package com.baolong.pictures.infrastructure.persistence.log.mybatis;
+package com.baolong.pictures.infrastructure.persistence.system.log.mybatis;
 
-import com.baolong.pictures.infrastructure.persistence.log.entity.RequestLog;
+import com.baolong.pictures.infrastructure.persistence.system.log.entity.RequestLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

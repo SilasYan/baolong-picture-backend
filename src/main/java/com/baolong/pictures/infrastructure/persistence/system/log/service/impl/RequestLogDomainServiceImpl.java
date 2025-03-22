@@ -1,9 +1,9 @@
-package com.baolong.pictures.infrastructure.persistence.log.service.impl;
+package com.baolong.pictures.infrastructure.persistence.system.log.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baolong.pictures.infrastructure.persistence.log.entity.RequestLog;
-import com.baolong.pictures.infrastructure.persistence.log.service.RequestLogDomainService;
-import com.baolong.pictures.infrastructure.persistence.log.mybatis.RequestLogMapper;
+import com.baolong.pictures.infrastructure.persistence.system.log.entity.RequestLog;
+import com.baolong.pictures.infrastructure.persistence.system.log.service.RequestLogDomainService;
+import com.baolong.pictures.infrastructure.persistence.system.log.mybatis.RequestLogMapper;
 import org.springframework.stereotype.Service;
 
 /**

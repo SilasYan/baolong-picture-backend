@@ -272,3 +272,22 @@ CREATE TABLE role_menu
     PRIMARY KEY (role_key, menu_id)
 ) COMMENT = '角色菜单关联表';
 
+
+-- 定时任务表
+CREATE TABLE IF NOT EXISTS scheduled_task
+(
+    id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    job_key     VARCHAR(255)    NOT NULL COMMENT '任务 KEY（存在内存中）',
+    job_name    VARCHAR(255)    NOT NULL COMMENT '任务名称',
+    job_cron    VARCHAR(255)    NOT NULL COMMENT '任务 corn 表达式',
+    job_desc    VARCHAR(255)    NULL     DEFAULT NULL COMMENT '任务描述',
+    job_bean    VARCHAR(255)    NOT NULL COMMENT '任务 Bean 名称（执行任务的 bean）',
+    job_status  TINYINT(4)      NOT NULL DEFAULT 0 COMMENT '任务状态（0-关闭, 1-开启）',
+    is_delete   TINYINT         NOT NULL DEFAULT 0 COMMENT '是否删除（0-正常, 1-删除）',
+    edit_time   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '编辑时间',
+    create_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '定时任务表';

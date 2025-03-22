@@ -1,6 +1,6 @@
-package com.baolong.pictures.infrastructure.persistence.log.service;
+package com.baolong.pictures.infrastructure.persistence.system.log.service;
 
-import com.baolong.pictures.infrastructure.persistence.log.entity.RequestLog;
+import com.baolong.pictures.infrastructure.persistence.system.log.entity.RequestLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
