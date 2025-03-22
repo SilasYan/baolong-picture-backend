@@ -156,6 +156,7 @@ public class MenuRepositoryImpl implements MenuRepository {
 		MenuDO menuDO = menuPersistenceService.getOne(new LambdaQueryWrapper<MenuDO>()
 				.eq(MenuDO::getMenuPath, menuPath)
 		);
+		if (menuDO == null) return null;
 		return MenuConverter.toDomain(menuDO);
 	}
 

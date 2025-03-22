@@ -160,6 +160,7 @@ public class ScheduledTaskRepositoryImpl implements ScheduledTaskRepository {
 		ScheduledTaskDO scheduledTaskDO = scheduledTaskPersistenceService.getOne(
 				new LambdaQueryWrapper<ScheduledTaskDO>().eq(ScheduledTaskDO::getTaskBean, taskBean)
 		);
+		if (scheduledTaskDO == null) return null;
 		return ScheduledTaskConverter.toDomain(scheduledTaskDO);
 	}
 }

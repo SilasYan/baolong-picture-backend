@@ -155,6 +155,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	@Override
 	public Category getCategoryByCategoryId(Long categoryId) {
 		CategoryDO categoryDO = categoryPersistenceService.getById(categoryId);
+		if (categoryDO == null) return null;
 		return CategoryConverter.toDomain(categoryDO);
 	}
 }
