@@ -1,6 +1,8 @@
 package com.baolong.pictures.interfaces.web.system.task.request;
 
+import com.baolong.pictures.infrastructure.common.page.PageRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -8,8 +10,9 @@ import java.util.Date;
 /**
  * 定时任务查询请求
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class ScheduledTaskQueryRequest implements Serializable {
+public class ScheduledTaskQueryRequest extends PageRequest implements Serializable {
 
 	/**
 	 * 任务ID

@@ -1,8 +1,8 @@
 package com.baolong.pictures.application.service;
 
 import cn.hutool.core.collection.CollUtil;
-import com.baolong.pictures.domain.menu.entity.Menu;
-import com.baolong.pictures.domain.menu.entity.enums.MenuPositionEnum;
+import com.baolong.pictures.domain.system.menu.aggregate.Menu;
+import com.baolong.pictures.domain.system.menu.aggregate.enums.MenuPositionEnum;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.domain.user.service.UserDomainService;
 import com.baolong.pictures.infrastructure.common.page.PageVO;

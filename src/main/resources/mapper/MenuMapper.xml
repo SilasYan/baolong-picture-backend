@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.baolong.pictures.infrastructure.persistence.menu.menu.mybatis.MenuMapper">
 
-    <resultMap id="BaseResultMap" type="com.baolong.pictures.infrastructure.persistence.menu.menu.mybatis.MenuDO">
+    <resultMap id="BaseResultMap" type="com.baolong.pictures.infrastructure.persistence.system.menu.menu.mybatis.MenuDO">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
         <result property="menuPosition" column="menu_position" jdbcType="TINYINT"/>
