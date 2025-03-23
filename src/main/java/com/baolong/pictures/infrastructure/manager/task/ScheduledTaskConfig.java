@@ -41,7 +41,7 @@ public class ScheduledTaskConfig {
 	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
-		threadPoolTaskScheduler.setThreadNamePrefix("TaskThreadPool: ");
+		threadPoolTaskScheduler.setThreadNamePrefix("TaskThread: ");
 		threadPoolTaskScheduler.setWaitForTasksToCompleteOnShutdown(true);
 		threadPoolTaskScheduler.setAwaitTerminationSeconds(30);
 		return threadPoolTaskScheduler;
