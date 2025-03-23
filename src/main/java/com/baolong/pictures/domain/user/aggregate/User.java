@@ -151,6 +151,22 @@ public class User extends PageRequest implements Serializable {
 	 */
 	private List<String> otherMenus;
 
+
+	/**
+	 * 原密码
+	 */
+	private String originPassword;
+
+	/**
+	 * 新密码
+	 */
+	private String newPassword;
+
+	/**
+	 * 确认密码
+	 */
+	private String confirmPassword;
+
 	// endregion拓展属性
 
 	// region 领域方法

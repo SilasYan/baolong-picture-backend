@@ -265,12 +265,12 @@ public class Picture extends PageRequest implements Serializable {
 	/**
 	 * 编辑时间[开始时间]
 	 */
-	private Date startEditTime;
+	private String startEditTime;
 
 	/**
 	 * 编辑时间[结束时间]
 	 */
-	private Date endEditTime;
+	private String endEditTime;
 
 	/**
 	 * 分类信息

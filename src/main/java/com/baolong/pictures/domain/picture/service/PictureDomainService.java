@@ -214,6 +214,16 @@ public class PictureDomainService {
 	}
 
 	/**
+	 * 根据图片ID集合获取图片列表
+	 *
+	 * @param pictureIds 图片ID集合
+	 * @return 图片列表
+	 */
+	public List<Picture> getPictureByPictureIds(Set<Long> pictureIds) {
+		return pictureRepository.getPictureByPictureIds(pictureIds);
+	}
+
+	/**
 	 * 根据图片ID和用户ID获取图片交互数据
 	 *
 	 * @param pictureId 图片ID

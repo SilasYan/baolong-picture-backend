@@ -130,7 +130,7 @@ public class PictureController {
 	 * @param pictureId 图片ID
 	 * @return 图片详情
 	 */
-	@Limit(key = "PictureDetail:", time = 2, count = 1, limitType = LimitType.IP, errMsg = "请求太频繁!")
+	@Limit(key = "PictureDetail:", time = 1, count = 1, limitType = LimitType.IP, errMsg = "请求太频繁!")
 	@GetMapping("/detail")
 	public BaseResponse<PictureDetailVO> getPictureDetailById(Long pictureId) {
 		ThrowUtils.throwIf(ObjectUtil.isEmpty(pictureId), ErrorCode.PARAMS_ERROR);

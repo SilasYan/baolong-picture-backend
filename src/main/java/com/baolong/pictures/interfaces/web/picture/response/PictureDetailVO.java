@@ -133,14 +133,19 @@ public class PictureDetailVO implements Serializable {
 	private Long userId;
 
 	/**
-	 * 创建用户昵称
+	 * 用户昵称
 	 */
 	private String userName;
 
 	/**
-	 * 创建用户头像
+	 * 用户头像
 	 */
 	private String userAvatar;
+
+	/**
+	 * 用户简介
+	 */
+	private String userProfile;
 
 	/**
 	 * 所属空间 ID（0-表示公共空间）

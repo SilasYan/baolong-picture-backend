@@ -12,11 +12,12 @@ import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
 import com.baolong.pictures.infrastructure.common.BaseResponse;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.ResultUtils;
-import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.interfaces.web.user.assembler.UserAssembler;
+import com.baolong.pictures.interfaces.web.user.request.UserEditPasswordRequest;
 import com.baolong.pictures.interfaces.web.user.request.UserEditRequest;
 import com.baolong.pictures.interfaces.web.user.request.UserLoginRequest;
 import com.baolong.pictures.interfaces.web.user.request.UserQueryRequest;
@@ -133,10 +134,34 @@ public class UserController {
 	public BaseResponse<Boolean> editUser(@RequestBody UserEditRequest userEditRequest) {
 		ThrowUtils.throwIf(userEditRequest == null, ErrorCode.PARAMS_ERROR);
 		ThrowUtils.throwIf(ObjectUtil.isEmpty(userEditRequest.getUserId()), ErrorCode.PARAMS_ERROR);
-		if (userEditRequest.getUserProfile().length() > 500) {
+		String userPhone = userEditRequest.getUserPhone();
+		if (StrUtil.isNotEmpty(userPhone) && userPhone.length() > 11) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号过长");
+		}
+		String userProfile = userEditRequest.getUserProfile();
+		if (StrUtil.isNotEmpty(userProfile) && userProfile.length() > 500) {
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户简介过长");
 		}
 		userApplicationService.editUser(UserAssembler.toDomain(userEditRequest));
+		return ResultUtils.success();
+	}
+
+	/**
+	 * 用户修改密码
+	 *
+	 * @return 是否成功
+	 */
+	@PostMapping("/password")
+	public BaseResponse<Boolean> editUserPassword(@RequestBody UserEditPasswordRequest userEditPasswordRequest) {
+		ThrowUtils.throwIf(userEditPasswordRequest == null, ErrorCode.PARAMS_ERROR);
+		if (StrUtil.hasBlank(userEditPasswordRequest.getOriginPassword(), userEditPasswordRequest.getNewPassword(),
+				userEditPasswordRequest.getConfirmPassword())) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码不能为空");
+		}
+		if (!userEditPasswordRequest.getNewPassword().equals(userEditPasswordRequest.getConfirmPassword())) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次新密码不一致");
+		}
+		userApplicationService.editUserPassword(UserAssembler.toDomain(userEditPasswordRequest));
 		return ResultUtils.success();
 	}
 

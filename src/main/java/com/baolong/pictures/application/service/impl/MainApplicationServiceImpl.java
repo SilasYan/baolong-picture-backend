@@ -4,6 +4,7 @@ import com.baolong.pictures.infrastructure.common.constant.CacheKeyConstant;
 import com.baolong.pictures.infrastructure.manager.redis.RedisCache;
 import com.baolong.pictures.interfaces.web.CaptchaVO;
 import com.wf.captcha.SpecCaptcha;
+import com.wf.captcha.base.Captcha;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,7 +30,8 @@ public class MainApplicationServiceImpl implements MainApplicationService {
 	 */
 	@Override
 	public CaptchaVO getCaptcha() {
-		SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, 5);
+		SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, 4);
+		specCaptcha.setCharType(Captcha.TYPE_ONLY_NUMBER);
 		String captchaCode = specCaptcha.text().toLowerCase();
 		String captchaImage = specCaptcha.toBase64();
 		String captchaKey = UUID.randomUUID().toString();

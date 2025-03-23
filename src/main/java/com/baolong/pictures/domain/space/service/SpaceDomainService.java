@@ -124,6 +124,21 @@ public class SpaceDomainService {
 	}
 
 	/**
+	 * 判断用户是否可以还有额度
+	 *
+	 * @param userId  用户ID
+	 * @param isAdmin 是否是管理员
+	 */
+	public void canCapacityInSpace(Long userId, boolean isAdmin) {
+		// 管理员直接返回
+		if (isAdmin) return;
+		Space space = this.getPersonSpaceByUserId(userId);
+		if (space.getUsedSize() >= space.getMaxSize() || space.getUsedCount() >= space.getMaxCount()) {
+			throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "空间已满, 请联系管理员开通更多容量!");
+		}
+	}
+
+	/**
 	 * 根据用户ID获取个人空间
 	 *
 	 * @param userId 用户ID

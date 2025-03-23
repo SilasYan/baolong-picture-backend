@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.interfaces.web.user.request.UserAddRequest;
+import com.baolong.pictures.interfaces.web.user.request.UserEditPasswordRequest;
 import com.baolong.pictures.interfaces.web.user.request.UserEditRequest;
 import com.baolong.pictures.interfaces.web.user.request.UserQueryRequest;
 import com.baolong.pictures.interfaces.web.user.request.UserUpdateRequest;
@@ -49,6 +50,15 @@ public class UserAssembler {
 	public static User toDomain(UserEditRequest userEditRequest) {
 		User user = new User();
 		BeanUtils.copyProperties(userEditRequest, user);
+		return user;
+	}
+
+	/**
+	 * 用户编辑密码请求 转为 用户领域对象
+	 */
+	public static User toDomain(UserEditPasswordRequest userEditPasswordRequest) {
+		User user = new User();
+		BeanUtils.copyProperties(userEditPasswordRequest, user);
 		return user;
 	}
 

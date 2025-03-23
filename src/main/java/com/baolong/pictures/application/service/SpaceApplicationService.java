@@ -112,6 +112,16 @@ public class SpaceApplicationService {
 	}
 
 	/**
+	 * 判断用户是否可以还有额度
+	 *
+	 * @param userId  用户ID
+	 * @param isAdmin 是否是管理员
+	 */
+	public void canCapacityInSpace(Long userId, boolean isAdmin) {
+		spaceDomainService.canCapacityInSpace(userId, isAdmin);
+	}
+
+	/**
 	 * 更新空间大小和数量
 	 *
 	 * @param spaceId  空间 ID

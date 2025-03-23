@@ -11,10 +11,10 @@ import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
 import com.baolong.pictures.domain.user.aggregate.enums.UserDisabledEnum;
 import com.baolong.pictures.domain.user.repository.UserRepository;
-import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.common.constant.CacheKeyConstant;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.manager.message.EmailManager;
 import com.baolong.pictures.infrastructure.manager.redis.RedisCache;
 import com.baolong.pictures.infrastructure.manager.upload.picture.UploadPictureFile;
@@ -80,7 +80,6 @@ public class UserDomainService {
 		// 获取 Redis 中的验证码
 		String code = redisCache.get(KEY);
 		// 删除验证码
-		redisCache.delete(KEY);
 		if (StrUtil.isEmpty(code) || !code.equals(codeValue)) {
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "验证码错误");
 		}
@@ -93,7 +92,11 @@ public class UserDomainService {
 		// 默认值填充
 		user.fillDefaultValue();
 		boolean result = userRepository.addUser(user);
-		if (result) return;
+		if (result) {
+			redisCache.delete(KEY);
+			emailManager.sendEmailAsRegisterSuccess(userEmail, "暴龙图库 - 注册成功通知");
+			return;
+		}
 		throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败!");
 	}
 
@@ -147,7 +150,7 @@ public class UserDomainService {
 	 */
 	public void userLogout() {
 		redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
-		StpUtil.logout();
+		StpUtil.logout(StpUtil.getLoginIdAsLong());
 	}
 
 	/**
@@ -161,8 +164,31 @@ public class UserDomainService {
 			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户不存在!");
 		}
 		boolean result = userRepository.updateUser(user);
-		if (result) return;
+		if (result) {
+			redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
+			return;
+		}
 		throw new BusinessException(ErrorCode.SYSTEM_ERROR, "编辑失败!");
+	}
+
+	/**
+	 * 用户修改密码
+	 *
+	 * @param user 用户领域对象
+	 */
+	public void editUserPassword(User user) {
+		User loginUser = this.getLoginUser();
+		if (!loginUser.getUserPassword().equals(User.getEncryptPassword(user.getOriginPassword()))) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "原密码错误");
+		}
+		user.setUserId(loginUser.getUserId());
+		user.setUserPassword(User.getEncryptPassword(user.getNewPassword()));
+		boolean result = userRepository.updateUser(user);
+		if (result) {
+			redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
+			return;
+		}
+		throw new BusinessException(ErrorCode.SYSTEM_ERROR, "密码修改失败!");
 	}
 
 	/**
@@ -185,6 +211,7 @@ public class UserDomainService {
 		if (!result) {
 			throw new BusinessException(ErrorCode.OPERATION_ERROR, "头像更新失败");
 		}
+		redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
 		return avatarUrl;
 	}
 
@@ -199,7 +226,10 @@ public class UserDomainService {
 			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户不存在!");
 		}
 		boolean result = userRepository.deleteUser(userId);
-		if (result) return;
+		if (result) {
+			redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
+			return;
+		}
 		throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除失败!");
 	}
 
@@ -214,7 +244,10 @@ public class UserDomainService {
 			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户不存在!");
 		}
 		boolean result = userRepository.updateUser(user);
-		if (result) return;
+		if (result) {
+			redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
+			return;
+		}
 		throw new BusinessException(ErrorCode.SYSTEM_ERROR, "更新失败!");
 	}
 
@@ -235,6 +268,7 @@ public class UserDomainService {
 		if (!result) {
 			throw new BusinessException(ErrorCode.OPERATION_ERROR, "重置密码失败");
 		}
+		redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
 		return tempPassword;
 	}
 
@@ -251,7 +285,10 @@ public class UserDomainService {
 		}
 		User user = new User().setUserId(userId).setIsDisabled(isDisabled);
 		boolean result = userRepository.updateUser(user);
-		if (result) return;
+		if (result) {
+			redisCache.delete(UserConstant.USER_LOGIN_STATE + StpUtil.getLoginIdAsLong());
+			return;
+		}
 		throw new BusinessException(ErrorCode.SYSTEM_ERROR, "禁用失败!");
 	}
 

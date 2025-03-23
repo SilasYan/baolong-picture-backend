@@ -6,10 +6,10 @@ import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionTypeEnum;
 import com.baolong.pictures.domain.picture.repository.PictureRepository;
-import com.baolong.pictures.infrastructure.common.page.PageRequest;
-import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.page.PageRequest;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.persistence.picture.picture.converter.PictureConverter;
 import com.baolong.pictures.infrastructure.persistence.picture.picture.mybatis.PictureDO;
 import com.baolong.pictures.infrastructure.persistence.picture.picture.mybatis.PicturePersistenceService;
@@ -18,10 +18,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 图片表 (picture) - 仓储服务实现
@@ -42,6 +45,7 @@ public class PictureRepositoryImpl implements PictureRepository {
 	 * @param picture 图片查询请求
 	 * @return 查询条件对象（Lambda）
 	 */
+	@SneakyThrows
 	private LambdaQueryWrapper<PictureDO> lambdaQueryWrapper(Picture picture) {
 		LambdaQueryWrapper<PictureDO> lambdaQueryWrapper = new LambdaQueryWrapper<>();
 		String searchText = picture.getSearchText();
@@ -60,8 +64,6 @@ public class PictureRepositoryImpl implements PictureRepository {
 		Integer reviewStatus = picture.getReviewStatus();
 		String reviewMessage = picture.getReviewMessage();
 		Long reviewerUser = picture.getReviewerUser();
-		Date startEditTime = picture.getStartEditTime();
-		Date endEditTime = picture.getEndEditTime();
 		lambdaQueryWrapper.and(StrUtil.isNotEmpty(searchText), lqw ->
 				lqw.like(PictureDO::getPicName, searchText)
 						.or().like(PictureDO::getPicDesc, searchText)
@@ -81,8 +83,12 @@ public class PictureRepositoryImpl implements PictureRepository {
 		lambdaQueryWrapper.eq(ObjUtil.isNotNull(reviewStatus), PictureDO::getReviewStatus, reviewStatus);
 		lambdaQueryWrapper.like(StrUtil.isNotEmpty(reviewMessage), PictureDO::getReviewMessage, reviewMessage);
 		lambdaQueryWrapper.eq(ObjUtil.isNotNull(reviewerUser), PictureDO::getReviewerUser, reviewerUser);
-		lambdaQueryWrapper.ge(ObjUtil.isNotEmpty(startEditTime), PictureDO::getEditTime, startEditTime);
-		lambdaQueryWrapper.lt(ObjUtil.isNotEmpty(endEditTime), PictureDO::getEditTime, endEditTime);
+		if (StrUtil.isNotEmpty(picture.getStartEditTime()) && StrUtil.isNotEmpty(picture.getEndEditTime())) {
+			Date startEditTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(picture.getStartEditTime());
+			Date endEditTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(picture.getEndEditTime());
+			lambdaQueryWrapper.ge(ObjUtil.isNotEmpty(startEditTime), PictureDO::getEditTime, startEditTime);
+			lambdaQueryWrapper.lt(ObjUtil.isNotEmpty(endEditTime), PictureDO::getEditTime, endEditTime);
+		}
 		// 处理排序规则
 		if (picture.isMultipleSort()) {
 			List<PageRequest.Sort> sorts = picture.getSorts();
@@ -242,5 +248,17 @@ public class PictureRepositoryImpl implements PictureRepository {
 		LambdaQueryWrapper<PictureDO> lambdaQueryWrapper = this.lambdaQueryWrapper(picture);
 		Page<PictureDO> page = picturePersistenceService.page(picture.getPage(PictureDO.class), lambdaQueryWrapper);
 		return PictureConverter.toDomainPage(page);
+	}
+
+	/**
+	 * 根据图片ID集合获取图片列表
+	 *
+	 * @param pictureIds 图片ID集合
+	 * @return 图片列表
+	 */
+	@Override
+	public List<Picture> getPictureByPictureIds(Set<Long> pictureIds) {
+		List<PictureDO> pictureDOList = picturePersistenceService.list(new LambdaQueryWrapper<PictureDO>().in(PictureDO::getId, pictureIds));
+		return PictureConverter.toDomainList(pictureDOList);
 	}
 }

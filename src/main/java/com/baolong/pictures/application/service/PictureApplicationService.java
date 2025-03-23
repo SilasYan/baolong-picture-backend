@@ -11,6 +11,7 @@ import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.domain.picture.aggregate.PictureInteraction;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionStatusEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionTypeEnum;
+import com.baolong.pictures.domain.picture.aggregate.enums.PictureReviewStatusEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureShareStatusEnum;
 import com.baolong.pictures.domain.picture.service.PictureDomainService;
 import com.baolong.pictures.domain.space.aggregate.Space;
@@ -20,6 +21,7 @@ import com.baolong.pictures.infrastructure.api.pictureSearch.model.SearchPicture
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
+import com.baolong.pictures.infrastructure.manager.message.EmailManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,7 @@ public class PictureApplicationService {
 	private final UserApplicationService userApplicationService;
 	private final SpaceApplicationService spaceApplicationService;
 	private final CategoryApplicationService categoryApplicationService;
+	private final EmailManager emailManager;
 
 	private final TransactionTemplate transactionTemplate;
 
@@ -70,6 +73,8 @@ public class PictureApplicationService {
 		if (ObjUtil.isNotEmpty(spaceId) && !spaceId.equals(0L)) {
 			// 判断当前用户是否有空间操作权限
 			spaceApplicationService.canOperateInSpace(spaceId, userId, loginUser.isAdmin());
+			// 判断当前用户的空间是否还有额度
+			spaceApplicationService.canCapacityInSpace(userId, loginUser.isAdmin());
 			picture.setSpaceId(spaceId);
 		}
 
@@ -80,7 +85,7 @@ public class PictureApplicationService {
 
 		// 开启事务执行数据库操作
 		return transactionTemplate.execute(status -> {
-			// 先把就的图片信息查询出来
+			// 先把旧的图片信息查询出来
 			Picture oldPicture = pictureDomainService.getPictureByPictureId(pictureId);
 			// 执行上传操作, 里面已经做了上传成功后保存数据库的操作
 			Picture newPicture = pictureDomainService.uploadPicture(
@@ -214,6 +219,15 @@ public class PictureApplicationService {
 	@Transactional(rollbackFor = Exception.class)
 	public void reviewPicture(List<Picture> pictureList) {
 		pictureDomainService.reviewPicture(pictureList, StpUtil.getLoginIdAsLong());
+
+		// 审核通知
+		Set<Long> pictureIds = pictureList.stream().map(Picture::getPictureId).collect(Collectors.toSet());
+		List<Picture> pictures = this.getPictureByPictureIds(pictureIds);
+		Set<Long> userIds = pictures.stream().map(Picture::getUserId).collect(Collectors.toSet());
+		List<User> userList = userApplicationService.getUserListByUserIds(userIds);
+		List<String> emailList = userList.stream().map(User::getUserEmail).collect(Collectors.toList());
+		emailManager.sendEmailAsReview(emailList, "图片审核通知", PictureReviewStatusEnum.PASS.getKey().equals(pictureList.get(0).getReviewStatus())
+						? "审核通过" : "审核不通过");
 	}
 
 	/**
@@ -265,6 +279,16 @@ public class PictureApplicationService {
 		// 更新图片操作类型数量
 		pictureDomainService.updateInteractionNum(pictureId, PictureInteractionTypeEnum.VIEW.getKey(), 1);
 		return picture;
+	}
+
+	/**
+	 * 根据图片ID集合获取图片列表
+	 *
+	 * @param pictureIds 图片ID集合
+	 * @return 图片列表
+	 */
+	private List<Picture> getPictureByPictureIds(Set<Long> pictureIds) {
+		return pictureDomainService.getPictureByPictureIds(pictureIds);
 	}
 
 	/**
@@ -337,7 +361,7 @@ public class PictureApplicationService {
 					.stream().collect(Collectors.groupingBy(Category::getCategoryId));
 			pictureList.forEach(p -> {
 				// 设置分类信息
-				Long categoryId = picture.getCategoryId();
+				Long categoryId = p.getCategoryId();
 				if (categoryListMap.containsKey(categoryId)) {
 					p.setCategoryInfo(categoryListMap.get(categoryId).get(0));
 				}
@@ -362,7 +386,7 @@ public class PictureApplicationService {
 					.stream().collect(Collectors.groupingBy(Category::getCategoryId));
 			pictureList.forEach(p -> {
 				// 设置分类信息
-				Long categoryId = picture.getCategoryId();
+				Long categoryId = p.getCategoryId();
 				if (categoryListMap.containsKey(categoryId)) {
 					p.setCategoryInfo(categoryListMap.get(categoryId).get(0));
 				}

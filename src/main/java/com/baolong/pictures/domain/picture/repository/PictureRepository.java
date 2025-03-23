@@ -4,6 +4,7 @@ import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 图片表 (picture) - 仓储服务接口
@@ -88,4 +89,12 @@ public interface PictureRepository {
 	 * @return 图片领域对象分页列表
 	 */
 	PageVO<Picture> getPicturePageList(Picture picture);
+
+	/**
+	 * 根据图片ID集合获取图片列表
+	 *
+	 * @param pictureIds 图片ID集合
+	 * @return 图片列表
+	 */
+	List<Picture> getPictureByPictureIds(Set<Long> pictureIds);
 }

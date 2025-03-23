@@ -94,6 +94,14 @@ public class UserApplicationService {
 	}
 
 	/**
+	 * 用户修改密码
+	 * @param user 用户领域对象
+	 */
+	public void editUserPassword(User user) {
+		userDomainService.editUserPassword(user);
+	}
+
+	/**
 	 * 上传头像
 	 *
 	 * @param avatarFile 头像文件
@@ -147,7 +155,21 @@ public class UserApplicationService {
 	 * @return 用户领域对象
 	 */
 	public User getLoginUserDetail() {
-		return userDomainService.getLoginUser();
+		User user = userDomainService.getLoginUser();
+		// 查询登录当前用户的菜单
+		List<Menu> menuList = menuApplicationService.getMenuListByUserRole(user.getUserRole());
+		if (CollUtil.isNotEmpty(menuList)) {
+			user.setTopMenus(menuList.stream()
+					.filter(menu -> menu.getMenuPosition().equals(MenuPositionEnum.TOP.getKey()))
+					.map(Menu::getMenuPath).collect(Collectors.toList()));
+			user.setLeftMenus(menuList.stream()
+					.filter(menu -> menu.getMenuPosition().equals(MenuPositionEnum.LEFT.getKey()))
+					.map(Menu::getMenuPath).collect(Collectors.toList()));
+			user.setOtherMenus(menuList.stream()
+					.filter(menu -> menu.getMenuPosition().equals(MenuPositionEnum.OTHER.getKey()))
+					.map(Menu::getMenuPath).collect(Collectors.toList()));
+		}
+		return user;
 	}
 
 	/**
