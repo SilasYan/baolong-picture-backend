@@ -16,6 +16,7 @@ import com.baolong.pictures.domain.picture.service.PictureDomainService;
 import com.baolong.pictures.domain.space.aggregate.Space;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
+import com.baolong.pictures.infrastructure.api.pictureSearch.model.SearchPictureResult;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
@@ -420,5 +421,15 @@ public class PictureApplicationService {
 	 */
 	public void uploadPictureByGrab(Picture picture) {
 		pictureDomainService.uploadPictureByGrab(picture);
+	}
+
+	/**
+	 * 以图搜图
+	 *
+	 * @param picture 图片领域对象
+	 * @return 搜图的图片列表
+	 */
+	public List<SearchPictureResult> searchPicture(Picture picture) {
+		return pictureDomainService.searchPicture(picture);
 	}
 }

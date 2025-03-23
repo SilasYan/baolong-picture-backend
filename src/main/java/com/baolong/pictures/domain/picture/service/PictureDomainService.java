@@ -17,6 +17,8 @@ import com.baolong.pictures.infrastructure.api.cos.CosManager;
 import com.baolong.pictures.infrastructure.api.grab.GrabPictureManager;
 import com.baolong.pictures.infrastructure.api.grab.enums.GrabSourceEnum;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
+import com.baolong.pictures.infrastructure.api.pictureSearch.AbstractSearchPicture;
+import com.baolong.pictures.infrastructure.api.pictureSearch.model.SearchPictureResult;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,6 +55,7 @@ public class PictureDomainService {
 	private final UploadPictureUrl uploadPictureUrl;
 	private final GrabPictureManager grabPictureManager;
 	private final CosManager cosManager;
+	private final Map<String, AbstractSearchPicture> searchServices;
 
 	/**
 	 * 上传图片
@@ -368,5 +372,21 @@ public class PictureDomainService {
 				.uploadFile(picture.getPictureUrl(), pathPrefix, true, picture.getPicName());
 		BeanUtils.copyProperties(uploadPictureResult, picture);
 		Long newPictureId = pictureRepository.addPicture(picture);
+	}
+
+	/**
+	 * 以图搜图
+	 *
+	 * @param picture 图片领域对象
+	 * @return 搜图的图片列表
+	 */
+	public List<SearchPictureResult> searchPicture(Picture picture) {
+		Picture oldPicture = this.getPictureByPictureId(picture.getPictureId());
+		if (oldPicture == null) {
+			throw new BusinessException(ErrorCode.DATA_ERROR, "图片不存在");
+		}
+		String searchSource = picture.getSearchSource();
+		AbstractSearchPicture soSearchPicture = searchServices.get(searchSource + "SearchPicture");
+		return soSearchPicture.execute(searchSource, oldPicture.getOriginUrl(), picture.getRandomSeed(), picture.getSearchCount());
 	}
 }

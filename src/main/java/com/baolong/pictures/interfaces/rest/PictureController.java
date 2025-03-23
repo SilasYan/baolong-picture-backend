@@ -13,13 +13,15 @@ import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionSta
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionTypeEnum;
 import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
+import com.baolong.pictures.infrastructure.api.pictureSearch.enums.SearchSourceEnum;
+import com.baolong.pictures.infrastructure.api.pictureSearch.model.SearchPictureResult;
 import com.baolong.pictures.infrastructure.common.BaseResponse;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.ResultUtils;
-import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.function.limit.annotation.Limit;
 import com.baolong.pictures.infrastructure.function.limit.enums.LimitType;
 import com.baolong.pictures.interfaces.web.picture.assembler.PictureAssembler;
@@ -29,6 +31,7 @@ import com.baolong.pictures.interfaces.web.picture.request.PictureGrabRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureInteractionRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureQueryRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureReviewRequest;
+import com.baolong.pictures.interfaces.web.picture.request.PictureSearchRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureUploadRequest;
 import com.baolong.pictures.interfaces.web.picture.response.PictureDetailVO;
 import com.baolong.pictures.interfaces.web.picture.response.PictureHomeVO;
@@ -301,5 +304,24 @@ public class PictureController {
 		Picture picture = PictureAssembler.toDomain(pictureUploadRequest);
 		pictureApplicationService.uploadPictureByGrab(picture);
 		return ResultUtils.success();
+	}
+
+	/**
+	 * 以图搜图
+	 *
+	 * @param pictureSearchRequest 以图搜图请求
+	 * @return 搜图的图片列表
+	 */
+	@PostMapping("/search")
+	public BaseResponse<List<SearchPictureResult>> searchPicture(@RequestBody PictureSearchRequest pictureSearchRequest) {
+		ThrowUtils.throwIf(pictureSearchRequest == null, ErrorCode.PARAMS_ERROR);
+		if (ObjUtil.isEmpty(pictureSearchRequest.getPictureId())) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片ID不能为空");
+		}
+		Picture picture = PictureAssembler.toDomain(pictureSearchRequest);
+		if (!SearchSourceEnum.keys().contains(picture.getSearchSource())) {
+			throw new BusinessException(ErrorCode.DATA_ERROR, "不支持的搜索源");
+		}
+		return ResultUtils.success(pictureApplicationService.searchPicture(picture));
 	}
 }

@@ -288,6 +288,16 @@ public class Picture extends PageRequest implements Serializable {
 	private String grabSource;
 
 	/**
+	 * 搜索来源
+	 */
+	private String searchSource;
+
+	/**
+	 * 搜索数量
+	 */
+	private Integer searchCount = 15;
+
+	/**
 	 * 关键词
 	 */
 	private String keyword;
