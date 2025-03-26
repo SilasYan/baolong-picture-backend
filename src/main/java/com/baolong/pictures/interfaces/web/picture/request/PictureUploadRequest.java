@@ -46,5 +46,10 @@ public class PictureUploadRequest implements Serializable {
 	 */
 	private Long spaceId;
 
+	/**
+	 * 扩图状态（0-普通图片, 1-扩图图片, 2-扩图成功后的图片）
+	 */
+	private Integer expandStatus;
+
 	private static final long serialVersionUID = 1L;
 }

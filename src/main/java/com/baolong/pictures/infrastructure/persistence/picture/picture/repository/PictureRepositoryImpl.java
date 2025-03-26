@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.domain.picture.aggregate.Picture;
+import com.baolong.pictures.domain.picture.aggregate.enums.PictureExpandStatusEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionTypeEnum;
 import com.baolong.pictures.domain.picture.repository.PictureRepository;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
@@ -64,6 +65,8 @@ public class PictureRepositoryImpl implements PictureRepository {
 		Integer reviewStatus = picture.getReviewStatus();
 		String reviewMessage = picture.getReviewMessage();
 		Long reviewerUser = picture.getReviewerUser();
+		Integer isShare = picture.getIsShare();
+		Integer expandStatus = picture.getExpandStatus();
 		lambdaQueryWrapper.and(StrUtil.isNotEmpty(searchText), lqw ->
 				lqw.like(PictureDO::getPicName, searchText)
 						.or().like(PictureDO::getPicDesc, searchText)
@@ -83,11 +86,18 @@ public class PictureRepositoryImpl implements PictureRepository {
 		lambdaQueryWrapper.eq(ObjUtil.isNotNull(reviewStatus), PictureDO::getReviewStatus, reviewStatus);
 		lambdaQueryWrapper.like(StrUtil.isNotEmpty(reviewMessage), PictureDO::getReviewMessage, reviewMessage);
 		lambdaQueryWrapper.eq(ObjUtil.isNotNull(reviewerUser), PictureDO::getReviewerUser, reviewerUser);
+		lambdaQueryWrapper.eq(ObjUtil.isNotNull(isShare), PictureDO::getIsShare, isShare);
+		lambdaQueryWrapper.eq(ObjUtil.isNotNull(expandStatus), PictureDO::getExpandStatus, expandStatus);
 		if (StrUtil.isNotEmpty(picture.getStartEditTime()) && StrUtil.isNotEmpty(picture.getEndEditTime())) {
 			Date startEditTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(picture.getStartEditTime());
 			Date endEditTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(picture.getEndEditTime());
 			lambdaQueryWrapper.ge(ObjUtil.isNotEmpty(startEditTime), PictureDO::getEditTime, startEditTime);
 			lambdaQueryWrapper.lt(ObjUtil.isNotEmpty(endEditTime), PictureDO::getEditTime, endEditTime);
+		}
+		// 是否查询扩图图片的处理
+		Boolean expandQuery = picture.getExpandQuery();
+		if (expandQuery) {
+			lambdaQueryWrapper.or().eq(PictureDO::getExpandStatus, PictureExpandStatusEnum.YES_SUCCESS.getKey());
 		}
 		// 处理排序规则
 		if (picture.isMultipleSort()) {

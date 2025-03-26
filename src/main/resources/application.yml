@@ -48,6 +48,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 100MB
+      max-request-size: 100MB
   # 发送邮件配置（QQ邮箱）
   mail:
     host: ${email.host}
@@ -118,3 +119,11 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.baolong.pictures.interfaces.rest
+
+# OkHttp 配置
+okhttp:
+  connect-timeout: 60 #链接超时时间
+  read-timeout: 60 # 读取超时时间
+  write-timeout: 60 # 写入超时时间
+  max-idle-connections: 5 # 连接池的最大空闲连接数
+  keep-alive-duration: 10 # 每个连接的最大请求数

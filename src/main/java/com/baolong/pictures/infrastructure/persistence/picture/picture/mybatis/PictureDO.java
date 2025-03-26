@@ -186,6 +186,11 @@ public class PictureDO implements Serializable {
 	private Integer isShare;
 
 	/**
+	 * 扩图状态（0-普通图片, 1-扩图图片, 2-扩图成功后的图片）
+	 */
+	private Integer expandStatus;
+
+	/**
 	 * 是否删除
 	 */
 	private Integer isDelete;

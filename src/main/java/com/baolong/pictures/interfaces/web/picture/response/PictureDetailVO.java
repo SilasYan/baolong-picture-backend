@@ -168,6 +168,11 @@ public class PictureDetailVO implements Serializable {
 	private Integer isShare;
 
 	/**
+	 * 扩图状态（0-普通图片, 1-扩图图片, 2-扩图成功后的图片）
+	 */
+	private Integer expandStatus;
+
+	/**
 	 * 登录用户是否点赞
 	 */
 	private Boolean loginUserIsLike = false;

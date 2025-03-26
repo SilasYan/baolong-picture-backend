@@ -16,6 +16,8 @@ import com.baolong.pictures.domain.picture.aggregate.enums.PictureShareStatusEnu
 import com.baolong.pictures.domain.picture.service.PictureDomainService;
 import com.baolong.pictures.domain.space.aggregate.Space;
 import com.baolong.pictures.domain.user.aggregate.User;
+import com.baolong.pictures.infrastructure.api.bailian.model.BaiLianTaskResponse;
+import com.baolong.pictures.infrastructure.api.bailian.model.CreateBaiLianTaskResponse;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
 import com.baolong.pictures.infrastructure.api.pictureSearch.model.SearchPictureResult;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
@@ -81,7 +83,7 @@ public class PictureApplicationService {
 		// 填充参数
 		picture.setUserId(userId);
 		// 填充审核参数
-		picture.fillReviewParams(loginUser.isAdmin(), userId, spaceId);
+		picture.fillReviewParams(loginUser.isAdmin(), userId, spaceId, picture.getExpandStatus());
 
 		// 开启事务执行数据库操作
 		return transactionTemplate.execute(status -> {
@@ -91,7 +93,7 @@ public class PictureApplicationService {
 			Picture newPicture = pictureDomainService.uploadPicture(
 					pictureInputSource == null ? picture.getPictureUrl() : pictureInputSource, picture
 			);
-			long size = picture.getOriginSize();
+			long size = newPicture.getOriginSize();
 			long count = 1;
 			// 存在旧图片说明是编辑操作重新上传图片
 			if (oldPicture != null) {
@@ -163,7 +165,7 @@ public class PictureApplicationService {
 			spaceApplicationService.canOperateInSpace(spaceId, userId, loginUser.isAdmin());
 		}
 		// 填充审核参数
-		picture.fillReviewParams(loginUser.isAdmin(), userId, spaceId);
+		picture.fillReviewParams(loginUser.isAdmin(), userId, spaceId, picture.getExpandStatus());
 		// 操作数据库
 		pictureDomainService.editPicture(picture);
 	}
@@ -227,7 +229,7 @@ public class PictureApplicationService {
 		List<User> userList = userApplicationService.getUserListByUserIds(userIds);
 		List<String> emailList = userList.stream().map(User::getUserEmail).collect(Collectors.toList());
 		emailManager.sendEmailAsReview(emailList, "图片审核通知", PictureReviewStatusEnum.PASS.getKey().equals(pictureList.get(0).getReviewStatus())
-						? "审核通过" : "审核不通过");
+				? "审核通过" : "审核不通过");
 	}
 
 	/**
@@ -301,7 +303,6 @@ public class PictureApplicationService {
 		PageVO<Picture> picturePageVO = pictureDomainService.getPicturePageListAsHome(picture);
 		if (CollUtil.isNotEmpty(picturePageVO.getRecords())) {
 			List<Picture> pictureList = picturePageVO.getRecords();
-			System.out.println(JSONUtil.parse(pictureList));
 			// 查询图片的用户信息
 			Set<Long> userIds = pictureList.stream().map(Picture::getUserId).collect(Collectors.toSet());
 			List<User> userList = userApplicationService.getUserListByUserIds(userIds);
@@ -414,7 +415,7 @@ public class PictureApplicationService {
 			Map<Long, List<Category>> categoryListMap = categoryApplicationService.getCategoryListByCategoryIds(categoryIds)
 					.stream().collect(Collectors.groupingBy(Category::getCategoryId));
 			pictureList.forEach(p -> {
-				Long userId = picture.getUserId();
+				Long userId = p.getUserId();
 				if (userListMap.containsKey(userId)) {
 					p.setUserInfo(userListMap.get(userId).get(0));
 				}
@@ -455,5 +456,25 @@ public class PictureApplicationService {
 	 */
 	public List<SearchPictureResult> searchPicture(Picture picture) {
 		return pictureDomainService.searchPicture(picture);
+	}
+
+	/**
+	 * 扩图
+	 *
+	 * @param picture 图片领域对象
+	 * @return 扩图任务结果
+	 */
+	public CreateBaiLianTaskResponse expandPicture(Picture picture) {
+		return pictureDomainService.expandPicture(picture);
+	}
+
+	/**
+	 * 扩图查询
+	 *
+	 * @param taskId 任务ID
+	 * @return 扩图任务结果
+	 */
+	public BaiLianTaskResponse expandPictureQuery(String taskId) {
+		return pictureDomainService.expandPictureQuery(taskId);
 	}
 }

@@ -12,6 +12,8 @@ import com.baolong.pictures.domain.picture.aggregate.PictureInteraction;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionStatusEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionTypeEnum;
 import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
+import com.baolong.pictures.infrastructure.api.bailian.model.BaiLianTaskResponse;
+import com.baolong.pictures.infrastructure.api.bailian.model.CreateBaiLianTaskResponse;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
 import com.baolong.pictures.infrastructure.api.pictureSearch.enums.SearchSourceEnum;
 import com.baolong.pictures.infrastructure.api.pictureSearch.model.SearchPictureResult;
@@ -27,6 +29,7 @@ import com.baolong.pictures.infrastructure.function.limit.enums.LimitType;
 import com.baolong.pictures.interfaces.web.picture.assembler.PictureAssembler;
 import com.baolong.pictures.interfaces.web.picture.assembler.PictureInteractionAssembler;
 import com.baolong.pictures.interfaces.web.picture.request.PictureEditRequest;
+import com.baolong.pictures.interfaces.web.picture.request.PictureExpandRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureGrabRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureInteractionRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureQueryRequest;
@@ -323,5 +326,32 @@ public class PictureController {
 			throw new BusinessException(ErrorCode.DATA_ERROR, "不支持的搜索源");
 		}
 		return ResultUtils.success(pictureApplicationService.searchPicture(picture));
+	}
+
+	/**
+	 * 扩图
+	 *
+	 * @param pictureExpandRequest 图片扩展请求
+	 * @return 扩图任务结果
+	 */
+	@PostMapping("/expand")
+	public BaseResponse<CreateBaiLianTaskResponse> expandPicture(@RequestBody PictureExpandRequest pictureExpandRequest) {
+		ThrowUtils.throwIf(pictureExpandRequest == null, ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(StrUtil.isEmpty(pictureExpandRequest.getPicUrl()), ErrorCode.PARAMS_ERROR, "图片地址不能为空");
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(pictureExpandRequest.getExpandType()), ErrorCode.PARAMS_ERROR, "扩图类型错误");
+		Picture picture = PictureAssembler.toDomain(pictureExpandRequest);
+		return ResultUtils.success(pictureApplicationService.expandPicture(picture));
+	}
+
+	/**
+	 * 扩图查询
+	 *
+	 * @param taskId 任务ID
+	 * @return 扩图任务结果
+	 */
+	@GetMapping("/expand/query")
+	public BaseResponse<BaiLianTaskResponse> expandPictureQuery(String taskId) {
+		ThrowUtils.throwIf(StrUtil.isEmpty(taskId), ErrorCode.PARAMS_ERROR, "任务ID不能为空");
+		return ResultUtils.success(pictureApplicationService.expandPictureQuery(taskId));
 	}
 }

@@ -3,6 +3,7 @@ package com.baolong.pictures.domain.picture.aggregate;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.domain.category.aggregate.Category;
+import com.baolong.pictures.domain.picture.aggregate.enums.PictureExpandStatusEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureReviewStatusEnum;
 import com.baolong.pictures.domain.space.aggregate.Space;
 import com.baolong.pictures.domain.user.aggregate.User;
@@ -194,6 +195,11 @@ public class Picture extends PageRequest implements Serializable {
 	private Integer isShare;
 
 	/**
+	 * 扩图状态（0-普通图片, 1-扩图图片, 2-扩图成功后的图片）
+	 */
+	private Integer expandStatus;
+
+	/**
 	 * 是否删除
 	 */
 	private Integer isDelete;
@@ -342,6 +348,16 @@ public class Picture extends PageRequest implements Serializable {
 	 */
 	private List<Long> idList;
 
+	/**
+	 * 扩图类型（旋转、等比）
+	 */
+	private Integer expandType;
+
+	/**
+	 * 是否查询扩图（默认为 false）
+	 */
+	private Boolean expandQuery = false;
+
 	// endregion 拓展属性
 
 	// region 领域方法
@@ -349,14 +365,22 @@ public class Picture extends PageRequest implements Serializable {
 	/**
 	 * 填充审核参数
 	 *
-	 * @param isAdmin 是否是管理员
-	 * @param userId  用户ID
-	 * @param spaceId 空间ID
+	 * @param isAdmin      是否是管理员
+	 * @param userId       用户ID
+	 * @param spaceId      空间ID
+	 * @param expandStatus 扩图状态（0-普通图片, 1-扩图图片, 2-扩图成功后的图片）
 	 */
-	public void fillReviewParams(boolean isAdmin, Long userId, Long spaceId) {
+	public void fillReviewParams(boolean isAdmin, Long userId, Long spaceId, Integer expandStatus) {
 		if ((ObjUtil.isNotEmpty(spaceId) && !spaceId.equals(0L))) {
 			this.setReviewStatus(PictureReviewStatusEnum.PASS.getKey());
 			this.setReviewMessage(TextConstant.REVIEW_AUTO_PASS_SPACE);
+			this.setReviewerUser(userId);
+			this.setReviewTime(new Date());
+			return;
+		}
+		if (ObjUtil.isNotEmpty(expandStatus) && PictureExpandStatusEnum.YES_SUCCESS.getKey().equals(expandStatus)) {
+			this.setReviewStatus(PictureReviewStatusEnum.PASS.getKey());
+			this.setReviewMessage(TextConstant.REVIEW_AUTO_PASS_EXPAND);
 			this.setReviewerUser(userId);
 			this.setReviewTime(new Date());
 			return;

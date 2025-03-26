@@ -46,7 +46,7 @@ public class UploadPictureUrl extends UploadPicture {
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "仅支持 HTTP 或 HTTPS 协议的文件地址");
 		}
 		// 校验 URL 是否存在
-		try (HttpResponse response = HttpUtil.createRequest(Method.HEAD, fileUrl).execute()) {
+		try (HttpResponse response = HttpUtil.createRequest(Method.GET, fileUrl).execute()) {
 			if (response.getStatus() != HttpStatus.HTTP_OK) {
 				throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片文件地址不存在");
 			}
@@ -115,7 +115,13 @@ public class UploadPictureUrl extends UploadPicture {
 	@Override
 	protected String getFileSuffix(Object fileInputSource) {
 		String fileUrl = (String) fileInputSource;
-		return FileUtil.mainName(fileUrl).substring(0, 2) + "." + FileUtil.extName(fileUrl).split("&")[0];
+		String suffix = FileUtil.mainName(fileUrl).substring(0, 2) + "."
+				+ FileUtil.extName(fileUrl).split("&")[0];
+		// 去掉 suffix 中 ? 后面的内容
+		if (suffix.contains("?")) {
+			suffix = suffix.substring(0, suffix.indexOf("?"));
+		}
+		return suffix;
 	}
 
 	/**

@@ -9,10 +9,15 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.domain.picture.aggregate.PictureInteraction;
+import com.baolong.pictures.domain.picture.aggregate.enums.PictureExpandTypeEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureReviewStatusEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureUploadTypeEnum;
 import com.baolong.pictures.domain.picture.repository.PictureInteractionRepository;
 import com.baolong.pictures.domain.picture.repository.PictureRepository;
+import com.baolong.pictures.infrastructure.api.bailian.BaiLianApi;
+import com.baolong.pictures.infrastructure.api.bailian.model.BaiLianTaskResponse;
+import com.baolong.pictures.infrastructure.api.bailian.model.CreateBaiLianTaskResponse;
+import com.baolong.pictures.infrastructure.api.bailian.model.ExpandImageTaskRequest;
 import com.baolong.pictures.infrastructure.api.cos.CosManager;
 import com.baolong.pictures.infrastructure.api.grab.GrabPictureManager;
 import com.baolong.pictures.infrastructure.api.grab.enums.GrabSourceEnum;
@@ -56,6 +61,7 @@ public class PictureDomainService {
 	private final GrabPictureManager grabPictureManager;
 	private final CosManager cosManager;
 	private final Map<String, AbstractSearchPicture> searchServices;
+	private final BaiLianApi baiLianApi;
 
 	/**
 	 * 上传图片
@@ -256,7 +262,8 @@ public class PictureDomainService {
 	 * @return 图片领域对象列表
 	 */
 	public PageVO<Picture> getPicturePageListAsHome(Picture picture) {
-		picture.setSpaceId(0L).setReviewStatus(PictureReviewStatusEnum.PASS.getKey());
+		picture.setSpaceId(0L).setReviewStatus(PictureReviewStatusEnum.PASS.getKey())
+				.setExpandQuery(true);
 		// region 使用并构建缓存
 		//
 		// // 1.构建缓存 KEY
@@ -398,5 +405,33 @@ public class PictureDomainService {
 		String searchSource = picture.getSearchSource();
 		AbstractSearchPicture soSearchPicture = searchServices.get(searchSource + "SearchPicture");
 		return soSearchPicture.execute(searchSource, oldPicture.getOriginUrl(), picture.getRandomSeed(), picture.getSearchCount());
+	}
+
+	/**
+	 * 扩图
+	 *
+	 * @param picture 图片领域对象
+	 * @return 扩图任务结果
+	 */
+	public CreateBaiLianTaskResponse expandPicture(Picture picture) {
+		ExpandImageTaskRequest expandImageTaskRequest = new ExpandImageTaskRequest();
+			expandImageTaskRequest.setInput(new ExpandImageTaskRequest.Input(picture.getPicUrl()));
+		ExpandImageTaskRequest.Parameters parameters = new ExpandImageTaskRequest.Parameters()
+				.setXScale(2.0f).setYScale(2.0f);
+		if (PictureExpandTypeEnum.ANGLE.getKey().equals(picture.getExpandType())) {
+			parameters.setAngle(45);
+		}
+		expandImageTaskRequest.setParameters(parameters);
+		return baiLianApi.createExpandImageTask(expandImageTaskRequest);
+	}
+
+	/**
+	 * 扩图查询
+	 *
+	 * @param taskId 任务ID
+	 * @return 扩图任务结果
+	 */
+	public BaiLianTaskResponse expandPictureQuery(String taskId) {
+		return baiLianApi.queryBaiLianTask(taskId);
 	}
 }

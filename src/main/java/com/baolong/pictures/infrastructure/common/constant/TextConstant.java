@@ -19,4 +19,9 @@ public interface TextConstant {
 	 */
 	String REVIEW_AUTO_PASS_SPACE = "个人空间自动过审";
 
+	/**
+	 * AI 扩图自动过审
+	 */
+	String REVIEW_AUTO_PASS_EXPAND = "AI 扩图自动过审";
+
 }

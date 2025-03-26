@@ -36,6 +36,7 @@
         <result property="downloadQuantity" column="download_quantity" jdbcType="INTEGER"/>
         <result property="shareQuantity" column="share_quantity" jdbcType="INTEGER"/>
         <result property="isShare" column="is_share" jdbcType="TINYINT"/>
+        <result property="expandStatus" column="expand_status" jdbcType="TINYINT"/>
         <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
         <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
@@ -52,7 +53,7 @@
         category,tags,user_id,
         space_id,review_status,review_message,
         reviewer_user,review_time,resource_status,
-        is_share,is_delete,edit_time,create_time,
+        is_share,expand_status,is_delete,edit_time,create_time,
         update_time
     </sql>
 </mapper>

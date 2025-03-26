@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS baolong_platform DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE baolong_platform;
+CREATE DATABASE IF NOT EXISTS baolong_picture DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE baolong_picture;
 
 -- 用户表
 CREATE TABLE IF NOT EXISTS user
@@ -145,24 +145,6 @@ CREATE TABLE IF NOT EXISTS category
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT = '分类表';
-
--- 标签表
-CREATE TABLE IF NOT EXISTS tag
-(
-    id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
-    name        VARCHAR(128)    NOT NULL COMMENT '名称',
-    use_num     INT             NOT NULL DEFAULT 0 COMMENT '使用数量',
-    user_id     BIGINT          NOT NULL COMMENT '创建用户 ID',
-    is_delete   TINYINT         NOT NULL DEFAULT 0 COMMENT '是否删除（0-正常, 1-删除）',
-    edit_time   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '编辑时间',
-    create_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    update_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (id),
-    INDEX idx_name (name)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci COMMENT = '标签表';
-
 
 -- 空间表
 CREATE TABLE IF NOT EXISTS teSpace

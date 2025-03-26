@@ -3,6 +3,7 @@ package com.baolong.pictures.interfaces.web.picture.assembler;
 import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.interfaces.web.picture.request.PictureEditRequest;
+import com.baolong.pictures.interfaces.web.picture.request.PictureExpandRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureGrabRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureQueryRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureReviewRequest;
@@ -62,6 +63,15 @@ public class PictureAssembler {
 	public static Picture toDomain(PictureGrabRequest pictureGrabRequest) {
 		Picture picture = new Picture();
 		BeanUtils.copyProperties(pictureGrabRequest, picture);
+		return picture;
+	}
+
+	/**
+	 * 图片扩图请求 转为 图片领域对象
+	 */
+	public static Picture toDomain(PictureExpandRequest pictureExpandRequest) {
+		Picture picture = new Picture();
+		BeanUtils.copyProperties(pictureExpandRequest, picture);
 		return picture;
 	}
 

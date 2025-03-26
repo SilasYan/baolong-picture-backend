@@ -41,5 +41,10 @@ public class PictureEditRequest implements Serializable {
 	 */
 	private Long spaceId;
 
+	/**
+	 * 是否分享（0-分享, 1-不分享）
+	 */
+	private Integer isShare;
+
 	private static final long serialVersionUID = 1L;
 }
