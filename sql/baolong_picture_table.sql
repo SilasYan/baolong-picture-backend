@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS vip
   COLLATE = utf8mb4_unicode_ci COMMENT = '会员表';
 
 -- 图片表
-CREATE TABLE IF NOT EXISTS tePicture
+CREATE TABLE IF NOT EXISTS picture
 (
     id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
     origin_name     VARCHAR(256)    NOT NULL COMMENT '原图名称',
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS category
   COLLATE = utf8mb4_unicode_ci COMMENT = '分类表';
 
 -- 空间表
-CREATE TABLE IF NOT EXISTS teSpace
+CREATE TABLE IF NOT EXISTS space
 (
     id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
     space_name  VARCHAR(128)    NOT NULL COMMENT '空间名称',
