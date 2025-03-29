@@ -266,8 +266,6 @@ public class PictureDomainService {
 	 */
 	public Picture getPictureByPictureId(Long pictureId) {
 		Picture picture = pictureRepository.getPictureByPictureId(pictureId);
-		// 初始化图片互动数据
-		this.initPictureInteraction(pictureId, picture);
 		// 更新图片操作类型数量
 		this.updateInteractionNumByRedis(pictureId, PictureInteractionTypeEnum.VIEW.getKey(), 1);
 		return picture;
