@@ -41,6 +41,7 @@
         <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="recommendScore" column="recommend_score" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -54,6 +55,6 @@
         space_id,review_status,review_message,
         reviewer_user,review_time,resource_status,
         is_share,expand_status,is_delete,edit_time,create_time,
-        update_time
+        update_time,recommend_score
     </sql>
 </mapper>

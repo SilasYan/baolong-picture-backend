@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.baolong.pictures.domain.category.aggregate.Category;
 import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.domain.picture.aggregate.PictureInteraction;
@@ -179,7 +178,7 @@ public class PictureApplicationService {
 	public String pictureDownload(Long pictureId) {
 		Picture picture = pictureDomainService.getPictureByPictureId(pictureId);
 		// 更新图片操作类型数量
-		pictureDomainService.updateInteractionNum(pictureId, PictureInteractionTypeEnum.DOWNLOAD.getKey(), 1);
+		pictureDomainService.updateInteractionNumByRedis(pictureId, PictureInteractionTypeEnum.DOWNLOAD.getKey(), 1);
 		return picture.getOriginUrl();
 	}
 
@@ -194,7 +193,7 @@ public class PictureApplicationService {
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "当前图片作者不允许分享!");
 		}
 		// 更新图片操作类型数量
-		pictureDomainService.updateInteractionNum(pictureId, PictureInteractionTypeEnum.SHARE.getKey(), 1);
+		pictureDomainService.updateInteractionNumByRedis(pictureId, PictureInteractionTypeEnum.SHARE.getKey(), 1);
 	}
 
 	/**
@@ -208,7 +207,7 @@ public class PictureApplicationService {
 		pictureDomainService.changePictureLikeOrCollect(pictureInteraction);
 		Integer interactionType = pictureInteraction.getInteractionType();
 		// 更新互动类型数量
-		pictureDomainService.updateInteractionNum(pictureId, interactionType,
+		pictureDomainService.updateInteractionNumByRedis(pictureId, interactionType,
 				PictureInteractionStatusEnum.CANCEL.getKey().equals(pictureInteraction.getInteractionStatus()) ?
 						-1 : 1);
 	}
@@ -278,8 +277,6 @@ public class PictureApplicationService {
 				}
 			}
 		}
-		// 更新图片操作类型数量
-		pictureDomainService.updateInteractionNum(pictureId, PictureInteractionTypeEnum.VIEW.getKey(), 1);
 		return picture;
 	}
 

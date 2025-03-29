@@ -19,7 +19,12 @@ public interface CacheKeyConstant {
 	String CAPTCHA_CODE_KEY = "CAPTCHA_CODE_KEY:%s";
 
 	/**
-	 * 图片列表缓存 KEY
+	 * 首页图片列表缓存 KEY
 	 */
-	String PICTURE_LIST_KEY = "PICTURE_LIST_KEY:%s";
+	String HOME_PICTURE_LIST_KEY = "HOME_PICTURE_LIST_KEY:%s";
+
+	/**
+	 * 图片互动 KEY 前缀
+	 */
+	String PICTURE_INTERACTION_KEY_PREFIX = "picture:interactions:";
 }

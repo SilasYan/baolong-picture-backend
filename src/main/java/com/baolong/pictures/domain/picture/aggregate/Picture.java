@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -219,6 +220,11 @@ public class Picture extends PageRequest implements Serializable {
 	 */
 	private Date updateTime;
 
+	/**
+	 * 推荐综合得分
+	 */
+	private BigDecimal recommendScore;
+
 	// endregion 原始属性
 
 	// region 拓展属性
@@ -352,6 +358,11 @@ public class Picture extends PageRequest implements Serializable {
 	 * 扩图类型（旋转、等比）
 	 */
 	private Integer expandType;
+
+	/**
+	 * 是否首页查询（默认为 false）
+	 */
+	private Boolean isHome = false;
 
 	/**
 	 * 是否查询扩图（默认为 false）

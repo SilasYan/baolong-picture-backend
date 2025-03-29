@@ -127,3 +127,13 @@ okhttp:
   write-timeout: 60 # 写入超时时间
   max-idle-connections: 5 # 连接池的最大空闲连接数
   keep-alive-duration: 10 # 每个连接的最大请求数
+
+# 推荐分数配置
+recommend:
+  score:
+    view: 0.15
+    like: 0.15
+    collect: 0.15
+    download: 0.15
+    share: 0.1
+    time: 0.3

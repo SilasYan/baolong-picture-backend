@@ -439,7 +439,7 @@ public class RedisCache {
 	 * @param key 键
 	 * @param map 值集合
 	 */
-	public void hSets(String key, Map<String, String> map) {
+	public void hSets(String key, Map<String, Object> map) {
 		opsHash().putAll(key, map);
 	}
 

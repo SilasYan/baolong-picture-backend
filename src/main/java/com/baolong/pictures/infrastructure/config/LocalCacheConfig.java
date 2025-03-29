@@ -1,8 +1,7 @@
-package com.baolong.pictures.infrastructure.cache;
+package com.baolong.pictures.infrastructure.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import lombok.Data;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,9 +14,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class LocalCacheConfig {
 	/**
-	 * 图片本地缓存
+	 * 首页图片本地缓存
 	 */
-	public static final Cache<String, String> PICTURE_LOCAL_CACHE =
+	public static final Cache<String, String> HOME_PICTURE_LOCAL_CACHE =
 			Caffeine.newBuilder().initialCapacity(512)
 					// 最多一万条数据
 					.maximumSize(10000L)

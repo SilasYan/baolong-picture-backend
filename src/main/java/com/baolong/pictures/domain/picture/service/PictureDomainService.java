@@ -3,13 +3,16 @@ package com.baolong.pictures.domain.picture.service;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baolong.pictures.domain.picture.aggregate.Picture;
 import com.baolong.pictures.domain.picture.aggregate.PictureInteraction;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureExpandTypeEnum;
+import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionTypeEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureReviewStatusEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureUploadTypeEnum;
 import com.baolong.pictures.domain.picture.repository.PictureInteractionRepository;
@@ -24,9 +27,12 @@ import com.baolong.pictures.infrastructure.api.grab.enums.GrabSourceEnum;
 import com.baolong.pictures.infrastructure.api.grab.model.GrabPictureResult;
 import com.baolong.pictures.infrastructure.api.pictureSearch.AbstractSearchPicture;
 import com.baolong.pictures.infrastructure.api.pictureSearch.model.SearchPictureResult;
+import com.baolong.pictures.infrastructure.common.constant.CacheKeyConstant;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
+import com.baolong.pictures.infrastructure.config.LocalCacheConfig;
+import com.baolong.pictures.infrastructure.manager.redis.RedisCache;
 import com.baolong.pictures.infrastructure.manager.upload.UploadPicture;
 import com.baolong.pictures.infrastructure.manager.upload.picture.UploadPictureFile;
 import com.baolong.pictures.infrastructure.manager.upload.picture.UploadPictureUrl;
@@ -36,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -62,6 +70,7 @@ public class PictureDomainService {
 	private final CosManager cosManager;
 	private final Map<String, AbstractSearchPicture> searchServices;
 	private final BaiLianApi baiLianApi;
+	private final RedisCache redisCache;
 
 	/**
 	 * 上传图片
@@ -116,7 +125,33 @@ public class PictureDomainService {
 		if (CollUtil.isNotEmpty(tagList)) {
 			picture.setTags(String.join(",", tagList));
 		}
-		pictureRepository.updatePicture(picture);
+		Long pictureId = pictureRepository.updatePicture(picture);
+		// 初始化图片互动数据
+		this.initPictureInteraction(pictureId, null);
+	}
+
+	/**
+	 * 初始化图片互动数据
+	 *
+	 * @param pictureId 图片ID
+	 */
+	@Async
+	public void initPictureInteraction(Long pictureId, Picture picture) {
+		String key = CacheKeyConstant.PICTURE_INTERACTION_KEY_PREFIX + pictureId;
+		Map<String, Object> interactions = redisCache.hGet(key);
+		if (interactions == null || interactions.isEmpty()) {
+			if (picture == null) {
+				picture = this.getPictureByPictureId(pictureId);
+			}
+			redisCache.hSets(key, Map.of(
+					"0", picture.getLikeQuantity(),
+					"1", picture.getCollectQuantity(),
+					"2", picture.getDownloadQuantity(),
+					"3", picture.getShareQuantity(),
+					"4", picture.getViewQuantity(),
+					"5", picture.getCreateTime().getTime()
+			));
+		}
 	}
 
 	/**
@@ -142,6 +177,20 @@ public class PictureDomainService {
 			log.info("清理图片文件: {}", thumbnailPath);
 			cosManager.deleteObject(thumbnailPath);
 		}
+	}
+
+	/**
+	 * 更新互动数量到Redis
+	 *
+	 * @param pictureId       图片 ID
+	 * @param interactionType 互动类型
+	 * @param num             变更数量
+	 */
+	public void updateInteractionNumByRedis(Long pictureId, Integer interactionType, int num) {
+		String KEY = CacheKeyConstant.PICTURE_INTERACTION_KEY_PREFIX + pictureId;
+		// 存储并递增
+		redisCache.hIncrBy(KEY, String.valueOf(interactionType), num);
+		// this.updateInteractionNum(pictureId, interactionType, num);
 	}
 
 	/**
@@ -216,7 +265,12 @@ public class PictureDomainService {
 	 * @return 图片领域对象
 	 */
 	public Picture getPictureByPictureId(Long pictureId) {
-		return pictureRepository.getPictureByPictureId(pictureId);
+		Picture picture = pictureRepository.getPictureByPictureId(pictureId);
+		// 初始化图片互动数据
+		this.initPictureInteraction(pictureId, picture);
+		// 更新图片操作类型数量
+		this.updateInteractionNumByRedis(pictureId, PictureInteractionTypeEnum.VIEW.getKey(), 1);
+		return picture;
 	}
 
 	/**
@@ -262,41 +316,69 @@ public class PictureDomainService {
 	 * @return 图片领域对象列表
 	 */
 	public PageVO<Picture> getPicturePageListAsHome(Picture picture) {
-		picture.setSpaceId(0L).setReviewStatus(PictureReviewStatusEnum.PASS.getKey())
-				.setExpandQuery(true);
-		// region 使用并构建缓存
-		//
-		// // 1.构建缓存 KEY
-		// String KEY = String.format(CacheKeyConstant.PICTURE_LIST_KEY
-		// 		, DigestUtils.md5DigestAsHex(
-		// 				(JSONUtil.toJsonStr(page) + JSONUtil.toJsonStr(lambdaQueryWrapper)).getBytes())
-		// );
-		// // 2.从本地缓存中查询, 如果本地缓存命中，返回结果
-		// String localCache = LocalCacheConfig.PICTURE_LOCAL_CACHE.getIfPresent(KEY);
-		// if (StrUtil.isNotEmpty(localCache)) {
-		// 	log.info("获取图片列表[Local 缓存]");
-		// 	return JSONUtil.toBean(localCache, new TypeReference<Page<Picture>>() {
-		// 	}, true);
-		// }
-		// // 3.查询 Redis, 如果 Redis 命中，返回结果
-		// String redisCache = this.redisCache.get(KEY);
-		// if (StrUtil.isNotEmpty(redisCache)) {
-		// 	log.info("获取图片列表[Redis 缓存]");
-		// 	// 设置到本地缓存
-		// 	LocalCacheConfig.PICTURE_LOCAL_CACHE.put(KEY, redisCache);
-		// 	return JSONUtil.toBean(redisCache, new TypeReference<Page<Picture>>() {
-		// 	}, true);
-		// }
-		// // 4.查询数据库, 存入 Redis 和 本地缓存
-		// Page<Picture> picturePage = this.page(page, lambdaQueryWrapper);
-		// log.info("获取图片列表[MySQL 查询]");
-		// // 存入 本地缓存, 已经配置了 5 分钟过期
-		// LocalCacheConfig.PICTURE_LOCAL_CACHE.put(KEY, JSONUtil.toJsonStr(picturePage));
-		// // 存入 Redis, 5 分钟过期
-		// this.redisCache.set(KEY, JSONUtil.toJsonStr(picturePage), 5, TimeUnit.MINUTES);
-		//
-		// endregion 使用并构建缓存
-		return pictureRepository.getPicturePageList(picture);
+		PageVO<Picture> picturePageList = null;
+
+		// 1.构建缓存 KEY
+		String KEY = String.format(CacheKeyConstant.HOME_PICTURE_LIST_KEY
+				, DigestUtils.md5DigestAsHex((picture.getCurrent() + "_" + picture.getPageSize()).getBytes())
+		);
+		// 2.从本地缓存中查询, 如果本地缓存命中，返回结果
+		String localData = LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.getIfPresent(KEY);
+		if (StrUtil.isNotEmpty(localData)) {
+			log.info("首页图片列表[Local 缓存]");
+			picturePageList = JSONUtil.toBean(localData, new TypeReference<PageVO<Picture>>() {
+			}, true);
+		}
+		// 3.查询 Redis, 如果 Redis 命中，返回结果
+		if (picturePageList == null) {
+			String redisData = this.redisCache.get(KEY);
+			if (StrUtil.isNotEmpty(redisData)) {
+				log.info("首页图片列表[Redis 缓存]");
+				// 设置到本地缓存
+				LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.put(KEY, redisData);
+				picturePageList = JSONUtil.toBean(redisData, new TypeReference<PageVO<Picture>>() {
+				}, true);
+			}
+		}
+
+		// 4.查询数据库, 存入 Redis 和 本地缓存
+		if (picturePageList == null) {
+			picture.setSpaceId(0L).setReviewStatus(PictureReviewStatusEnum.PASS.getKey())
+					.setIsHome(true)
+					.setExpandQuery(true);
+			picturePageList = pictureRepository.getPicturePageList(picture);
+
+			log.info("首页图片列表[MySQL 查询]");
+			// 存入 本地缓存, 已经配置了 5 分钟过期
+			LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.put(KEY, JSONUtil.toJsonStr(picturePageList));
+			// 存入 Redis, 5 分钟过期
+			this.redisCache.set(KEY, JSONUtil.toJsonStr(picturePageList), 5, TimeUnit.MINUTES);
+		}
+
+		// 动态设置图片的互动数据
+		picturePageList.getRecords().forEach(pic -> {
+			String key = CacheKeyConstant.PICTURE_INTERACTION_KEY_PREFIX + pic.getPictureId();
+			Map<String, Object> interactions = redisCache.hGet(key);
+			if (interactions != null) {
+				if (ObjectUtil.isNotEmpty(interactions.get("0"))) {
+					pic.setLikeQuantity(Integer.parseInt(interactions.get("0").toString()));
+				}
+				if (ObjectUtil.isNotEmpty(interactions.get("1"))) {
+					pic.setCollectQuantity(Integer.parseInt(interactions.get("1").toString()));
+				}
+				if (ObjectUtil.isNotEmpty(interactions.get("2"))) {
+					pic.setDownloadQuantity(Integer.parseInt(interactions.get("2").toString()));
+				}
+				if (ObjectUtil.isNotEmpty(interactions.get("3"))) {
+					pic.setShareQuantity(Integer.parseInt(interactions.get("3").toString()));
+				}
+				if (ObjectUtil.isNotEmpty(interactions.get("4"))) {
+					pic.setViewQuantity(Integer.parseInt(interactions.get("4").toString()));
+				}
+			}
+		});
+
+		return picturePageList;
 	}
 
 	/**
@@ -415,7 +497,7 @@ public class PictureDomainService {
 	 */
 	public CreateBaiLianTaskResponse expandPicture(Picture picture) {
 		ExpandImageTaskRequest expandImageTaskRequest = new ExpandImageTaskRequest();
-			expandImageTaskRequest.setInput(new ExpandImageTaskRequest.Input(picture.getPicUrl()));
+		expandImageTaskRequest.setInput(new ExpandImageTaskRequest.Input(picture.getPicUrl()));
 		ExpandImageTaskRequest.Parameters parameters = new ExpandImageTaskRequest.Parameters()
 				.setXScale(2.0f).setYScale(2.0f);
 		if (PictureExpandTypeEnum.ANGLE.getKey().equals(picture.getExpandType())) {

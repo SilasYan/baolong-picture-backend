@@ -97,7 +97,12 @@ public class PictureRepositoryImpl implements PictureRepository {
 		// 是否查询扩图图片的处理
 		Boolean expandQuery = picture.getExpandQuery();
 		if (expandQuery) {
-			lambdaQueryWrapper.or().eq(PictureDO::getExpandStatus, PictureExpandStatusEnum.YES_SUCCESS.getKey());
+			lambdaQueryWrapper.ne(PictureDO::getExpandStatus, PictureExpandStatusEnum.YES.getKey());
+		}
+		// 如果是首页查询,在最后拼接推荐分数字段排序
+		Boolean isHome = picture.getIsHome();
+		if (isHome) {
+			lambdaQueryWrapper.orderByDesc(PictureDO::getRecommendScore);
 		}
 		// 处理排序规则
 		if (picture.isMultipleSort()) {

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -210,6 +211,11 @@ public class PictureDO implements Serializable {
 	 * 更新时间
 	 */
 	private Date updateTime;
+
+	/**
+	 * 推荐综合得分
+	 */
+	private BigDecimal recommendScore;
 
 	@TableField(exist = false)
 	private static final long serialVersionUID = 1L;
