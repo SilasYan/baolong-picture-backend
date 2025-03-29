@@ -318,9 +318,16 @@ public class PictureDomainService {
 	public PageVO<Picture> getPicturePageListAsHome(Picture picture) {
 		PageVO<Picture> picturePageList = null;
 
+		// 构建缓存 KEY 内容
+		String cacheKeyContent = picture.getCurrent() + "_" + picture.getPageSize();
+		Long categoryId = picture.getCategoryId();
+		if (ObjectUtil.isNotEmpty(categoryId)) {
+			cacheKeyContent = cacheKeyContent + "_" + categoryId;
+		}
+
 		// 1.构建缓存 KEY
 		String KEY = String.format(CacheKeyConstant.HOME_PICTURE_LIST_KEY
-				, DigestUtils.md5DigestAsHex((picture.getCurrent() + "_" + picture.getPageSize()).getBytes())
+				, DigestUtils.md5DigestAsHex(cacheKeyContent.getBytes())
 		);
 		// 2.从本地缓存中查询, 如果本地缓存命中，返回结果
 		String localData = LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.getIfPresent(KEY);
