@@ -87,7 +87,10 @@ public class PictureApplicationService {
 		// 开启事务执行数据库操作
 		return transactionTemplate.execute(status -> {
 			// 先把旧的图片信息查询出来
-			Picture oldPicture = pictureDomainService.getPictureByPictureId(pictureId);
+			Picture oldPicture = null;
+			if (ObjUtil.isNotEmpty(pictureId)) {
+				oldPicture = pictureDomainService.getPictureByPictureId(pictureId);
+			}
 			// 执行上传操作, 里面已经做了上传成功后保存数据库的操作
 			Picture newPicture = pictureDomainService.uploadPicture(
 					pictureInputSource == null ? picture.getPictureUrl() : pictureInputSource, picture
