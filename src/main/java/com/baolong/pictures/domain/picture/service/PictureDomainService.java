@@ -99,8 +99,10 @@ public class PictureDomainService {
 		} else {
 			newPictureId = pictureRepository.addPicture(picture);
 		}
+		// 初始化图片互动数据
+		this.initPictureInteraction(newPictureId);
 		// 查询图片
-		return this.getPictureByPictureId(newPictureId);
+		return pictureRepository.getPictureByPictureId(newPictureId);
 	}
 
 	/**
@@ -127,7 +129,7 @@ public class PictureDomainService {
 		}
 		Long pictureId = pictureRepository.updatePicture(picture);
 		// 初始化图片互动数据
-		this.initPictureInteraction(pictureId, null);
+		this.initPictureInteraction(pictureId);
 	}
 
 	/**
@@ -136,20 +138,17 @@ public class PictureDomainService {
 	 * @param pictureId 图片ID
 	 */
 	@Async
-	public void initPictureInteraction(Long pictureId, Picture picture) {
+	public void initPictureInteraction(Long pictureId) {
 		String key = CacheKeyConstant.PICTURE_INTERACTION_KEY_PREFIX + pictureId;
 		Map<String, Object> interactions = redisCache.hGet(key);
 		if (interactions == null || interactions.isEmpty()) {
-			if (picture == null) {
-				picture = this.getPictureByPictureId(pictureId);
-			}
 			redisCache.hSets(key, Map.of(
-					"0", picture.getLikeQuantity(),
-					"1", picture.getCollectQuantity(),
-					"2", picture.getDownloadQuantity(),
-					"3", picture.getShareQuantity(),
-					"4", picture.getViewQuantity(),
-					"5", picture.getCreateTime().getTime()
+					"0", 0,
+					"1", 0,
+					"2", 0,
+					"3", 0,
+					"4", 0,
+					"5", new Date().getTime()
 			));
 		}
 	}
@@ -266,9 +265,37 @@ public class PictureDomainService {
 	 */
 	public Picture getPictureByPictureId(Long pictureId) {
 		Picture picture = pictureRepository.getPictureByPictureId(pictureId);
+		this.fillPictureInteraction(picture);
 		// 更新图片操作类型数量
 		this.updateInteractionNumByRedis(pictureId, PictureInteractionTypeEnum.VIEW.getKey(), 1);
 		return picture;
+	}
+
+	/**
+	 * 填充图片互动数据
+	 *
+	 * @param picture 图片领域对象
+	 */
+	private void fillPictureInteraction(Picture picture) {
+		String key = CacheKeyConstant.PICTURE_INTERACTION_KEY_PREFIX + picture.getPictureId();
+		Map<String, Object> interactions = redisCache.hGet(key);
+		if (interactions != null) {
+			if (ObjectUtil.isNotEmpty(interactions.get("0"))) {
+				picture.setLikeQuantity(Integer.parseInt(interactions.get("0").toString()));
+			}
+			if (ObjectUtil.isNotEmpty(interactions.get("1"))) {
+				picture.setCollectQuantity(Integer.parseInt(interactions.get("1").toString()));
+			}
+			if (ObjectUtil.isNotEmpty(interactions.get("2"))) {
+				picture.setDownloadQuantity(Integer.parseInt(interactions.get("2").toString()));
+			}
+			if (ObjectUtil.isNotEmpty(interactions.get("3"))) {
+				picture.setShareQuantity(Integer.parseInt(interactions.get("3").toString()));
+			}
+			if (ObjectUtil.isNotEmpty(interactions.get("4"))) {
+				picture.setViewQuantity(Integer.parseInt(interactions.get("4").toString()));
+			}
+		}
 	}
 
 	/**
@@ -361,27 +388,7 @@ public class PictureDomainService {
 		}
 
 		// 动态设置图片的互动数据
-		picturePageList.getRecords().forEach(pic -> {
-			String key = CacheKeyConstant.PICTURE_INTERACTION_KEY_PREFIX + pic.getPictureId();
-			Map<String, Object> interactions = redisCache.hGet(key);
-			if (interactions != null) {
-				if (ObjectUtil.isNotEmpty(interactions.get("0"))) {
-					pic.setLikeQuantity(Integer.parseInt(interactions.get("0").toString()));
-				}
-				if (ObjectUtil.isNotEmpty(interactions.get("1"))) {
-					pic.setCollectQuantity(Integer.parseInt(interactions.get("1").toString()));
-				}
-				if (ObjectUtil.isNotEmpty(interactions.get("2"))) {
-					pic.setDownloadQuantity(Integer.parseInt(interactions.get("2").toString()));
-				}
-				if (ObjectUtil.isNotEmpty(interactions.get("3"))) {
-					pic.setShareQuantity(Integer.parseInt(interactions.get("3").toString()));
-				}
-				if (ObjectUtil.isNotEmpty(interactions.get("4"))) {
-					pic.setViewQuantity(Integer.parseInt(interactions.get("4").toString()));
-				}
-			}
-		});
+		picturePageList.getRecords().forEach(this::fillPictureInteraction);
 
 		return picturePageList;
 	}

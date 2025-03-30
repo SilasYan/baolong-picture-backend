@@ -1,6 +1,7 @@
 package com.baolong.pictures.infrastructure.manager.task;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baolong.pictures.infrastructure.common.constant.CacheKeyConstant;
 import com.baolong.pictures.infrastructure.manager.redis.RedisCache;
 import com.baolong.pictures.infrastructure.persistence.picture.picture.mybatis.PictureDO;
@@ -131,19 +132,19 @@ public class PictureTask {
 			try {
 				switch (Integer.parseInt(field)) {
 					case 0:
-						update.setLikeQuantity(Integer.parseInt(String.valueOf(value)));
+						update.setLikeQuantity(Integer.parseInt(String.valueOf(ObjectUtil.isEmpty(value) ? '0' : value)));
 						break;
 					case 1:
-						update.setCollectQuantity(Integer.parseInt(String.valueOf(value)));
+						update.setCollectQuantity(Integer.parseInt(String.valueOf(ObjectUtil.isEmpty(value) ? '0' : value)));
 						break;
 					case 2:
-						update.setDownloadQuantity(Integer.parseInt(String.valueOf(value)));
+						update.setDownloadQuantity(Integer.parseInt(String.valueOf(ObjectUtil.isEmpty(value) ? '0' : value)));
 						break;
 					case 3:
-						update.setShareQuantity(Integer.parseInt(String.valueOf(value)));
+						update.setShareQuantity(Integer.parseInt(String.valueOf(ObjectUtil.isEmpty(value) ? '0' : value)));
 						break;
 					case 4:
-						update.setViewQuantity(Integer.parseInt(String.valueOf(value)));
+						update.setViewQuantity(Integer.parseInt(String.valueOf(ObjectUtil.isEmpty(value) ? '0' : value)));
 						break;
 					case 5:
 						update.setCreateTime(new Date(Long.parseLong(String.valueOf(value))));
@@ -195,7 +196,6 @@ public class PictureTask {
 	 * @return 评分
 	 */
 	private double calculateScore(PictureDO pic) {
-		double timeScore = calculateTimeScore(pic.getCreateTime());
 		return calculateTimeScore(pic.getCreateTime()) +
 				Math.log1p(pic.getViewQuantity()) * view +
 				Math.log1p(pic.getLikeQuantity()) * like +
