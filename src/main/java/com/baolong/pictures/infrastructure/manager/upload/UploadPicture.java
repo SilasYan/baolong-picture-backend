@@ -40,7 +40,7 @@ public abstract class UploadPicture {
 	/**
 	 * 允许上传的图片格式
 	 */
-	final List<String> ALLOW_FORMAT_LIST = Arrays.asList("jpeg", "jpg", "png", "webp", "gif",
+	public final List<String> ALLOW_FORMAT_LIST = Arrays.asList("jpeg", "jpg", "png", "webp", "gif",
 			"image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif");
 
 	/**
