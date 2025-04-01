@@ -1,11 +1,16 @@
 package com.baolong.pictures.domain.category.service;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.lang.TypeReference;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baolong.pictures.domain.category.aggregate.Category;
 import com.baolong.pictures.domain.category.repository.CategoryRepository;
-import com.baolong.pictures.infrastructure.common.page.PageVO;
+import com.baolong.pictures.infrastructure.common.constant.CacheKeyConstant;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
+import com.baolong.pictures.infrastructure.config.LocalCacheConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -67,7 +72,18 @@ public class CategoryDomainService {
 	 * @return 首页分类列表
 	 */
 	public List<Category> getCategoryListAsHome() {
-		return categoryRepository.getCategoryList();
+		List<Category> categoryList;
+		String localData = LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.getIfPresent(CacheKeyConstant.HOME_CATEGORY);
+		if (StrUtil.isNotEmpty(localData)) {
+			log.info("首页分类列表[Local 缓存]");
+			categoryList = JSONUtil.toBean(localData, new TypeReference<List<Category>>() {
+			}, true);
+		} else {
+			log.info("首页分类列表[MySQL 查询]");
+			categoryList = categoryRepository.getCategoryList();
+			LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.put(CacheKeyConstant.HOME_CATEGORY, JSONUtil.toJsonStr(categoryList));
+		}
+		return categoryList;
 	}
 
 	/**

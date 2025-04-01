@@ -50,7 +50,7 @@ public class SoSearchPicture extends AbstractSearchPicture {
 			Element element = document.selectFirst(".img_img");
 			if (element == null) {
 				log.error("[360搜图]搜图失败，未找到图片元素");
-				throw new BusinessException(ErrorCode.OPERATION_ERROR, "搜图失败");
+				throw new BusinessException(ErrorCode.OPERATION_ERROR, "搜图失败，未找到图片");
 			}
 			String imagesUrl = "";
 			// 获取当前元素的属性
@@ -65,7 +65,7 @@ public class SoSearchPicture extends AbstractSearchPicture {
 			}
 			if (StrUtil.isEmpty(imagesUrl)) {
 				log.error("[360搜图]搜图失败，未找到图片地址");
-				throw new BusinessException(ErrorCode.OPERATION_ERROR, "搜图失败");
+				throw new BusinessException(ErrorCode.OPERATION_ERROR, "搜图失败，未找到图片");
 			}
 			return imagesUrl;
 		} catch (Exception e) {

@@ -19,6 +19,11 @@ public interface CacheKeyConstant {
 	String CAPTCHA_CODE_KEY = "CAPTCHA_CODE_KEY:%s";
 
 	/**
+	 * 首页分类缓存 KEY
+	 */
+	String HOME_CATEGORY = "HOME_CATEGORY";
+
+	/**
 	 * 首页图片列表缓存 KEY
 	 */
 	String HOME_PICTURE_LIST_KEY = "HOME_PICTURE_LIST_KEY:%s";

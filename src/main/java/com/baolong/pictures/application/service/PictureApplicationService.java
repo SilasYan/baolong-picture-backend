@@ -224,14 +224,19 @@ public class PictureApplicationService {
 	public void reviewPicture(List<Picture> pictureList) {
 		pictureDomainService.reviewPicture(pictureList, StpUtil.getLoginIdAsLong());
 
-		// 审核通知
 		Set<Long> pictureIds = pictureList.stream().map(Picture::getPictureId).collect(Collectors.toSet());
 		List<Picture> pictures = this.getPictureByPictureIds(pictureIds);
 		Set<Long> userIds = pictures.stream().map(Picture::getUserId).collect(Collectors.toSet());
 		List<User> userList = userApplicationService.getUserListByUserIds(userIds);
 		List<String> emailList = userList.stream().map(User::getUserEmail).collect(Collectors.toList());
-		emailManager.sendEmailAsReview(emailList, "图片审核通知", PictureReviewStatusEnum.PASS.getKey().equals(pictureList.get(0).getReviewStatus())
-				? "审核通过" : "审核不通过");
+		// 审核通知
+		if (pictureList.size() == 1) {
+			emailManager.sendEmailAsReview(emailList, "图片审核通知", PictureReviewStatusEnum.PASS.getKey().equals(pictureList.get(0).getReviewStatus())
+					? "审核通过" : "审核不通过! 【原因: " + pictureList.get(0).getReviewMessage() + "】");
+		} else {
+			emailManager.sendEmailAsReview(emailList, "图片审核通知", PictureReviewStatusEnum.PASS.getKey().equals(pictureList.get(0).getReviewStatus())
+					? "审核通过" : "审核不通过");
+		}
 	}
 
 	/**

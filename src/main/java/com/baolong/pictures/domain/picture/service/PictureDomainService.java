@@ -31,7 +31,6 @@ import com.baolong.pictures.infrastructure.common.constant.CacheKeyConstant;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.infrastructure.config.LocalCacheConfig;
 import com.baolong.pictures.infrastructure.manager.redis.RedisCache;
 import com.baolong.pictures.infrastructure.manager.upload.UploadPicture;
 import com.baolong.pictures.infrastructure.manager.upload.picture.UploadPictureFile;
@@ -99,8 +98,10 @@ public class PictureDomainService {
 		} else {
 			newPictureId = pictureRepository.addPicture(picture);
 		}
-		// 初始化图片互动数据
-		this.initPictureInteraction(newPictureId);
+		if (PictureReviewStatusEnum.PASS.getKey().equals(picture.getReviewStatus())) {
+			// 初始化图片互动数据
+			this.initPictureInteraction(newPictureId);
+		}
 		// 查询图片
 		return pictureRepository.getPictureByPictureId(newPictureId);
 	}
@@ -215,7 +216,13 @@ public class PictureDomainService {
 	public void reviewPicture(List<Picture> pictureList, Long userId) {
 		pictureList.forEach(picture -> picture.setReviewerUser(userId));
 		boolean result = pictureRepository.updatePictureByBatch(pictureList);
-		if (result) return;
+		if (result) {
+			for (Picture picture : pictureList) {
+				// 初始化图片互动数据
+				this.initPictureInteraction(picture.getPictureId());
+			}
+			return;
+		}
 		throw new BusinessException(ErrorCode.OPERATION_ERROR, "审核图片失败");
 	}
 
@@ -354,20 +361,12 @@ public class PictureDomainService {
 		String KEY = String.format(CacheKeyConstant.HOME_PICTURE_LIST_KEY
 				, DigestUtils.md5DigestAsHex(cacheKeyContent.getBytes())
 		);
-		// 2.从本地缓存中查询, 如果本地缓存命中，返回结果
-		String localData = LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.getIfPresent(KEY);
-		if (StrUtil.isNotEmpty(localData)) {
-			log.info("首页图片列表[Local 缓存]");
-			picturePageList = JSONUtil.toBean(localData, new TypeReference<PageVO<Picture>>() {
-			}, true);
-		}
-		// 3.查询 Redis, 如果 Redis 命中，返回结果
-		if (picturePageList == null) {
+
+		if (StrUtil.isEmpty(picture.getSearchText())) {
+			// 3.查询 Redis, 如果 Redis 命中，返回结果
 			String redisData = this.redisCache.get(KEY);
 			if (StrUtil.isNotEmpty(redisData)) {
 				log.info("首页图片列表[Redis 缓存]");
-				// 设置到本地缓存
-				LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.put(KEY, redisData);
 				picturePageList = JSONUtil.toBean(redisData, new TypeReference<PageVO<Picture>>() {
 				}, true);
 			}
@@ -381,10 +380,11 @@ public class PictureDomainService {
 			picturePageList = pictureRepository.getPicturePageList(picture);
 
 			log.info("首页图片列表[MySQL 查询]");
-			// 存入 本地缓存, 已经配置了 5 分钟过期
-			LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.put(KEY, JSONUtil.toJsonStr(picturePageList));
-			// 存入 Redis, 5 分钟过期
-			this.redisCache.set(KEY, JSONUtil.toJsonStr(picturePageList), 5, TimeUnit.MINUTES);
+
+			if (StrUtil.isEmpty(picture.getSearchText())) {
+				// 存入 Redis, 5 分钟过期
+				this.redisCache.set(KEY, JSONUtil.toJsonStr(picturePageList), 5, TimeUnit.MINUTES);
+			}
 		}
 
 		// 动态设置图片的互动数据
