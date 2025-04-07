@@ -2,22 +2,22 @@ server:
   port: 8123
   servlet:
     context-path: /api
-  # cookie 30天过期
+  # cookie 7 天过期
   reactive:
     session:
-      timeout: 2592000
+      timeout: 504800
 
 # Spring 配置
 spring:
   application:
-    name: bl-picture-backend
+    name: baolong-picture
   profiles:
     # 开发环境文件后缀 local/prod
     active: local
   session:
     store-type: redis
-    # session 30 天过期
-    timeout: 2592000
+    # session 7 天过期
+    timeout: 504800
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${mysql.url}
@@ -28,26 +28,27 @@ spring:
     port: ${redis.port}
     database: ${redis.database}
     password: ${redis.password}
-    # 连接超时时间
+    # 连接超时时间 10 秒
     timeout: 10000
     # 配置连接池
     jedis:
       pool:
         enabled: true
         # 最小空闲连接数
-        min-idle: 1
+        min-idle: 10
         # 最大空闲连接数
         max-idle: 10
         # 最大连接数，-1表示没有限制
         max-active: 50
         # 最大等待时间，-1表示没有限制
         max-wait: -1ms
-        # 断开连接的间隔时间
+        # 断开连接的间隔时间 5 秒
         time-between-eviction-runs: 5000
   # 开放更大的上传大小
   servlet:
     multipart:
       max-file-size: 100MB
+      max-request-size: 100MB
   # 发送邮件配置（QQ邮箱）
   mail:
     host: ${email.host}
@@ -78,8 +79,8 @@ sa-token:
   token-prefix: Bearer
   # jwt秘钥
   jwt-secret-key: baolong_picture
-  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
-  timeout: 2592000
+  # token 有效期（单位：秒） 7 天，-1 代表永久有效
+  timeout: 504800
   # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
   active-timeout: -1
   # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
@@ -117,4 +118,22 @@ knife4j:
       default:
         api-rule: package
         api-rule-resources:
-          - com.baolong.pictures.interfaces.controller
+          - com.baolong.pictures.interfaces.rest
+
+# OkHttp 配置
+okhttp:
+  connect-timeout: 60 #链接超时时间
+  read-timeout: 60 # 读取超时时间
+  write-timeout: 60 # 写入超时时间
+  max-idle-connections: 5 # 连接池的最大空闲连接数
+  keep-alive-duration: 10 # 每个连接的最大请求数
+
+# 推荐分数配置
+recommend:
+  score:
+    view: 0.15
+    like: 0.15
+    collect: 0.15
+    download: 0.15
+    share: 0.1
+    time: 0.3

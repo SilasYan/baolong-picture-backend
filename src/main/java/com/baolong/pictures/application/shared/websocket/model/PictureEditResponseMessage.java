@@ -1,6 +1,6 @@
 package com.baolong.pictures.application.shared.websocket.model;
 
-import com.baolong.pictures.interfaces.vo.user.UserDetailVO;
+import com.baolong.pictures.interfaces.web.user.response.UserDetailVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

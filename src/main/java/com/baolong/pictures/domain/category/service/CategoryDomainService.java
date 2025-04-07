@@ -1,96 +1,118 @@
 package com.baolong.pictures.domain.category.service;
 
-import com.baolong.pictures.domain.category.entity.Category;
-import com.baolong.pictures.interfaces.dto.category.CategoryQueryRequest;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.lang.TypeReference;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.baolong.pictures.domain.category.aggregate.Category;
+import com.baolong.pictures.domain.category.repository.CategoryRepository;
+import com.baolong.pictures.infrastructure.common.constant.CacheKeyConstant;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
+import com.baolong.pictures.infrastructure.config.LocalCacheConfig;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 
 /**
- * 分类表 (category) - 领域服务接口
+ * 分类表 (category) - 领域服务
  *
- * @author Baolong 2025年03月09 21:09
+ * @author Baolong 2025年03月09 21:10
  * @version 1.0
  * @since 1.8
  */
-public interface CategoryDomainService extends IService<Category>  {
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class CategoryDomainService {
 
-	// region 其他方法
-
-	/**
-	 * 获取查询条件对象（Lambda）
-	 *
-	 * @param categoryQueryRequest 分类查询请求
-	 * @return 查询条件对象（Lambda）
-	 */
-	LambdaQueryWrapper<Category> getLambdaQueryWrapper(CategoryQueryRequest categoryQueryRequest);
-
-	// endregion 其他方法
-
-	// region 增删改
+	private final CategoryRepository categoryRepository;
 
 	/**
 	 * 新增分类
 	 *
-	 * @param category 分类对象
-	 * @return 是否成功
+	 * @param category 分类领域对象
 	 */
-	Boolean addCategory(Category category);
+	public void addCategory(Category category) {
+		category.setUserId(StpUtil.getLoginIdAsLong());
+		boolean result = categoryRepository.addCategory(category);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "新增分类失败");
+	}
 
 	/**
 	 * 删除分类
 	 *
 	 * @param categoryId 分类 ID
-	 * @return 是否成功
 	 */
-	Boolean deleteCategory(Long categoryId);
+	public void deleteCategory(Long categoryId) {
+		boolean result = categoryRepository.deleteCategory(categoryId);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "删除分类失败");
+	}
 
 	/**
 	 * 更新分类
 	 *
-	 * @param category 分类对象
-	 * @return 是否成功
+	 * @param category 分类领域对象
 	 */
-	Boolean updateCategory(Category category);
-
-	// endregion 增删改
-
-	// region 查询相关
+	public void updateCategory(Category category) {
+		boolean result = categoryRepository.updateCategory(category);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新分类失败");
+	}
 
 	/**
-	 * 获取分类列表
+	 * 获取首页分类列表
 	 *
-	 * @return 分类列表
+	 * @return 首页分类列表
 	 */
-	List<Category> getCategoryList();
+	public List<Category> getCategoryListAsHome() {
+		List<Category> categoryList;
+		String localData = LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.getIfPresent(CacheKeyConstant.HOME_CATEGORY);
+		if (StrUtil.isNotEmpty(localData)) {
+			log.info("首页分类列表[Local 缓存]");
+			categoryList = JSONUtil.toBean(localData, new TypeReference<List<Category>>() {
+			}, true);
+		} else {
+			log.info("首页分类列表[MySQL 查询]");
+			categoryList = categoryRepository.getCategoryList();
+			LocalCacheConfig.HOME_PICTURE_LOCAL_CACHE.put(CacheKeyConstant.HOME_CATEGORY, JSONUtil.toJsonStr(categoryList));
+		}
+		return categoryList;
+	}
 
 	/**
-	 * 根据分类 ID 列表获取分类列表
+	 * 根据分类ID列表获取分类列表
 	 *
-	 * @param categoryIds 分类 ID 列表
+	 * @param categoryIds 分类ID列表
 	 * @return 分类列表
 	 */
-	List<Category> getCategoryListByIds(Set<Long> categoryIds);
+	public List<Category> getCategoryListByCategoryIds(Set<Long> categoryIds) {
+		return categoryRepository.getCategoryListByCategoryIds(categoryIds);
+	}
 
 	/**
 	 * 获取图片管理分页列表
 	 *
-	 * @param page               分页对象
-	 * @param lambdaQueryWrapper 查询条件
+	 * @param category 分类领域对象
 	 * @return 图片管理分页列表
 	 */
-	Page<Category> getCategoryPageListAsManage(Page<Category> page, LambdaQueryWrapper<Category> lambdaQueryWrapper);
+	public PageVO<Category> getCategoryPageListAsManage(Category category) {
+		return categoryRepository.getCategoryPageList(category);
+	}
 
 	/**
-	 * 根据分类 ID 获取分类信息
+	 * 根据分类ID获取分类
 	 *
-	 * @param categoryId 分类 ID
-	 * @return 分类信息
+	 * @param categoryId 分类ID
+	 * @return 分类
 	 */
-	Category getCategoryInfoById(Long categoryId);
-
-	// endregion 查询相关
+	public Category getCategoryByCategoryId(Long categoryId) {
+		return categoryRepository.getCategoryByCategoryId(categoryId);
+	}
 }

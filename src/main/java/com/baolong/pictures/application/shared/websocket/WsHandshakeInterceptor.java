@@ -5,10 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.application.service.PictureApplicationService;
 import com.baolong.pictures.application.service.SpaceApplicationService;
 import com.baolong.pictures.application.service.UserApplicationService;
-import com.baolong.pictures.domain.picture.entity.Picture;
-import com.baolong.pictures.domain.space.entity.Space;
-import com.baolong.pictures.domain.space.enums.SpaceTypeEnum;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.picture.aggregate.Picture;
+import com.baolong.pictures.domain.space.aggregate.Space;
+import com.baolong.pictures.domain.space.aggregate.enums.SpaceTypeEnum;
+import com.baolong.pictures.domain.user.aggregate.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -50,13 +50,13 @@ public class WsHandshakeInterceptor implements HandshakeInterceptor {
 				log.error("缺少图片参数，拒绝握手");
 				return false;
 			}
-			User loginUser = userApplicationService.getLoginUser();
+			User loginUser = userApplicationService.getLoginUserDetail();
 			if (ObjUtil.isEmpty(loginUser)) {
 				log.error("用户未登录，拒绝握手");
 				return false;
 			}
 			// 校验用户是否有该图片的权限
-			Picture tePicture = pictureApplicationService.getPictureInfoById(Long.valueOf(pictureId));
+			Picture tePicture = pictureApplicationService.getPictureDetailById(Long.valueOf(pictureId));
 			if (tePicture == null) {
 				log.error("图片不存在，拒绝握手");
 				return false;
@@ -64,7 +64,7 @@ public class WsHandshakeInterceptor implements HandshakeInterceptor {
 			Long spaceId = tePicture.getSpaceId();
 			Space space = null;
 			if (spaceId != null) {
-				space = spaceApplicationService.getSpaceInfoById(spaceId);
+				space = spaceApplicationService.getSpaceBySpaceId(spaceId);
 				if (space == null) {
 					log.error("空间不存在，拒绝握手");
 					return false;
@@ -82,7 +82,7 @@ public class WsHandshakeInterceptor implements HandshakeInterceptor {
 			// }
 			// 设置 attributes
 			attributes.put("user", loginUser);
-			attributes.put("userId", loginUser.getId());
+			attributes.put("userId", loginUser.getUserId());
 			attributes.put("pictureId", Long.valueOf(pictureId)); // 记得转换为 Long 类型
 		}
 		return true;

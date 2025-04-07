@@ -6,9 +6,9 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
-import com.baolong.pictures.infrastructure.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
 import com.baolong.pictures.infrastructure.manager.upload.UploadPicture;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +46,7 @@ public class UploadPictureUrl extends UploadPicture {
 			throw new BusinessException(ErrorCode.PARAMS_ERROR, "仅支持 HTTP 或 HTTPS 协议的文件地址");
 		}
 		// 校验 URL 是否存在
-		try (HttpResponse response = HttpUtil.createRequest(Method.HEAD, fileUrl).execute()) {
+		try (HttpResponse response = HttpUtil.createRequest(Method.GET, fileUrl).execute()) {
 			if (response.getStatus() != HttpStatus.HTTP_OK) {
 				throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片文件地址不存在");
 			}
@@ -55,6 +55,7 @@ public class UploadPictureUrl extends UploadPicture {
 			if (StrUtil.isEmpty(contentType)) {
 				throw new BusinessException(ErrorCode.PARAMS_ERROR, "图片文件地址格式错误");
 			}
+			System.out.println("文件类型: "+contentType);
 			// 校验文件后缀
 			ThrowUtils.throwIf(!checkPictureSuffix(contentType), ErrorCode.PARAMS_ERROR, "图片文件地址类型错误");
 		}
@@ -73,38 +74,6 @@ public class UploadPictureUrl extends UploadPicture {
 		HttpUtil.downloadFile(fileUrl, file);
 	}
 
-	// /**
-	//  * 上传文件到存储服务
-	//  *
-	//  * @param uploadPath 上传路径
-	//  * @param file       文件对象
-	//  */
-	// @Override
-	// protected Object uploadFileToStore(String uploadPath, File file) {
-	// 	// 获取原图名称, 不包含后缀
-	// 	String originName = getFileNameWithoutSuffix(file);
-	// 	// 上传图片到对象存储
-	// 	PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
-	// 	// 图片原图信息
-	// 	ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
-	// 	// 获取处理后的结果信息
-	// 	ProcessResults processResults = putObjectResult.getCiUploadResult().getProcessResults();
-	// 	List<CIObject> objectList = processResults.getObjectList();
-	// 	if (CollUtil.isEmpty(objectList)) {
-	// 		return buildPictureResult(file, uploadPath, originName, imageInfo);
-	// 	}
-	// 	// 根据图片处理规则的顺序获取, 获取压缩图信息
-	// 	CIObject compressedCiObject = objectList.get(0);
-	// 	CIObject thumbnailCiObject = null;
-	// 	if (objectList.size() > 1) {
-	// 		// 获取压缩图信息
-	// 		thumbnailCiObject = objectList.get(1);
-	// 		return buildPictureResult(file, uploadPath, originName, imageInfo, compressedCiObject, thumbnailCiObject);
-	// 	} else {
-	// 		return buildPictureResult(file, uploadPath, originName, imageInfo, compressedCiObject);
-	// 	}
-	// }
-
 	/**
 	 * 获取文件后缀
 	 *
@@ -114,7 +83,21 @@ public class UploadPictureUrl extends UploadPicture {
 	@Override
 	protected String getFileSuffix(Object fileInputSource) {
 		String fileUrl = (String) fileInputSource;
-		return FileUtil.mainName(fileUrl).substring(0, 2) + "." + FileUtil.extName(fileUrl).split("&")[0];
+		System.out.println("文件: "+fileUrl);
+		System.out.println("文件1: "+FileUtil.mainName(fileUrl));
+		System.out.println("文件2: "+FileUtil.mainName(fileUrl).substring(0, 2));
+		System.out.println("文件3: "+FileUtil.extName(fileUrl).split("&")[0]);
+		String suffix = FileUtil.mainName(fileUrl).substring(0, 2) + "."
+				+ FileUtil.extName(fileUrl).split("&")[0];
+		// 去掉 suffix 中 ? 后面的内容
+		if (suffix.contains("?")) {
+			suffix = suffix.substring(0, suffix.indexOf("?"));
+		}
+		System.out.println("文件后缀: "+suffix);
+		if (!super.ALLOW_FORMAT_LIST.contains(suffix.toLowerCase())) {
+			suffix = "jpg";
+		}
+		return suffix;
 	}
 
 	/**

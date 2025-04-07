@@ -1,11 +1,20 @@
 package com.baolong.pictures.infrastructure.common;
 
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 
 /**
  * 公共响应工具类
  */
 public class ResultUtils {
+
+	/**
+	 * 成功
+	 *
+	 * @return 响应
+	 */
+	public static BaseResponse<Boolean> success() {
+		return new BaseResponse<>(0, true, "ok");
+	}
 
 	/**
 	 * 成功

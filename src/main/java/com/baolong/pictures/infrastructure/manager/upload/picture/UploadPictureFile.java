@@ -1,9 +1,9 @@
 package com.baolong.pictures.infrastructure.manager.upload.picture;
 
 import cn.hutool.core.io.FileUtil;
-import com.baolong.pictures.infrastructure.exception.BusinessException;
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
-import com.baolong.pictures.infrastructure.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
 import com.baolong.pictures.infrastructure.manager.upload.UploadPicture;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

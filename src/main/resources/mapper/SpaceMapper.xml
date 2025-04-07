@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baolong.pictures.infrastructure.persistence.space.space.mybatis.SpaceMapper">
+
+    <resultMap id="BaseResultMap" type="com.baolong.pictures.infrastructure.persistence.space.space.mybatis.SpaceDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="spaceName" column="space_name" jdbcType="VARCHAR"/>
+        <result property="spaceType" column="space_type" jdbcType="TINYINT"/>
+        <result property="spaceLevel" column="space_level" jdbcType="TINYINT"/>
+        <result property="maxSize" column="max_size" jdbcType="BIGINT"/>
+        <result property="maxCount" column="max_count" jdbcType="BIGINT"/>
+        <result property="usedSize" column="used_size" jdbcType="BIGINT"/>
+        <result property="usedCount" column="used_count" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+        <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,space_name,space_type,
+        space_level,max_size,max_count,
+        used_size,used_count,user_id,
+        is_delete,edit_time,create_time,
+        update_time
+    </sql>
+</mapper>

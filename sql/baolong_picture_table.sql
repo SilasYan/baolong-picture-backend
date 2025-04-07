@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS baolong_platform DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE baolong_platform;
+CREATE DATABASE IF NOT EXISTS baolong_picture DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE baolong_picture;
 
 -- 用户表
 CREATE TABLE IF NOT EXISTS user
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS vip
   COLLATE = utf8mb4_unicode_ci COMMENT = '会员表';
 
 -- 图片表
-CREATE TABLE IF NOT EXISTS tePicture
+CREATE TABLE IF NOT EXISTS picture
 (
     id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
     origin_name     VARCHAR(256)    NOT NULL COMMENT '原图名称',
@@ -146,26 +146,8 @@ CREATE TABLE IF NOT EXISTS category
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT = '分类表';
 
--- 标签表
-CREATE TABLE IF NOT EXISTS tag
-(
-    id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
-    name        VARCHAR(128)    NOT NULL COMMENT '名称',
-    use_num     INT             NOT NULL DEFAULT 0 COMMENT '使用数量',
-    user_id     BIGINT          NOT NULL COMMENT '创建用户 ID',
-    is_delete   TINYINT         NOT NULL DEFAULT 0 COMMENT '是否删除（0-正常, 1-删除）',
-    edit_time   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '编辑时间',
-    create_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    update_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (id),
-    INDEX idx_name (name)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci COMMENT = '标签表';
-
-
 -- 空间表
-CREATE TABLE IF NOT EXISTS teSpace
+CREATE TABLE IF NOT EXISTS space
 (
     id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
     space_name  VARCHAR(128)    NOT NULL COMMENT '空间名称',
@@ -272,26 +254,22 @@ CREATE TABLE role_menu
     PRIMARY KEY (role_key, menu_id)
 ) COMMENT = '角色菜单关联表';
 
--- 操作表
-CREATE TABLE operate
+
+-- 定时任务表
+CREATE TABLE IF NOT EXISTS scheduled_task
 (
-    id           BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
-    operate_name VARCHAR(50)  NOT NULL COMMENT '操作名称',
-    operate_key  VARCHAR(255) NOT NULL COMMENT '操作标识',
-    operate_desc VARCHAR(255) NOT NULL COMMENT '操作描述',
-    is_disabled  TINYINT      NOT NULL DEFAULT 0 COMMENT '是否禁用（0-正常, 1-禁用）',
-    is_delete    TINYINT      NOT NULL DEFAULT 0 COMMENT '是否删除（0-正常, 1-删除）',
-    edit_time    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '编辑时间',
-    create_time  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    update_time  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    job_key     VARCHAR(255)    NOT NULL COMMENT '任务 KEY（存在内存中）',
+    job_name    VARCHAR(255)    NOT NULL COMMENT '任务名称',
+    job_cron    VARCHAR(255)    NOT NULL COMMENT '任务 corn 表达式',
+    job_desc    VARCHAR(255)    NULL     DEFAULT NULL COMMENT '任务描述',
+    job_bean    VARCHAR(255)    NOT NULL COMMENT '任务 Bean 名称（执行任务的 bean）',
+    job_status  TINYINT(4)      NOT NULL DEFAULT 0 COMMENT '任务状态（0-关闭, 1-开启）',
+    is_delete   TINYINT         NOT NULL DEFAULT 0 COMMENT '是否删除（0-正常, 1-删除）',
+    edit_time   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '编辑时间',
+    create_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id)
-) COMMENT = '操作表';
-
--- 角色-操作关联表
-CREATE TABLE role_operate
-(
-    role_key   VARCHAR(20) NOT NULL,
-    operate_id BIGINT      NOT NULL,
-    PRIMARY KEY (role_key, operate_id)
-) COMMENT = '角色操作关联表';
-
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '定时任务表';

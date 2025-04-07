@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,50 +8,50 @@
 </head>
 <!--邮箱验证码模板-->
 <body>
-  <div style="background-color: #ECECEC; padding: 35px;">
+  <div style="background-color:#ECECEC; padding: 35px;">
     <table cellpadding="0" align="center"
-           style="width: 800px; height: 100%; margin: 0 auto; text-align: left; position: relative;
-           border-radius: 10px; font-size: 14px; font-family: 微软雅黑, 黑体, serif; line-height: 1.5;
-           box-shadow: rgb(153, 153, 153) 0 0 5px; border-collapse: collapse;
-           background-position: initial; background-repeat: initial; background-color: #fff;">
+           style="width: 800px;height: 100%; margin: 0px auto; text-align: left; position: relative; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; font-size: 14px; font-family:微软雅黑, 黑体; line-height: 1.5; box-shadow: rgb(153, 153, 153) 0px 0px 5px; border-collapse: collapse; background-position: initial initial; background-repeat: initial initial;background:#fff;">
+      <tbody>
       <tr>
         <th valign="middle"
-            style="height: 25px; line-height: 25px; padding: 15px 35px;
-            border-bottom-width: 1px; border-bottom-style: solid;
-            background-color: #409EFF; border-radius: 10px 10px 0 0;">
-          <font style="color: rgb(255, 255, 255); font-size: 24px; font-family: 微软雅黑, serif;">暴龙图库</font>
+            style="height: 25px; line-height: 25px; padding: 15px 35px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #409EFF; background-color: #409EFF; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px;">
+          <font face="微软雅黑" size="5" style="color: rgb(255, 255, 255); ">暴龙图库</font>
         </th>
       </tr>
-      <!--内容：-->
       <tr>
         <td style="word-break:break-all">
-          <div style="padding: 25px 35px 40px; background-color: #fff; opacity: 0.8;">
-            <!--内容-->
-            <h2 style="margin: 10px 0; ">
-              <font style="line-height: 20px; color: #333333">
-                <font style="line-height: 22px; font-size: 18px">
-                  您正在注册 <a href="https://tePicture.baolong.icu" target="_blank">暴龙图库</a> 的账号, 验证码为:
-                  <span style="font-size: 24px">BOOT_code_END</span>,
-                  有效时间<span style="color: red">5分钟</span>!</font>
+          <div style="padding:25px 35px 40px; background-color:#fff;opacity:0.8;">
+
+            <h2 style="margin: 5px 0px; ">
+              <font color="#333333" style="line-height: 20px; ">
+                <font style="line-height: 22px; " size="4">
+                  注册操作：</font>
               </font>
             </h2>
-            <!--底部-->
-            <div style="width: 100%; margin:0 auto;">
+            <!-- 中文 -->
+            <p>
+              你好！你正在注册 <a href="https://picture.baolong.icu">暴龙图库</a> ，你的验证码为
+              <span style="font-size: 20px">BOOT_code_END</span>，验证码有效时间<span style="color: red">5分钟</span>！
+            </p>
+            <br>
+
+            <div style="width:100%;margin:0 auto;">
               <div
-                style="padding: 10px 10px 0; border-top: 2px solid #ccc; color: #2ea7eb;
-                margin-bottom: 20px; line-height: 1.3em; font-size: 16px;">
-                <p>
-                  <span>联系邮箱: 510132075@qq.com</span>
-                  <span style="margin-left: 20px">个人主页: <a href="https://www.baolong.icu"
-                                                               target="_blank">点击进入</a></span>
-                </p>
-                <p>此为系统邮件，请勿回复。
+                style="padding:10px 10px 0;border-top:1px solid #ccc;color:#747474;margin-bottom:20px;line-height:1.3em;font-size:12px;">
+                <p>Silas Yan</p>
+                <p>Q Q: 510132075</p>
+                <p>微信: JasonYanze</p>
+                <p>联系邮箱：510132075@qq.com</p>
+                <br>
+                <p>此为系统邮件，请勿回复<br>
+                  Please do not reply to this system email
                 </p>
               </div>
             </div>
           </div>
         </td>
       </tr>
+      </tbody>
     </table>
   </div>
 </body>

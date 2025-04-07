@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * 启动类
  */
 @SpringBootApplication
-@MapperScan("com.baolong.pictures.infrastructure.repository")
+@MapperScan(value = {"com.baolong.pictures.infrastructure.persistence.**.mybatis"})
 @EnableAspectJAutoProxy(exposeProxy = true) // 通过 AOP 提供对当前代理对象的访问, 通过 AopContext.currentProxy() 获取当前代理对象
 @EnableAsync // 开启异步注解功能
 public class PicturesApplication {

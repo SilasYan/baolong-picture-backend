@@ -1,110 +1,182 @@
 package com.baolong.pictures.domain.space.service;
 
-import com.baolong.pictures.domain.space.entity.Space;
-import com.baolong.pictures.interfaces.dto.space.SpaceQueryRequest;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import com.baolong.pictures.domain.space.aggregate.Space;
+import com.baolong.pictures.domain.space.repository.SpaceRepository;
+import com.baolong.pictures.domain.space.aggregate.SpaceUser;
+import com.baolong.pictures.domain.space.aggregate.enums.SpaceRoleEnum;
+import com.baolong.pictures.domain.space.repository.SpaceUserRepository;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
+import com.baolong.pictures.infrastructure.common.exception.BusinessException;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
- * 空间表 (space) - 领域服务接口
+ * 空间表 (space) - 领域服务
  */
-public interface SpaceDomainService extends IService<Space> {
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SpaceDomainService {
 
-	// region 其他相关
-
-	/**
-	 * 根据用户 ID 和空间类型判断空间是否存在
-	 *
-	 * @param userId    用户 ID
-	 * @param spaceType 空间类型
-	 * @return 是否存在
-	 */
-	Boolean existSpaceByUserIdAndSpaceType(Long userId, Integer spaceType);
+	private final SpaceRepository spaceRepository;
+	private final SpaceUserRepository spaceUserRepository;
 
 	/**
-	 * 根据空间 ID 判断空间是否存在
+	 * 激活空间
 	 *
-	 * @param spaceId 空间 ID
-	 * @return 是否存在
+	 * @param space 空间领域对象
 	 */
-	Boolean existSpaceById(Long spaceId);
+	public void activateSpace(Space space) {
+		// 判断是否存在个人空间
+		boolean existed = spaceRepository.existedPersonSpaceByUserId(space.getUserId());
+		if (existed) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户已激活个人空间");
+		}
+		boolean result = spaceRepository.addSpace(space);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "个人空间激活失败");
+	}
 
 	/**
-	 * 获取查询条件对象（Lambda）
+	 * 编辑空间
 	 *
-	 * @param spaceQueryRequest 空间查询请求
-	 * @return 查询条件对象（Lambda）
+	 * @param space       空间领域对象
+	 * @param loginUserId 登录用户ID
+	 * @param isAdmin     是否管理员
 	 */
-	LambdaQueryWrapper<Space> getLambdaQueryWrapper(SpaceQueryRequest spaceQueryRequest);
-
-	// endregion 其他相关
-
-	// region 增删改相关
-
-	/**
-	 * 创建空间
-	 *
-	 * @param space 空间对象
-	 * @return 是否成功
-	 */
-	Boolean addSpace(Space space);
+	public void editSpace(Space space, Long loginUserId, boolean isAdmin) {
+		boolean existed = spaceRepository.existedSpaceBySpaceId(space.getSpaceId());
+		if (!existed) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+		}
+		Space oldSpace = spaceRepository.getSpaceBySpaceId(space.getSpaceId());
+		// 判断当前登录用户是否是管理员, 如果不是管理员, 则判断是否是当前空间的所有者, 如果都不是, 则抛出异常
+		if (!oldSpace.getUserId().equals(loginUserId) && !isAdmin) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "无权限编辑空间");
+		}
+		boolean result = spaceRepository.updateSpace(space);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "空间编辑失败");
+	}
 
 	/**
 	 * 删除空间
 	 *
 	 * @param spaceId 空间ID
-	 * @return 是否成功
 	 */
-	Boolean deleteSpace(Long spaceId);
+	public void deleteSpace(Long spaceId) {
+		boolean existed = spaceRepository.existedSpaceBySpaceId(spaceId);
+		if (!existed) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+		}
+		boolean result = spaceRepository.deleteSpace(spaceId);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "空间删除失败");
+	}
 
 	/**
 	 * 更新空间
 	 *
-	 * @param space 空间对象
-	 * @return 是否成功
+	 * @param space 空间领域对象
 	 */
-	Boolean updateSpace(Space space);
+	public void updateSpace(Space space) {
+		boolean existed = spaceRepository.existedSpaceBySpaceId(space.getSpaceId());
+		if (!existed) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+		}
+		boolean result = spaceRepository.updateSpace(space);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "空间更新失败");
+	}
 
 	/**
 	 * 更新空间大小和数量
 	 *
-	 * @param updateWrapper 更新条件
-	 * @return 是否成功
+	 * @param spaceId  空间 ID
+	 * @param picSize  图片大小
+	 * @param picCount 图片数量
 	 */
-	Boolean updateSpaceSizeAndCount(LambdaUpdateWrapper<Space> updateWrapper);
-
-	// endregion 增删改相关
-
-	// region 查询相关
+	public void updateSpaceSizeAndCount(Long spaceId, Long picSize, Long picCount) {
+		boolean result = spaceRepository.updateSpaceSizeAndCount(spaceId, picSize, picCount);
+		if (result) return;
+		throw new BusinessException(ErrorCode.OPERATION_ERROR, "空间额度更新失败");
+	}
 
 	/**
-	 * 根据空间 ID 获取空间信息
+	 * 判断用户是否可以操作空间
 	 *
-	 * @param spaceId 空间 ID
-	 * @return 空间信息
+	 * @param spaceId 空间ID
+	 * @param userId  用户ID
+	 * @param isAdmin 是否是管理员
 	 */
-	Space getSpaceById(Long spaceId);
+	public void canOperateInSpace(Long spaceId, Long userId, boolean isAdmin) {
+		// 管理员直接返回
+		if (isAdmin) return;
+		Space space = this.getSpaceBySpaceId(spaceId);
+		// 如果当前空间创建人为当前用户则直接返回
+		if (space.getUserId().equals(userId)) return;
+		SpaceUser spaceUser = spaceUserRepository.getSpaceUserBySpaceIdAndUserId(spaceId, userId);
+		String spaceRole = spaceUser.getSpaceRole();
+		if (SpaceRoleEnum.isCreator(spaceRole) || SpaceRoleEnum.isEditor(spaceRole)) return;
+		throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "没有空间操作权限");
+	}
 
 	/**
-	 * 获取用户空间列表
+	 * 判断用户是否可以还有额度
 	 *
-	 * @param lambdaQueryWrapper 查询条件
-	 * @return 空间列表
+	 * @param userId  用户ID
+	 * @param isAdmin 是否是管理员
 	 */
-	List<Space> getSpaceListAsUser(LambdaQueryWrapper<Space> lambdaQueryWrapper);
+	public void canCapacityInSpace(Long userId, boolean isAdmin) {
+		// 管理员直接返回
+		if (isAdmin) return;
+		Space space = this.getPersonSpaceByUserId(userId);
+		if (space.getUsedSize() >= space.getMaxSize() || space.getUsedCount() >= space.getMaxCount()) {
+			throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "空间已满, 请联系管理员开通更多容量!");
+		}
+	}
+
+	/**
+	 * 根据用户ID获取个人空间
+	 *
+	 * @param userId 用户ID
+	 * @return 空间领域对象
+	 */
+	public Space getPersonSpaceByUserId(Long userId) {
+		Space space = spaceRepository.getPersonSpaceByUserId(userId);
+		if (space == null) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "请先激活个人空间");
+		}
+		return space;
+	}
+
+	/**
+	 * 根据空间ID获取空间
+	 *
+	 * @param spaceId 空间ID
+	 * @return 空间领域对象
+	 */
+	public Space getSpaceBySpaceId(Long spaceId) {
+		Space space = spaceRepository.getSpaceBySpaceId(spaceId);
+		if (space == null) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+		}
+		return space;
+	}
 
 	/**
 	 * 获取空间管理分页列表
 	 *
-	 * @param page               分页对象
-	 * @param lambdaQueryWrapper 查询条件
+	 * @param space 空间领域模型
 	 * @return 空间管理分页列表
 	 */
-	Page<Space> getSpacePageListAsManage(Page<Space> page, LambdaQueryWrapper<Space> lambdaQueryWrapper);
-
-	// endregion 查询相关
+	public PageVO<Space> getSpacePageListAsManage(Space space) {
+		return spaceRepository.getSpacePageList(space);
+	}
 }
+
+
+
+

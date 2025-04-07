@@ -1,105 +1,90 @@
 package com.baolong.pictures.application.service;
 
-import com.baolong.pictures.domain.category.entity.Category;
-import com.baolong.pictures.infrastructure.common.DeleteRequest;
+import com.baolong.pictures.domain.category.aggregate.Category;
+import com.baolong.pictures.domain.category.service.CategoryDomainService;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
-import com.baolong.pictures.interfaces.dto.category.CategoryAddRequest;
-import com.baolong.pictures.interfaces.dto.category.CategoryQueryRequest;
-import com.baolong.pictures.interfaces.dto.category.CategoryUpdateRequest;
-import com.baolong.pictures.interfaces.vo.category.CategoryVO;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 
 /**
- * 分类应用服务接口
+ * 分类表 (category) - 应用服务
  *
- * @author Baolong 2025年03月09 21:07
+ * @author Baolong 2025年03月09 21:08
  * @version 1.0
  * @since 1.8
  */
-public interface CategoryApplicationService {
+@Service
+@RequiredArgsConstructor
+public class CategoryApplicationService {
 
-	// region 增删改
+	private final CategoryDomainService categoryDomainService;
 
 	/**
 	 * 新增分类
 	 *
-	 * @param categoryAddRequest 分类新增请求
-	 * @return 是否成功
+	 * @param category 分类领域对象
 	 */
-	Boolean addCategory(CategoryAddRequest categoryAddRequest);
+	public void addCategory(Category category) {
+		categoryDomainService.addCategory(category);
+	}
 
 	/**
 	 * 删除分类
 	 *
-	 * @param deleteRequest 删除请求
-	 * @return 是否成功
+	 * @param categoryId 分类ID
 	 */
-	Boolean deleteCategory(DeleteRequest deleteRequest);
+	public void deleteCategory(Long categoryId) {
+		categoryDomainService.deleteCategory(categoryId);
+	}
 
 	/**
 	 * 更新分类
 	 *
-	 * @param categoryUpdateRequest 分类更新请求
-	 * @return 是否成功
+	 * @param category 分类领域对象
 	 */
-	Boolean updateCategory(CategoryUpdateRequest categoryUpdateRequest);
-
-	// endregion 增删改
-
-	// region 查询相关
-
-	/**
-	 * 获取分类列表
-	 *
-	 * @return 分类列表
-	 */
-	List<Category> getCategoryList();
-
-	/**
-	 * 根据分类 ID 列表获取分类列表
-	 *
-	 * @param categoryIds 分类 ID 列表
-	 * @return 分类列表
-	 */
-	List<Category> getCategoryListByIds(Set<Long> categoryIds);
+	public void updateCategory(Category category) {
+		categoryDomainService.updateCategory(category);
+	}
 
 	/**
 	 * 获取首页分类列表
 	 *
 	 * @return 首页分类列表
 	 */
-	List<CategoryVO> getCategoryListAsHome();
+	public List<Category> getCategoryListAsHome() {
+		return categoryDomainService.getCategoryListAsHome();
+	}
 
 	/**
 	 * 获取图片管理分页列表
 	 *
-	 * @param categoryQueryRequest 分类查询请求
+	 * @param category 分类领域对象
 	 * @return 图片管理分页列表
 	 */
-	PageVO<Category> getCategoryPageListAsManage(CategoryQueryRequest categoryQueryRequest);
+	public PageVO<Category> getCategoryPageListAsManage(Category category) {
+		return categoryDomainService.getCategoryPageListAsManage(category);
+	}
 
 	/**
-	 * 根据分类 ID 获取分类信息
+	 * 根据分类ID列表获取分类列表
 	 *
-	 * @param categoryId 分类 ID
-	 * @return 分类信息
+	 * @param categoryIds 分类ID列表
+	 * @return 分类列表
 	 */
-	Category getCategoryInfoById(Long categoryId);
-
-	// endregion 查询相关
-
-	// region 其他方法
+	public List<Category> getCategoryListByCategoryIds(Set<Long> categoryIds) {
+		return categoryDomainService.getCategoryListByCategoryIds(categoryIds);
+	}
 
 	/**
-	 * 获取查询条件对象（Lambda）
+	 * 根据分类ID获取分类
 	 *
-	 * @param categoryQueryRequest 分类查询请求
-	 * @return 查询条件对象（Lambda）
+	 * @param categoryId 分类ID
+	 * @return 分类
 	 */
-	LambdaQueryWrapper<Category> getLambdaQueryWrapper(CategoryQueryRequest categoryQueryRequest);
-
-	// endregion 其他方法
+	public Category getCategoryByCategoryId(Long categoryId) {
+		return categoryDomainService.getCategoryByCategoryId(categoryId);
+	}
 }

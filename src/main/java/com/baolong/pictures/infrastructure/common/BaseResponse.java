@@ -1,6 +1,6 @@
 package com.baolong.pictures.infrastructure.common;
 
-import com.baolong.pictures.infrastructure.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import lombok.Data;
 
 import java.io.Serializable;

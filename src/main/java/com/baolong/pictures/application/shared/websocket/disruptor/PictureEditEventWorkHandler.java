@@ -6,7 +6,9 @@ import com.baolong.pictures.application.shared.websocket.PictureEditHandler;
 import com.baolong.pictures.application.shared.websocket.model.PictureEditMessageTypeEnum;
 import com.baolong.pictures.application.shared.websocket.model.PictureEditRequestMessage;
 import com.baolong.pictures.application.shared.websocket.model.PictureEditResponseMessage;
-import com.baolong.pictures.domain.user.entity.User;
+import com.baolong.pictures.domain.user.aggregate.User;
+import com.baolong.pictures.interfaces.web.user.assembler.UserAssembler;
+import com.baolong.pictures.interfaces.web.user.response.UserDetailVO;
 import com.lmax.disruptor.WorkHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -57,7 +59,8 @@ public class PictureEditEventWorkHandler implements WorkHandler<PictureEditEvent
                 PictureEditResponseMessage pictureEditResponseMessage = new PictureEditResponseMessage();
                 pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.ERROR.getValue());
                 pictureEditResponseMessage.setMessage("消息类型错误");
-                pictureEditResponseMessage.setUser(userApplicationService.getUserDetailById(user.getId()));
+                UserDetailVO userDetailVO = UserAssembler.toUserDetailVO(userApplicationService.getUserDetailById(user.getUserId()));
+                pictureEditResponseMessage.setUser(userDetailVO);
                 session.sendMessage(new TextMessage(JSONUtil.toJsonStr(pictureEditResponseMessage)));
         }
     }

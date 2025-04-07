@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baolong.pictures.infrastructure.persistence.system.feedback.mybatis.FeedbackMapper">
+
+    <resultMap id="BaseResultMap"
+               type="com.baolong.pictures.infrastructure.persistence.system.feedback.mybatis.FeedbackDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="feedbackType" column="feedback_type" jdbcType="TINYINT"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="contactType" column="contact_type" jdbcType="TINYINT"/>
+        <result property="contactInfo" column="contact_info" jdbcType="VARCHAR"/>
+        <result property="processStatus" column="process_status" jdbcType="TINYINT"/>
+        <result property="processContent" column="process_content" jdbcType="VARCHAR"/>
+        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+        <result property="editTime" column="edit_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,feedback_type,content,
+        contact_type,contact_info,process_status,
+        process_content,is_delete,edit_time,
+        create_time,update_time
+    </sql>
+</mapper>
