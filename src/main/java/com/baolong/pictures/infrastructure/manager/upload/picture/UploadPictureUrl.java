@@ -83,17 +83,12 @@ public class UploadPictureUrl extends UploadPicture {
 	@Override
 	protected String getFileSuffix(Object fileInputSource) {
 		String fileUrl = (String) fileInputSource;
-		System.out.println("文件: "+fileUrl);
-		System.out.println("文件1: "+FileUtil.mainName(fileUrl));
-		System.out.println("文件2: "+FileUtil.mainName(fileUrl).substring(0, 2));
-		System.out.println("文件3: "+FileUtil.extName(fileUrl).split("&")[0]);
 		String suffix = FileUtil.mainName(fileUrl).substring(0, 2) + "."
 				+ FileUtil.extName(fileUrl).split("&")[0];
 		// 去掉 suffix 中 ? 后面的内容
 		if (suffix.contains("?")) {
 			suffix = suffix.substring(0, suffix.indexOf("?"));
 		}
-		System.out.println("文件后缀: "+suffix);
 		if (!super.ALLOW_FORMAT_LIST.contains(suffix.toLowerCase())) {
 			suffix = "jpg";
 		}

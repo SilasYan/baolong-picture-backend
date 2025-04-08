@@ -71,5 +71,10 @@ public class SpaceDetailVO implements Serializable {
 	 */
 	private Date createTime;
 
+	/**
+	 * 空间角色（CREATOR-创建者, EDITOR-编辑者, VIEWER-访问）
+	 */
+	private String spaceRole;
+
 	private static final long serialVersionUID = 1L;
 }

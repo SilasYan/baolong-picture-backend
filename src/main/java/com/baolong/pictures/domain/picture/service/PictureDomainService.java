@@ -113,7 +113,11 @@ public class PictureDomainService {
 	 */
 	public void deletePicture(Long pictureId) {
 		boolean existed = pictureRepository.deletePicture(pictureId);
-		if (existed) return;
+		if (existed) {
+			String key = CacheKeyConstant.PICTURE_INTERACTION_KEY_PREFIX + pictureId;
+			redisCache.delete(key);
+			return;
+		}
 		throw new BusinessException(ErrorCode.OPERATION_ERROR, "图片删除失败");
 	}
 
@@ -272,9 +276,13 @@ public class PictureDomainService {
 	 */
 	public Picture getPictureByPictureId(Long pictureId) {
 		Picture picture = pictureRepository.getPictureByPictureId(pictureId);
-		this.fillPictureInteraction(picture);
-		// 更新图片操作类型数量
-		this.updateInteractionNumByRedis(pictureId, PictureInteractionTypeEnum.VIEW.getKey(), 1);
+		if (PictureReviewStatusEnum.PASS.getKey().equals(picture.getReviewStatus())) {
+			// 初始化图片互动数据
+			this.initPictureInteraction(pictureId);
+			// 更新图片操作类型数量
+			this.updateInteractionNumByRedis(pictureId, PictureInteractionTypeEnum.VIEW.getKey(), 1);
+			this.fillPictureInteraction(picture);
+		}
 		return picture;
 	}
 
@@ -400,6 +408,17 @@ public class PictureDomainService {
 	 * @return 图片领域对象列表
 	 */
 	public PageVO<Picture> getPicturePageListAsPersonSpace(Picture picture) {
+		return pictureRepository.getPicturePageList(picture);
+	}
+
+
+	/**
+	 * 获取团队空间图片分页列表
+	 *
+	 * @param picture 图片领域对象
+	 * @return 团队空间图片分页列表
+	 */
+	public PageVO<Picture> getPicturePageListAsTeamSpace(Picture picture) {
 		return pictureRepository.getPicturePageList(picture);
 	}
 

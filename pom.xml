@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.baolong</groupId>
     <artifactId>baolong-picture-backend</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
     <name>bl-tePicture-backend</name>
     <description>baolong-picture</description>
     <properties>

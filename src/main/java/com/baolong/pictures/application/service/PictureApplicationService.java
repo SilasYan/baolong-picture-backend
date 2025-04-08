@@ -377,6 +377,31 @@ public class PictureApplicationService {
 	}
 
 	/**
+	 * 获取团队空间图片分页列表
+	 *
+	 * @param picture 图片领域对象
+	 * @return 团队空间图片分页列表
+	 */
+	public PageVO<Picture> getPicturePageListAsTeamSpace(Picture picture) {
+		PageVO<Picture> picturePageVO = pictureDomainService.getPicturePageListAsTeamSpace(picture);
+		List<Picture> pictureList = picturePageVO.getRecords();
+		if (CollUtil.isNotEmpty(pictureList)) {
+			// 查询分类信息
+			Set<Long> categoryIds = pictureList.stream().map(Picture::getCategoryId).collect(Collectors.toSet());
+			Map<Long, List<Category>> categoryListMap = categoryApplicationService.getCategoryListByCategoryIds(categoryIds)
+					.stream().collect(Collectors.groupingBy(Category::getCategoryId));
+			pictureList.forEach(p -> {
+				// 设置分类信息
+				Long categoryId = p.getCategoryId();
+				if (categoryListMap.containsKey(categoryId)) {
+					p.setCategoryInfo(categoryListMap.get(categoryId).get(0));
+				}
+			});
+		}
+		return picturePageVO;
+	}
+
+	/**
 	 * 获取个人发布的图片分页列表
 	 *
 	 * @param picture 图片领域对象
@@ -425,7 +450,7 @@ public class PictureApplicationService {
 					p.setUserInfo(userListMap.get(userId).get(0));
 				}
 				// 设置分类信息
-				Long categoryId = picture.getCategoryId();
+				Long categoryId = p.getCategoryId();
 				if (categoryListMap.containsKey(categoryId)) {
 					p.setCategoryInfo(categoryListMap.get(categoryId).get(0));
 				}

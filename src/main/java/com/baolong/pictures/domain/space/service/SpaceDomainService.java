@@ -1,16 +1,22 @@
 package com.baolong.pictures.domain.space.service;
 
+import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.baolong.pictures.domain.space.aggregate.Space;
-import com.baolong.pictures.domain.space.repository.SpaceRepository;
 import com.baolong.pictures.domain.space.aggregate.SpaceUser;
 import com.baolong.pictures.domain.space.aggregate.enums.SpaceRoleEnum;
+import com.baolong.pictures.domain.space.repository.SpaceRepository;
 import com.baolong.pictures.domain.space.repository.SpaceUserRepository;
-import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 空间表 (space) - 领域服务
@@ -35,8 +41,16 @@ public class SpaceDomainService {
 			throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户已激活个人空间");
 		}
 		boolean result = spaceRepository.addSpace(space);
-		if (result) return;
-		throw new BusinessException(ErrorCode.OPERATION_ERROR, "个人空间激活失败");
+		if (!result) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "个人空间激活失败");
+		}
+
+		// 开通一个官方公共空间
+		SpaceUser spaceUser = new SpaceUser();
+		spaceUser.setSpaceId(100000L);
+		spaceUser.setUserId(space.getUserId());
+		spaceUser.setSpaceRole(SpaceRoleEnum.EDITOR.getKey());
+		spaceUserRepository.addSpaceUser(spaceUser);
 	}
 
 	/**
@@ -174,6 +188,38 @@ public class SpaceDomainService {
 	 */
 	public PageVO<Space> getSpacePageListAsManage(Space space) {
 		return spaceRepository.getSpacePageList(space);
+	}
+
+	/**
+	 * 根据用户ID获取团队空间列表
+	 *
+	 * @param userId 用户ID
+	 * @return 团队空间列表
+	 */
+	public List<Space> getTeamSpaceListByUserId(Long userId) {
+		List<SpaceUser> spaceUserList = spaceUserRepository.getTeamSpaceListByUserId(userId);
+		if (CollUtil.isNotEmpty(spaceUserList)) {
+			Set<Long> spaceIds = spaceUserList.stream().map(SpaceUser::getSpaceId).collect(Collectors.toSet());
+			return spaceRepository.getSpaceListBySpaceIdList(spaceIds);
+		}
+		return List.of();
+	}
+
+	/**
+	 * 根据空间ID获取空间详情
+	 *
+	 * @param spaceId 空间ID
+	 * @return 空间详情
+	 */
+	public Space getSpaceDetailBySpaceId(Long spaceId) {
+		Space space = this.getSpaceBySpaceId(spaceId);
+		// 获取当前登录用户在当前空间的权限
+		SpaceUser spaceUser = spaceUserRepository.getSpaceUserBySpaceIdAndUserId(spaceId, StpUtil.getLoginIdAsLong());
+		if (spaceUser == null) {
+			throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "暂无空间访问权限!");
+		}
+		space.setSpaceRole(spaceUser.getSpaceRole());
+		return space;
 	}
 }
 

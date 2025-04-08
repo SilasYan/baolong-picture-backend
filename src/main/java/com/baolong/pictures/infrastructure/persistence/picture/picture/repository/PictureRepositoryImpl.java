@@ -71,7 +71,9 @@ public class PictureRepositoryImpl implements PictureRepository {
 				lqw.like(PictureDO::getPicName, searchText)
 						.or().like(PictureDO::getPicDesc, searchText)
 						.or().apply("FIND_IN_SET ('" + searchText + "', tags) > 0")
-		);
+		);lambdaQueryWrapper.eq(ObjUtil.isNotNull(id), PictureDO::getId, id);
+		lambdaQueryWrapper.eq(StrUtil.isNotEmpty(originFormat), PictureDO::getOriginFormat, originFormat);
+
 		lambdaQueryWrapper.eq(ObjUtil.isNotNull(id), PictureDO::getId, id);
 		lambdaQueryWrapper.eq(StrUtil.isNotEmpty(originFormat), PictureDO::getOriginFormat, originFormat);
 		lambdaQueryWrapper.eq(ObjUtil.isNotNull(originWidth), PictureDO::getOriginWidth, originWidth);

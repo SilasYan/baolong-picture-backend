@@ -177,6 +177,19 @@ public class PictureController {
 	}
 
 	/**
+	 * 获取团队空间图片分页列表
+	 *
+	 * @param pictureQueryRequest 图片查询请求
+	 * @return 团队空间图片分页列表
+	 */
+	@PostMapping("/teamSpace/page")
+	public BaseResponse<PageVO<PictureVO>> getPicturePageListAsTeamSpace(@RequestBody PictureQueryRequest pictureQueryRequest) {
+		Picture picture = PictureAssembler.toDomain(pictureQueryRequest);
+		PageVO<Picture> picturePageVO = pictureApplicationService.getPicturePageListAsTeamSpace(picture);
+		return ResultUtils.success(PictureAssembler.toPicturePageVO(picturePageVO));
+	}
+
+	/**
 	 * 获取个人发布的图片分页列表
 	 *
 	 * @param pictureQueryRequest 图片查询请求

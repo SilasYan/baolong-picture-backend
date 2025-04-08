@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 空间表 (space) - 仓储服务实现
@@ -182,6 +183,7 @@ public class SpaceRepositoryImpl implements SpaceRepository {
 	public Space getPersonSpaceByUserId(Long userId) {
 		SpaceDO spaceDO = spacePersistenceService.getOne(new LambdaQueryWrapper<SpaceDO>()
 				.eq(SpaceDO::getUserId, userId)
+				.eq(SpaceDO::getSpaceType, SpaceTypeEnum.PRIVATE.getKey())
 		);
 		if (spaceDO == null) {
 			return null;
@@ -200,5 +202,19 @@ public class SpaceRepositoryImpl implements SpaceRepository {
 		LambdaQueryWrapper<SpaceDO> lambdaQueryWrapper = this.lambdaQueryWrapper(space);
 		Page<SpaceDO> page = spacePersistenceService.page(space.getPage(SpaceDO.class), lambdaQueryWrapper);
 		return SpaceConverter.toDomainPage(page);
+	}
+
+	/**
+	 * 根据空间ID列表获取空间列表
+	 *
+	 * @param spaceIds 空间列表
+	 * @return 空间列表
+	 */
+	@Override
+	public List<Space> getSpaceListBySpaceIdList(Set<Long> spaceIds) {
+		List<SpaceDO> spaceDOList = spacePersistenceService.list(new LambdaQueryWrapper<SpaceDO>()
+				.in(SpaceDO::getId, spaceIds)
+		);
+		return SpaceConverter.toDomainList(spaceDOList);
 	}
 }

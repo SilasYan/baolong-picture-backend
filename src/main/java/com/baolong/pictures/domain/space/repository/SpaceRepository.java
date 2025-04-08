@@ -3,6 +3,9 @@ package com.baolong.pictures.domain.space.repository;
 import com.baolong.pictures.domain.space.aggregate.Space;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * 空间表 (space) - 仓储服务接口
  *
@@ -85,4 +88,12 @@ public interface SpaceRepository {
 	 * @return 空间领域对象分页列表
 	 */
 	PageVO<Space> getSpacePageList(Space space);
+
+	/**
+	 * 根据空间ID列表获取空间列表
+	 *
+	 * @param spaceIds 空间列表
+	 * @return 空间列表
+	 */
+	List<Space> getSpaceListBySpaceIdList(Set<Long> spaceIds);
 }
