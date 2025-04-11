@@ -80,6 +80,13 @@
             <version>5.6.227</version>
         </dependency>
 
+        <!-- 阿里云百炼 https://mvnrepository.com/artifact/com.alibaba/dashscope-sdk-java -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dashscope-sdk-java</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+
         <!-- MyBatisPlus 依赖: 用于数据库操作, 该版本中已经集成了 MyBatis 的依赖 -->
         <dependency>
             <groupId>com.baomidou</groupId>

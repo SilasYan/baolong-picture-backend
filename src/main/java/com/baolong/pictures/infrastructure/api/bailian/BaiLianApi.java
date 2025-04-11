@@ -3,6 +3,9 @@ package com.baolong.pictures.infrastructure.api.bailian;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesis;
+import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesisParam;
+import com.alibaba.dashscope.aigc.imagesynthesis.ImageSynthesisResult;
 import com.baolong.pictures.infrastructure.api.bailian.config.BaiLianConfig;
 import com.baolong.pictures.infrastructure.api.bailian.model.BaiLianTaskResponse;
 import com.baolong.pictures.infrastructure.api.bailian.model.CreateBaiLianTaskResponse;
@@ -16,10 +19,12 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * 百炼
@@ -226,5 +231,40 @@ public class BaiLianApi {
 			log.info("[百炼大模型]扩图任务创建成功...");
 			return taskResponse;
 		}*/
+	}
+
+	/**
+	 * 创建文生图任务
+	 *
+	 * @param prompt 提示词
+	 * @param size   大小
+	 * @return 任务响应对象
+	 */
+	public BaiLianTaskResponse createTextGenerateImageTask(String prompt, String size) {
+		log.info("[百炼大模型]开始创建文生图任务...");
+		try {
+			ImageSynthesisParam param = ImageSynthesisParam.builder()
+					.apiKey(baiLianConfig.getApiKey()).model("wanx2.1-t2i-turbo").n(1)
+					.prompt(prompt)
+					.size(size)
+					.build();
+			ImageSynthesis imageSynthesis = new ImageSynthesis();
+			log.info("[百炼大模型]文生图调用成功, 等待结果中...");
+			ImageSynthesisResult result = imageSynthesis.call(param);
+			log.info("[百炼大模型]文生图结果: {}", JSONUtil.parse(result));
+			BaiLianTaskResponse baiLianTaskResponse = new BaiLianTaskResponse();
+			BeanUtils.copyProperties(result, baiLianTaskResponse);
+			Map<String, String> resultMap = result.getOutput().getResults().get(0);
+			BaiLianTaskResponse.Results results = new BaiLianTaskResponse.Results();
+			results.setOrigPrompt(resultMap.get("orig_prompt"));
+			results.setActualPrompt(resultMap.get("actual_prompt"));
+			results.setUrl(resultMap.get("url"));
+			baiLianTaskResponse.setResults(results);
+			log.info("[百炼大模型]响应结果: {}", JSONUtil.parse(baiLianTaskResponse));
+			return baiLianTaskResponse;
+		} catch (Exception e) {
+			log.error("[百炼大模型]文生图失败", e);
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "文生图失败");
+		}
 	}
 }

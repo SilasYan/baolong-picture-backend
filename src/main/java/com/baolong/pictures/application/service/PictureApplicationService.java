@@ -507,4 +507,14 @@ public class PictureApplicationService {
 	public BaiLianTaskResponse expandPictureQuery(String taskId) {
 		return pictureDomainService.expandPictureQuery(taskId);
 	}
+
+	/**
+	 * 文生图
+	 *
+	 * @param picture 图片领域对象
+	 * @return 文生图任务结果
+	 */
+	public BaiLianTaskResponse textGeneratePicture(Picture picture) {
+		return pictureDomainService.textGeneratePicture(picture);
+	}
 }

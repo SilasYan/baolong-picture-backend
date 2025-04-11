@@ -32,4 +32,9 @@ public interface CacheKeyConstant {
 	 * 图片互动 KEY 前缀
 	 */
 	String PICTURE_INTERACTION_KEY_PREFIX = "picture:interactions:";
+
+	/**
+	 * 百炼任务 KEY 前缀
+	 */
+	String BAI_LIAN_TASK_COUNT_KEY_PREFIX = "bai_lian:task:%s:%s";
 }

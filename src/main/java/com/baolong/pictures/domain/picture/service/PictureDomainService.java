@@ -2,6 +2,7 @@ package com.baolong.pictures.domain.picture.service;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.util.ObjUtil;
@@ -14,6 +15,7 @@ import com.baolong.pictures.domain.picture.aggregate.PictureInteraction;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureExpandTypeEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureInteractionTypeEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureReviewStatusEnum;
+import com.baolong.pictures.domain.picture.aggregate.enums.PictureTextGenerateSizeEnum;
 import com.baolong.pictures.domain.picture.aggregate.enums.PictureUploadTypeEnum;
 import com.baolong.pictures.domain.picture.repository.PictureInteractionRepository;
 import com.baolong.pictures.domain.picture.repository.PictureRepository;
@@ -527,6 +529,12 @@ public class PictureDomainService {
 	 * @return 扩图任务结果
 	 */
 	public CreateBaiLianTaskResponse expandPicture(Picture picture) {
+		long userId = StpUtil.getLoginIdAsLong();
+		String KEY = String.format(CacheKeyConstant.BAI_LIAN_TASK_COUNT_KEY_PREFIX, "1", userId);
+		String value = redisCache.get(KEY);
+		if (StrUtil.isNotEmpty(value)) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "今天 AI 扩图已使用, 请明天再试!");
+		}
 		ExpandImageTaskRequest expandImageTaskRequest = new ExpandImageTaskRequest();
 		expandImageTaskRequest.setInput(new ExpandImageTaskRequest.Input(picture.getPicUrl()));
 		ExpandImageTaskRequest.Parameters parameters = new ExpandImageTaskRequest.Parameters()
@@ -535,6 +543,9 @@ public class PictureDomainService {
 			parameters.setAngle(45);
 		}
 		expandImageTaskRequest.setParameters(parameters);
+		// 获取当前时间到今天晚上23:59:59的秒数
+		long seconds = DateUtil.between(new Date(), DateUtil.endOfDay(new Date()), DateUnit.SECOND);
+		redisCache.set(KEY, "1", seconds, TimeUnit.SECONDS);
 		return baiLianApi.createExpandImageTask(expandImageTaskRequest);
 	}
 
@@ -546,5 +557,28 @@ public class PictureDomainService {
 	 */
 	public BaiLianTaskResponse expandPictureQuery(String taskId) {
 		return baiLianApi.queryBaiLianTask(taskId);
+	}
+
+	/**
+	 * 文生图
+	 *
+	 * @param picture 图片领域对象
+	 * @return 文生图任务结果
+	 */
+	public BaiLianTaskResponse textGeneratePicture(Picture picture) {
+		long userId = StpUtil.getLoginIdAsLong();
+		String KEY = String.format(CacheKeyConstant.BAI_LIAN_TASK_COUNT_KEY_PREFIX, "2", userId);
+		String value = redisCache.get(KEY);
+		if (StrUtil.isNotEmpty(value)) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "今天文本生图已使用, 请明天再试!");
+		}
+		PictureTextGenerateSizeEnum sizeEnum = PictureTextGenerateSizeEnum.of(picture.getPictureSize());
+		if (sizeEnum == null) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "不支持的图片尺寸");
+		}
+		// 获取当前时间到今天晚上23:59:59的秒数
+		long seconds = DateUtil.between(new Date(), DateUtil.endOfDay(new Date()), DateUnit.SECOND);
+		redisCache.set(KEY, "1", seconds, TimeUnit.SECONDS);
+		return baiLianApi.createTextGenerateImageTask(picture.getPrompt(), sizeEnum.getLabel());
 	}
 }

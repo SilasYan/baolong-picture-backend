@@ -26,6 +26,11 @@ public class BaiLianTaskResponse {
 	private Output Usage;
 
 	/**
+	 * 文生图输出的结果信息
+	 */
+	private Results results;
+
+	/**
 	 * 输出的任务信息
 	 */
 	@Data
@@ -125,5 +130,24 @@ public class BaiLianTaskResponse {
 		 * 模型生成图片的数量
 		 */
 		private String image_count;
+	}
+
+	/**
+	 * 文生图输出结果
+	 */
+	@Data
+	public static class Results {
+		/**
+		 * 原始提示词
+		 */
+		private String origPrompt;
+		/**
+		 * 实际提示词
+		 */
+		private String actualPrompt;
+		/**
+		 * 图片链接
+		 */
+		private String url;
 	}
 }
