@@ -141,6 +141,26 @@ public class SpaceApplicationService {
 	public Space getSpaceBySpaceId(Long spaceId) {
 		return spaceDomainService.getSpaceBySpaceId(spaceId);
 	}
+
+	/**
+	 * 根据用户ID获取团队空间列表
+	 *
+	 * @param userId 用户ID
+	 * @return 团队空间列表
+	 */
+	public List<Space> getTeamSpaceListByUserId(Long userId) {
+		return spaceDomainService.getTeamSpaceListByUserId(userId);
+	}
+
+	/**
+	 * 根据空间ID获取空间详情
+	 *
+	 * @param spaceId 空间ID
+	 * @return 空间详情
+	 */
+	public Space getSpaceDetailBySpaceId(Long spaceId) {
+		return spaceDomainService.getSpaceDetailBySpaceId(spaceId);
+	}
 }
 
 

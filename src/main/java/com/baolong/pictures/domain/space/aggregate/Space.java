@@ -97,6 +97,11 @@ public class Space extends PageRequest implements Serializable {
 	 */
 	private User userInfo;
 
+	/**
+	 * 空间角色（CREATOR-创建者, EDITOR-编辑者, VIEWER-访问）
+	 */
+	private String spaceRole;
+
 	// endregion 原始属性
 
 	// region 领域方法

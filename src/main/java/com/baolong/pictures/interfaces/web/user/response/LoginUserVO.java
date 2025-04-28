@@ -1,5 +1,6 @@
 package com.baolong.pictures.interfaces.web.user.response;
 
+import com.baolong.pictures.domain.system.menu.aggregate.Menu;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -95,17 +96,17 @@ public class LoginUserVO implements Serializable {
 	/**
 	 * 顶部菜单列表
 	 */
-	private List<String> topMenus;
+	private List<Menu> topMenus;
 
 	/**
 	 * 左侧菜单列表
 	 */
-	private List<String> leftMenus;
+	private List<Menu> leftMenus;
 
 	/**
 	 * 其他菜单列表
 	 */
-	private List<String> otherMenus;
+	private List<Menu> otherMenus;
 
 	private static final long serialVersionUID = 1L;
 }

@@ -8,6 +8,7 @@ import com.baolong.pictures.interfaces.web.picture.request.PictureGrabRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureQueryRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureReviewRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureSearchRequest;
+import com.baolong.pictures.interfaces.web.picture.request.PictureTextGenerateRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureUpdateRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureUploadRequest;
 import com.baolong.pictures.interfaces.web.picture.response.PictureDetailVO;
@@ -72,6 +73,15 @@ public class PictureAssembler {
 	public static Picture toDomain(PictureExpandRequest pictureExpandRequest) {
 		Picture picture = new Picture();
 		BeanUtils.copyProperties(pictureExpandRequest, picture);
+		return picture;
+	}
+
+	/**
+	 * 图片文本生成请求 转为 图片领域对象
+	 */
+	public static Picture toDomain(PictureTextGenerateRequest pictureTextGenerateRequest) {
+		Picture picture = new Picture();
+		BeanUtils.copyProperties(pictureTextGenerateRequest, picture);
 		return picture;
 	}
 

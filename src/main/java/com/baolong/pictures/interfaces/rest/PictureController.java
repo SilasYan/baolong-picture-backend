@@ -35,6 +35,7 @@ import com.baolong.pictures.interfaces.web.picture.request.PictureInteractionReq
 import com.baolong.pictures.interfaces.web.picture.request.PictureQueryRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureReviewRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureSearchRequest;
+import com.baolong.pictures.interfaces.web.picture.request.PictureTextGenerateRequest;
 import com.baolong.pictures.interfaces.web.picture.request.PictureUploadRequest;
 import com.baolong.pictures.interfaces.web.picture.response.PictureDetailVO;
 import com.baolong.pictures.interfaces.web.picture.response.PictureHomeVO;
@@ -173,6 +174,19 @@ public class PictureController {
 	public BaseResponse<PageVO<PictureVO>> getPicturePageListAsPersonSpace(@RequestBody PictureQueryRequest pictureQueryRequest) {
 		Picture picture = PictureAssembler.toDomain(pictureQueryRequest);
 		PageVO<Picture> picturePageVO = pictureApplicationService.getPicturePageListAsPersonSpace(picture);
+		return ResultUtils.success(PictureAssembler.toPicturePageVO(picturePageVO));
+	}
+
+	/**
+	 * 获取团队空间图片分页列表
+	 *
+	 * @param pictureQueryRequest 图片查询请求
+	 * @return 团队空间图片分页列表
+	 */
+	@PostMapping("/teamSpace/page")
+	public BaseResponse<PageVO<PictureVO>> getPicturePageListAsTeamSpace(@RequestBody PictureQueryRequest pictureQueryRequest) {
+		Picture picture = PictureAssembler.toDomain(pictureQueryRequest);
+		PageVO<Picture> picturePageVO = pictureApplicationService.getPicturePageListAsTeamSpace(picture);
 		return ResultUtils.success(PictureAssembler.toPicturePageVO(picturePageVO));
 	}
 
@@ -353,5 +367,19 @@ public class PictureController {
 	public BaseResponse<BaiLianTaskResponse> expandPictureQuery(String taskId) {
 		ThrowUtils.throwIf(StrUtil.isEmpty(taskId), ErrorCode.PARAMS_ERROR, "任务ID不能为空");
 		return ResultUtils.success(pictureApplicationService.expandPictureQuery(taskId));
+	}
+
+	/**
+	 * 文生图
+	 *
+	 * @param pictureTextGenerateRequest 图片文本生成请求
+	 * @return 文生图任务结果
+	 */
+	@PostMapping("/textGenerate")
+	public BaseResponse<BaiLianTaskResponse> textGeneratePicture(@RequestBody PictureTextGenerateRequest pictureTextGenerateRequest) {
+		ThrowUtils.throwIf(pictureTextGenerateRequest == null, ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(StrUtil.isEmpty(pictureTextGenerateRequest.getPrompt()), ErrorCode.PARAMS_ERROR, "提示词不能为空");
+		Picture picture = PictureAssembler.toDomain(pictureTextGenerateRequest);
+		return ResultUtils.success(pictureApplicationService.textGeneratePicture(picture));
 	}
 }

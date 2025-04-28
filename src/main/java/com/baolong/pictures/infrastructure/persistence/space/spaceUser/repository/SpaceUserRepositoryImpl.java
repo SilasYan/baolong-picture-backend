@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 空间用户表 (space_user) - 仓储服务实现
  *
@@ -39,5 +41,31 @@ public class SpaceUserRepositoryImpl implements SpaceUserRepository {
 			return null;
 		}
 		return SpaceUserConverter.toDomain(spaceUserDO);
+	}
+
+	/**
+	 * 根据用户ID获取团队空间列表
+	 *
+	 * @param userId 用户ID
+	 * @return 团队空间列表
+	 */
+	@Override
+	public List<SpaceUser> getTeamSpaceListByUserId(Long userId) {
+		List<SpaceUserDO> spaceUserDOList = spaceUserPersistenceService.list(new LambdaQueryWrapper<SpaceUserDO>()
+				.eq(SpaceUserDO::getUserId, userId)
+		);
+		return SpaceUserConverter.toDomainList(spaceUserDOList);
+	}
+
+	/**
+	 * 添加空间用户
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 * @return 是否成功
+	 */
+	@Override
+	public boolean addSpaceUser(SpaceUser spaceUser) {
+		SpaceUserDO spaceUserDO = SpaceUserConverter.toDO(spaceUser);
+		return spaceUserPersistenceService.save(spaceUserDO);
 	}
 }

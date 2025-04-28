@@ -1,6 +1,7 @@
 package com.baolong.pictures.domain.user.aggregate;
 
 import cn.hutool.core.util.RandomUtil;
+import com.baolong.pictures.domain.system.menu.aggregate.Menu;
 import com.baolong.pictures.domain.user.aggregate.enums.UserRoleEnum;
 import com.baolong.pictures.infrastructure.common.page.PageRequest;
 import lombok.Data;
@@ -139,17 +140,17 @@ public class User extends PageRequest implements Serializable {
 	/**
 	 * 顶部菜单列表
 	 */
-	private List<String> topMenus;
+	private List<Menu> topMenus;
 
 	/**
 	 * 左侧菜单列表
 	 */
-	private List<String> leftMenus;
+	private List<Menu> leftMenus;
 
 	/**
 	 * 其他菜单列表
 	 */
-	private List<String> otherMenus;
+	private List<Menu> otherMenus;
 
 
 	/**

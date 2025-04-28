@@ -119,4 +119,15 @@ public class SpaceController {
 		PageVO<Space> spacePage = spaceApplicationService.getSpacePageListAsManage(SpaceAssembler.toDomain(spaceQueryRequest));
 		return ResultUtils.success(SpaceAssembler.toSpaceVOPage(spacePage));
 	}
+
+	/**
+	 * 根据空间ID获取空间详情
+	 *
+	 * @return 空间详情
+	 */
+	@GetMapping("/detail")
+	public BaseResponse<SpaceDetailVO> getSpaceDetailBySpaceId(Long spaceId) {
+		Space space = spaceApplicationService.getSpaceDetailBySpaceId(spaceId);
+		return ResultUtils.success(SpaceAssembler.toSpaceDetailVO(space));
+	}
 }

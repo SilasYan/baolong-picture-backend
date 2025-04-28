@@ -369,6 +369,16 @@ public class Picture extends PageRequest implements Serializable {
 	 */
 	private Boolean expandQuery = false;
 
+	/**
+	 * 图片提示词
+	 */
+	private String prompt;
+
+	/**
+	 * 尺寸
+	 */
+	private Integer pictureSize;
+
 	// endregion 拓展属性
 
 	// region 领域方法

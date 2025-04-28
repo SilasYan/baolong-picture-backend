@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.baolong</groupId>
     <artifactId>baolong-picture-backend</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
     <name>bl-tePicture-backend</name>
     <description>baolong-picture</description>
     <properties>
@@ -78,6 +78,13 @@
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>
             <version>5.6.227</version>
+        </dependency>
+
+        <!-- 阿里云百炼 https://mvnrepository.com/artifact/com.alibaba/dashscope-sdk-java -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dashscope-sdk-java</artifactId>
+            <version>2.19.0</version>
         </dependency>
 
         <!-- MyBatisPlus 依赖: 用于数据库操作, 该版本中已经集成了 MyBatis 的依赖 -->

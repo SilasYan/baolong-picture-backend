@@ -47,6 +47,7 @@ public class SoSearchPicture extends AbstractSearchPicture {
 		log.info("[360搜图]搜图地址：{}", searchUrl);
 		try {
 			Document document = Jsoup.connect(searchUrl).timeout(5000).get();
+			System.out.println(document);
 			Element element = document.selectFirst(".img_img");
 			if (element == null) {
 				log.error("[360搜图]搜图失败，未找到图片元素");
