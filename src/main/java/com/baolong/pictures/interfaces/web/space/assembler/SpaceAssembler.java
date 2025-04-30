@@ -82,6 +82,18 @@ public class SpaceAssembler {
 	}
 
 	/**
+	 * 空间领域对象 转为 空间详情响应对象
+	 */
+	public static List<SpaceDetailVO> toSpaceDetailVOList(List<Space> spaces) {
+		if (spaces == null || spaces.isEmpty()) {
+			return List.of();
+		}
+		return spaces.stream()
+				.map(SpaceAssembler::toSpaceDetailVO)
+				.collect(Collectors.toList());
+	}
+
+	/**
 	 * 空间领域对象 转为 空间响应对象
 	 */
 	public static SpaceVO toSpaceVO(Space space) {

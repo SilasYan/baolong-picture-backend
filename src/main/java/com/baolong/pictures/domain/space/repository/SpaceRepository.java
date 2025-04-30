@@ -96,4 +96,12 @@ public interface SpaceRepository {
 	 * @return 空间列表
 	 */
 	List<Space> getSpaceListBySpaceIdList(Set<Long> spaceIds);
+
+	/**
+	 * 根据用户ID获取创建的团队空间
+	 *
+	 * @param userId 登录用户ID
+	 * @return 空间领域对象
+	 */
+	Space getTeamSpaceByUserId(Long userId);
 }

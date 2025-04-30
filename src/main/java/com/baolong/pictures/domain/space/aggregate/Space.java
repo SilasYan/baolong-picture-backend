@@ -147,7 +147,11 @@ public class Space extends PageRequest implements Serializable {
 	 */
 	public void fillSpaceDefaultValue() {
 		if (StrUtil.isEmpty(this.getSpaceName())) {
-			this.setSpaceName("个人空间_" + RandomUtil.randomString(6));
+			if (this.spaceType == null) {
+				this.setSpaceName("个人空间_" + RandomUtil.randomString(6));
+			} else {
+				this.setSpaceName("团队空间_" + RandomUtil.randomString(6));
+			}
 		}
 		if (this.spaceType == null) {
 			this.setSpaceType(SpaceTypeEnum.PRIVATE.getKey());

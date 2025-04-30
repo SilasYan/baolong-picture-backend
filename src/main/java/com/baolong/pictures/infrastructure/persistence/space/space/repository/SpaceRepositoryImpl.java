@@ -217,4 +217,22 @@ public class SpaceRepositoryImpl implements SpaceRepository {
 		);
 		return SpaceConverter.toDomainList(spaceDOList);
 	}
+
+	/**
+	 * 根据用户ID获取创建的团队空间
+	 *
+	 * @param userId 登录用户ID
+	 * @return 空间领域对象
+	 */
+	@Override
+	public Space getTeamSpaceByUserId(Long userId) {
+		SpaceDO spaceDO = spacePersistenceService.getOne(new LambdaQueryWrapper<SpaceDO>()
+				.eq(SpaceDO::getUserId, userId)
+				.eq(SpaceDO::getSpaceType, SpaceTypeEnum.TEAM.getKey())
+		);
+		if (spaceDO == null) {
+			return null;
+		}
+		return SpaceConverter.toDomain(spaceDO);
+	}
 }

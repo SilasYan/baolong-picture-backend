@@ -161,6 +161,24 @@ public class SpaceApplicationService {
 	public Space getSpaceDetailBySpaceId(Long spaceId) {
 		return spaceDomainService.getSpaceDetailBySpaceId(spaceId);
 	}
+
+	/**
+	 * 获取登录用户的团队空间列表
+	 *
+	 * @return 登录用户的团队空间列表
+	 */
+	public List<Space> getTeamSpacesByLoginUser() {
+		return this.getTeamSpaceListByUserId(StpUtil.getLoginIdAsLong());
+	}
+
+	/**
+	 * 根据用户ID获取创建的团队空间
+	 *
+	 * @return 空间领域对象
+	 */
+	public Space getTeamSpaceByUserId() {
+		return spaceDomainService.getTeamSpaceByUserId(StpUtil.getLoginIdAsLong());
+	}
 }
 
 
