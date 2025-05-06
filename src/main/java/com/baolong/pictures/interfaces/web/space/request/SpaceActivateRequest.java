@@ -15,5 +15,10 @@ public class SpaceActivateRequest implements Serializable {
 	 */
 	private String spaceName;
 
+	/**
+	 * 空间类型
+	 */
+	private Integer spaceType;
+
 	private static final long serialVersionUID = 1L;
 }

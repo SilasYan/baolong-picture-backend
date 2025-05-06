@@ -8,9 +8,9 @@ import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
 import com.baolong.pictures.infrastructure.common.BaseResponse;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
 import com.baolong.pictures.infrastructure.common.ResultUtils;
-import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
+import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.interfaces.web.space.assembler.SpaceAssembler;
 import com.baolong.pictures.interfaces.web.space.request.SpaceActivateRequest;
 import com.baolong.pictures.interfaces.web.space.request.SpaceEditRequest;
@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 空间表 (space) - 接口
@@ -129,5 +131,27 @@ public class SpaceController {
 	public BaseResponse<SpaceDetailVO> getSpaceDetailBySpaceId(Long spaceId) {
 		Space space = spaceApplicationService.getSpaceDetailBySpaceId(spaceId);
 		return ResultUtils.success(SpaceAssembler.toSpaceDetailVO(space));
+	}
+
+	/**
+	 * 获取登录用户是否创建了团队空间
+	 *
+	 * @return 空间详情
+	 */
+	@GetMapping("/loginUser/teamSpace")
+	public BaseResponse<SpaceDetailVO> getTeamSpaceByUserId() {
+		Space space = spaceApplicationService.getTeamSpaceByUserId();
+		return ResultUtils.success(SpaceAssembler.toSpaceDetailVO(space));
+	}
+
+	/**
+	 * 获取登录用户的团队空间列表
+	 *
+	 * @return 空间详情
+	 */
+	@GetMapping("/loginUser/teamSpaces")
+	public BaseResponse<List<SpaceDetailVO>> getTeamSpacesByLoginUser() {
+		List<Space> spaces = spaceApplicationService.getTeamSpacesByLoginUser();
+		return ResultUtils.success(SpaceAssembler.toSpaceDetailVOList(spaces));
 	}
 }

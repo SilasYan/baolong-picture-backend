@@ -2,9 +2,11 @@ package com.baolong.pictures.domain.space.service;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baolong.pictures.domain.space.aggregate.Space;
 import com.baolong.pictures.domain.space.aggregate.SpaceUser;
 import com.baolong.pictures.domain.space.aggregate.enums.SpaceRoleEnum;
+import com.baolong.pictures.domain.space.aggregate.enums.SpaceTypeEnum;
 import com.baolong.pictures.domain.space.repository.SpaceRepository;
 import com.baolong.pictures.domain.space.repository.SpaceUserRepository;
 import com.baolong.pictures.infrastructure.common.exception.BusinessException;
@@ -35,22 +37,40 @@ public class SpaceDomainService {
 	 * @param space 空间领域对象
 	 */
 	public void activateSpace(Space space) {
-		// 判断是否存在个人空间
-		boolean existed = spaceRepository.existedPersonSpaceByUserId(space.getUserId());
-		if (existed) {
-			throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户已激活个人空间");
-		}
-		boolean result = spaceRepository.addSpace(space);
-		if (!result) {
-			throw new BusinessException(ErrorCode.OPERATION_ERROR, "个人空间激活失败");
-		}
+		if (space.getSpaceType().equals(SpaceTypeEnum.PRIVATE.getKey())) {
+			// 判断是否存在个人空间
+			boolean existed = spaceRepository.existedPersonSpaceByUserId(space.getUserId());
+			if (existed) {
+				throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户已激活个人空间");
+			}
+			boolean result = spaceRepository.addSpace(space);
+			if (!result) {
+				throw new BusinessException(ErrorCode.OPERATION_ERROR, "个人空间激活失败");
+			}
 
-		// 开通一个官方公共空间
-		SpaceUser spaceUser = new SpaceUser();
-		spaceUser.setSpaceId(100000L);
-		spaceUser.setUserId(space.getUserId());
-		spaceUser.setSpaceRole(SpaceRoleEnum.EDITOR.getKey());
-		spaceUserRepository.addSpaceUser(spaceUser);
+			// 开通一个官方公共空间
+			SpaceUser spaceUser = new SpaceUser();
+			spaceUser.setSpaceId(100000L);
+			spaceUser.setUserId(space.getUserId());
+			spaceUser.setSpaceRole(SpaceRoleEnum.EDITOR.getKey());
+			spaceUserRepository.addSpaceUser(spaceUser);
+		} else {
+			// 判断是否存在团队空间
+			Space oldSpace = spaceRepository.getTeamSpaceByUserId(space.getUserId());
+			if (ObjectUtil.isNotEmpty(oldSpace)) {
+				throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户已激活团队空间");
+			}
+			boolean result = spaceRepository.addSpace(space);
+			if (!result) {
+				throw new BusinessException(ErrorCode.OPERATION_ERROR, "团队空间激活失败");
+			}
+			oldSpace = spaceRepository.getTeamSpaceByUserId(space.getUserId());
+			SpaceUser spaceUser = new SpaceUser();
+			spaceUser.setSpaceId(oldSpace.getSpaceId());
+			spaceUser.setUserId(space.getUserId());
+			spaceUser.setSpaceRole(SpaceRoleEnum.CREATOR.getKey());
+			spaceUserRepository.addSpaceUser(spaceUser);
+		}
 	}
 
 	/**
@@ -219,6 +239,20 @@ public class SpaceDomainService {
 			throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "暂无空间访问权限!");
 		}
 		space.setSpaceRole(spaceUser.getSpaceRole());
+		return space;
+	}
+
+	/**
+	 * 根据用户ID获取创建的团队空间
+	 *
+	 * @param userId 登录用户ID
+	 * @return 空间领域对象
+	 */
+	public Space getTeamSpaceByUserId(Long userId) {
+		Space space = spaceRepository.getTeamSpaceByUserId(userId);
+		if (space == null) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "请先激活团队空间");
+		}
 		return space;
 	}
 }

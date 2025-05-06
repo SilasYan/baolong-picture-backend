@@ -1,8 +1,6 @@
 package com.baolong.pictures.application.service;
 
 import cn.hutool.core.collection.CollUtil;
-import com.baolong.pictures.domain.space.aggregate.Space;
-import com.baolong.pictures.domain.space.service.SpaceDomainService;
 import com.baolong.pictures.domain.system.menu.aggregate.Menu;
 import com.baolong.pictures.domain.system.menu.aggregate.enums.MenuPositionEnum;
 import com.baolong.pictures.domain.user.aggregate.User;
@@ -30,7 +28,6 @@ public class UserApplicationService {
 	private final UserDomainService userDomainService;
 	// 其他应用服务相关
 	private final MenuApplicationService menuApplicationService;
-	private final SpaceDomainService spaceDomainService;
 
 	/**
 	 * 发送邮箱验证码
@@ -77,19 +74,6 @@ public class UserApplicationService {
 					.filter(menu -> menu.getMenuPosition().equals(MenuPositionEnum.OTHER.getKey()))
 					.collect(Collectors.toList()));
 		}
-		// 获取当前用户加入的团队空间信息
-		List<Space> teamSpaceList = spaceDomainService.getTeamSpaceListByUserId(user.getUserId());
-		if (CollUtil.isNotEmpty(teamSpaceList)) {
-			// 组装成 Menus 对象并加入到 TopMenus
-			List<Menu> topMenus = user.getTopMenus();
-			teamSpaceList.forEach(teamSpace -> {
-				Menu menu = new Menu();
-				menu.setMenuName(teamSpace.getSpaceName());
-				menu.setMenuPath("/space/team/" + teamSpace.getSpaceId());
-				topMenus.add(menu);
-			});
-		}
-
 		return user;
 	}
 
@@ -185,18 +169,6 @@ public class UserApplicationService {
 			user.setOtherMenus(menuList.stream()
 					.filter(menu -> menu.getMenuPosition().equals(MenuPositionEnum.OTHER.getKey()))
 					.collect(Collectors.toList()));
-		}
-		// 获取当前用户加入的团队空间信息
-		List<Space> teamSpaceList = spaceDomainService.getTeamSpaceListByUserId(user.getUserId());
-		if (CollUtil.isNotEmpty(teamSpaceList)) {
-			// 组装成 Menus 对象并加入到 TopMenus
-			List<Menu> topMenus = user.getTopMenus();
-			teamSpaceList.forEach(teamSpace -> {
-				Menu menu = new Menu();
-				menu.setMenuName(teamSpace.getSpaceName());
-				menu.setMenuPath("/space/team/" + teamSpace.getSpaceId());
-				topMenus.add(menu);
-			});
 		}
 		return user;
 	}
