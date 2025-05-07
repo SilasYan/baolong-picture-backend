@@ -62,12 +62,7 @@ public class PictureApplicationService {
 		User loginUser = userApplicationService.getLoginUserDetail();
 		Long userId = loginUser.getUserId();
 
-		// 存在图片ID说明是编辑操作重新上传图片
-		Long pictureId = picture.getPictureId();
-		if (ObjUtil.isNotEmpty(pictureId)) {
-			// 判断是否有图片的编辑权限
-			pictureDomainService.canOperateInPicture(pictureId, userId, loginUser.isAdmin());
-		}
+		boolean editStatus = false;
 
 		// 存在空间ID说明是上传到空间
 		Long spaceId = picture.getSpaceId();
@@ -77,6 +72,14 @@ public class PictureApplicationService {
 			// 判断当前用户的空间是否还有额度
 			spaceApplicationService.canCapacityInSpace(userId, loginUser.isAdmin());
 			picture.setSpaceId(spaceId);
+			editStatus = true;
+		}
+
+		// 存在图片ID说明是编辑操作重新上传图片
+		Long pictureId = picture.getPictureId();
+		if (ObjUtil.isNotEmpty(pictureId) && !editStatus) {
+			// 判断是否有图片的编辑权限
+			pictureDomainService.canOperateInPicture(pictureId, userId, loginUser.isAdmin());
 		}
 
 		// 填充参数
