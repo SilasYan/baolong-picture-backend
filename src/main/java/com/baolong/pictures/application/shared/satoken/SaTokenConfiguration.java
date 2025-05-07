@@ -6,6 +6,7 @@ import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
+import com.baolong.pictures.infrastructure.utils.ServletUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -35,6 +36,7 @@ public class SaTokenConfiguration implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new SaInterceptor(handler -> {
+					System.out.println("地址: " + ServletUtils.getRequest().getRequestURI());
 					// 如果是预检请求，则立即返回到前端
 					SaRouter.match(SaHttpMethod.OPTIONS)
 							.free(r -> System.out.println("--------OPTIONS预检请求，不做处理"))
