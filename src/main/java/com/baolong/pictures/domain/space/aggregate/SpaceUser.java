@@ -1,8 +1,6 @@
 package com.baolong.pictures.domain.space.aggregate;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baolong.pictures.domain.user.aggregate.User;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -21,10 +19,9 @@ public class SpaceUser implements Serializable {
 	// region 属性
 
 	/**
-	 * 主键 ID
+	 * 空间用户ID
 	 */
-	@TableId(type = IdType.AUTO)
-	private Long id;
+	private Long spaceUserId;
 
 	/**
 	 * 空间 ID
@@ -61,11 +58,15 @@ public class SpaceUser implements Serializable {
 	 */
 	private Date updateTime;
 
-	@TableField(exist = false)
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 用户信息
+	 */
+	private User user;
 
 	// endregion 属性
 
 	// region 行为
 	// endregion 行为
+
+	private static final long serialVersionUID = 1L;
 }

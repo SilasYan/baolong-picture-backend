@@ -6,6 +6,7 @@ import com.baolong.pictures.infrastructure.persistence.space.spaceUser.converter
 import com.baolong.pictures.infrastructure.persistence.space.spaceUser.mybatis.SpaceUserDO;
 import com.baolong.pictures.infrastructure.persistence.space.spaceUser.mybatis.SpaceUserPersistenceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -67,5 +68,44 @@ public class SpaceUserRepositoryImpl implements SpaceUserRepository {
 	public boolean addSpaceUser(SpaceUser spaceUser) {
 		SpaceUserDO spaceUserDO = SpaceUserConverter.toDO(spaceUser);
 		return spaceUserPersistenceService.save(spaceUserDO);
+	}
+
+	/**
+	 * 修改用户在空间的权限
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 */
+	@Override
+	public boolean updateSpaceUserRole(SpaceUser spaceUser) {
+		SpaceUserDO spaceUserDO = SpaceUserConverter.toDO(spaceUser);
+		return spaceUserPersistenceService.update(new LambdaUpdateWrapper<SpaceUserDO>()
+				.set(SpaceUserDO::getSpaceRole, spaceUserDO.getSpaceRole())
+				.eq(SpaceUserDO::getUserId, spaceUserDO.getUserId())
+				.eq(SpaceUserDO::getSpaceId, spaceUserDO.getSpaceId())
+		);
+	}
+
+	/**
+	 * 获取空间用户列表
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 * @return 空间用户列表
+	 */
+	@Override
+	public List<SpaceUser> getSpaceUserList(SpaceUser spaceUser) {
+		SpaceUserDO spaceUserDO = SpaceUserConverter.toDO(spaceUser);
+		List<SpaceUserDO> userDOList = spaceUserPersistenceService.list(
+				new LambdaQueryWrapper<SpaceUserDO>().eq(SpaceUserDO::getSpaceId, spaceUserDO.getSpaceId()));
+		return SpaceUserConverter.toDomainList(userDOList);
+	}
+
+	/**
+	 * 删除空间用户
+	 *
+	 * @param spaceUserId 空间用户ID
+	 */
+	@Override
+	public boolean deleteSpaceUser(Long spaceUserId) {
+		return spaceUserPersistenceService.removeById(spaceUserId);
 	}
 }

@@ -72,4 +72,16 @@ public class SpaceUserAssembler {
 				.collect(Collectors.toList())
 		);
 	}
+
+	/**
+	 * 空间用户领域对象 转为 空间用户响应对象
+	 */
+	public static List<SpaceUserVO> toSpaceDetailVOList(List<SpaceUser> spaceUsers) {
+		if (spaceUsers == null || spaceUsers.isEmpty()) {
+			return List.of();
+		}
+		return spaceUsers.stream()
+				.map(SpaceUserAssembler::toSpaceUserVO)
+				.collect(Collectors.toList());
+	}
 }

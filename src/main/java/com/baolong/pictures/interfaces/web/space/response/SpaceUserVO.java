@@ -1,6 +1,6 @@
 package com.baolong.pictures.interfaces.web.space.response;
 
-import com.baolong.pictures.interfaces.web.user.response.UserDetailVO;
+import com.baolong.pictures.domain.user.aggregate.User;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -40,7 +40,7 @@ public class SpaceUserVO implements Serializable {
 	/**
 	 * 用户信息
 	 */
-	private UserDetailVO user;
+	private User user;
 
 	private static final long serialVersionUID = 1L;
 }

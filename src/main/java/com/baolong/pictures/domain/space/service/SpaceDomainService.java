@@ -255,6 +255,78 @@ public class SpaceDomainService {
 		}
 		return space;
 	}
+
+	/**
+	 * 获取空间用户列表
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 * @return 空间用户列表
+	 */
+	public List<SpaceUser> getSpaceUserList(SpaceUser spaceUser) {
+		return spaceUserRepository.getSpaceUserList(spaceUser);
+	}
+
+	/**
+	 * 新增用户到空间
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 */
+	public void addSpaceUser(SpaceUser spaceUser) {
+		Long spaceId = spaceUser.getSpaceId();
+		Space space = spaceRepository.getSpaceBySpaceId(spaceId);
+		if (space == null) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+		}
+		long userId = StpUtil.getLoginIdAsLong();
+		if (!space.getUserId().equals(userId)) {
+			throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "没有操作权限");
+		}
+		SpaceUser oldSpaceUser = spaceUserRepository.getSpaceUserBySpaceIdAndUserId(spaceUser.getSpaceId(), spaceUser.getUserId());
+		if (oldSpaceUser != null) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户已加入该空间");
+		}
+		boolean result = spaceUserRepository.addSpaceUser(spaceUser);
+		if (!result) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户加入空间失败");
+		}
+	}
+
+	/**
+	 * 修改用户在空间的权限
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 */
+	public void updateSpaceUserRole(SpaceUser spaceUser) {
+		Long spaceId = spaceUser.getSpaceId();
+		Space space = spaceRepository.getSpaceBySpaceId(spaceId);
+		if (space == null) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "空间不存在");
+		}
+		long userId = StpUtil.getLoginIdAsLong();
+		if (!space.getUserId().equals(userId)) {
+			throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "没有操作权限");
+		}
+		SpaceUser oldSpaceUser = spaceUserRepository.getSpaceUserBySpaceIdAndUserId(spaceUser.getSpaceId(), spaceUser.getUserId());
+		if (oldSpaceUser == null) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户未加入该空间");
+		}
+		boolean result = spaceUserRepository.updateSpaceUserRole(spaceUser);
+		if (!result) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "空间用户角色修改失败");
+		}
+	}
+
+	/**
+	 * 删除空间用户
+	 *
+	 * @param spaceUserId 空间用户ID
+	 */
+	public void deleteSpaceUser(Long spaceUserId) {
+		boolean result = spaceUserRepository.deleteSpaceUser(spaceUserId);
+		if (!result) {
+			throw new BusinessException(ErrorCode.OPERATION_ERROR, "空间用户删除失败");
+		}
+	}
 }
 
 

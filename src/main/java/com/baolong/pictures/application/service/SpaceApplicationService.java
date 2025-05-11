@@ -3,6 +3,7 @@ package com.baolong.pictures.application.service;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baolong.pictures.domain.space.aggregate.Space;
+import com.baolong.pictures.domain.space.aggregate.SpaceUser;
 import com.baolong.pictures.domain.space.service.SpaceDomainService;
 import com.baolong.pictures.domain.user.aggregate.User;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
@@ -178,6 +179,53 @@ public class SpaceApplicationService {
 	 */
 	public Space getTeamSpaceByUserId() {
 		return spaceDomainService.getTeamSpaceByUserId(StpUtil.getLoginIdAsLong());
+	}
+
+	/**
+	 * 获取空间用户列表
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 * @return 空间用户列表
+	 */
+	public List<SpaceUser> getSpaceUserList(SpaceUser spaceUser) {
+		List<SpaceUser> spaceUserList = spaceDomainService.getSpaceUserList(spaceUser);
+		Set<Long> userIds = spaceUserList.stream().map(SpaceUser::getUserId).collect(Collectors.toSet());
+		Map<Long, List<User>> userListMap = userApplicationService.getUserListByUserIds(userIds)
+				.stream().collect(Collectors.groupingBy(User::getUserId));
+		for (SpaceUser su : spaceUserList) {
+			Long userId = su.getUserId();
+			if (userListMap.containsKey(userId)) {
+				su.setUser(userListMap.get(userId).get(0));
+			}
+		}
+		return spaceUserList;
+	}
+
+	/**
+	 * 新增用户到空间
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 */
+	public void addSpaceUser(SpaceUser spaceUser) {
+		spaceDomainService.addSpaceUser(spaceUser);
+	}
+
+	/**
+	 * 修改用户在空间的权限
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 */
+	public void updateSpaceUserRole(SpaceUser spaceUser) {
+		spaceDomainService.updateSpaceUserRole(spaceUser);
+	}
+
+	/**
+	 * 删除空间用户
+	 *
+	 * @param spaceUserId 空间用户ID
+	 */
+	public void deleteSpaceUser(Long spaceUserId) {
+		spaceDomainService.deleteSpaceUser(spaceUserId);
 	}
 }
 

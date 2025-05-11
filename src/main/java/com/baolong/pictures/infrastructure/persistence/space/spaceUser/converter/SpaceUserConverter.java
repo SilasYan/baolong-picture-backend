@@ -1,10 +1,12 @@
 package com.baolong.pictures.infrastructure.persistence.space.spaceUser.converter;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.map.MapUtil;
 import com.baolong.pictures.domain.space.aggregate.SpaceUser;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.infrastructure.persistence.space.spaceUser.mybatis.SpaceUserDO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,14 @@ import java.util.stream.Collectors;
  */
 public class SpaceUserConverter {
 
+	private final static CopyOptions toDoOption = CopyOptions.create();
+	private final static CopyOptions toDomainOption = CopyOptions.create();
+
+	static {
+		toDoOption.setFieldMapping(MapUtil.of("spaceUserId", "id"));
+		toDomainOption.setFieldMapping(MapUtil.of("id", "spaceUserId"));
+	}
+
 	/**
 	 * 领域模型 转为 持久化模型
 	 *
@@ -27,7 +37,7 @@ public class SpaceUserConverter {
 	 */
 	public static SpaceUserDO toDO(SpaceUser spaceUser) {
 		SpaceUserDO spaceUserDO = new SpaceUserDO();
-		BeanUtils.copyProperties(spaceUser, spaceUserDO);
+		BeanUtil.copyProperties(spaceUser, spaceUserDO, toDoOption);
 		return spaceUserDO;
 	}
 
@@ -39,7 +49,7 @@ public class SpaceUserConverter {
 	 */
 	public static SpaceUser toDomain(SpaceUserDO spaceUserDO) {
 		SpaceUser spaceUser = new SpaceUser();
-		BeanUtils.copyProperties(spaceUserDO, spaceUser);
+		BeanUtil.copyProperties(spaceUserDO, spaceUser, toDomainOption);
 		return spaceUser;
 	}
 

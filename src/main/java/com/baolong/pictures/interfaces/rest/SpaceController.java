@@ -1,9 +1,11 @@
 package com.baolong.pictures.interfaces.rest;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baolong.pictures.application.service.SpaceApplicationService;
 import com.baolong.pictures.application.shared.auth.annotation.AuthCheck;
 import com.baolong.pictures.domain.space.aggregate.Space;
+import com.baolong.pictures.domain.space.aggregate.SpaceUser;
 import com.baolong.pictures.domain.user.aggregate.constant.UserConstant;
 import com.baolong.pictures.infrastructure.common.BaseResponse;
 import com.baolong.pictures.infrastructure.common.DeleteRequest;
@@ -12,11 +14,16 @@ import com.baolong.pictures.infrastructure.common.exception.ErrorCode;
 import com.baolong.pictures.infrastructure.common.exception.ThrowUtils;
 import com.baolong.pictures.infrastructure.common.page.PageVO;
 import com.baolong.pictures.interfaces.web.space.assembler.SpaceAssembler;
+import com.baolong.pictures.interfaces.web.space.assembler.SpaceUserAssembler;
 import com.baolong.pictures.interfaces.web.space.request.SpaceActivateRequest;
 import com.baolong.pictures.interfaces.web.space.request.SpaceEditRequest;
 import com.baolong.pictures.interfaces.web.space.request.SpaceQueryRequest;
 import com.baolong.pictures.interfaces.web.space.request.SpaceUpdateRequest;
+import com.baolong.pictures.interfaces.web.space.request.SpaceUserAddRequest;
+import com.baolong.pictures.interfaces.web.space.request.SpaceUserEditRequest;
+import com.baolong.pictures.interfaces.web.space.request.SpaceUserQueryRequest;
 import com.baolong.pictures.interfaces.web.space.response.SpaceDetailVO;
+import com.baolong.pictures.interfaces.web.space.response.SpaceUserVO;
 import com.baolong.pictures.interfaces.web.space.response.SpaceVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -153,5 +160,65 @@ public class SpaceController {
 	public BaseResponse<List<SpaceDetailVO>> getTeamSpacesByLoginUser() {
 		List<Space> spaces = spaceApplicationService.getTeamSpacesByLoginUser();
 		return ResultUtils.success(SpaceAssembler.toSpaceDetailVOList(spaces));
+	}
+
+	/**
+	 * 获取空间用户列表
+	 *
+	 * @param spaceUserQueryRequest 空间用户查询请求
+	 * @return 空间用户列表
+	 */
+	@GetMapping("/spaceUserList")
+	public BaseResponse<List<SpaceUserVO>> getSpaceUserList(SpaceUserQueryRequest spaceUserQueryRequest) {
+		SpaceUser spaceUser = SpaceUserAssembler.toDomain(spaceUserQueryRequest);
+		List<SpaceUser> spaceUserList = spaceApplicationService.getSpaceUserList(spaceUser);
+		return ResultUtils.success(SpaceUserAssembler.toSpaceDetailVOList(spaceUserList));
+	}
+
+	/**
+	 * 新增用户到空间
+	 *
+	 * @param spaceUserAddRequest 空间用户新增请求
+	 * @return 是否成功
+	 */
+	@PostMapping("/addSpaceUser")
+	public BaseResponse<Boolean> addSpaceUser(@RequestBody SpaceUserAddRequest spaceUserAddRequest) {
+		ThrowUtils.throwIf(spaceUserAddRequest == null, ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(spaceUserAddRequest.getSpaceId()), ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(spaceUserAddRequest.getUserId()), ErrorCode.PARAMS_ERROR);
+		SpaceUser spaceUser = SpaceUserAssembler.toDomain(spaceUserAddRequest);
+		spaceApplicationService.addSpaceUser(spaceUser);
+		return ResultUtils.success();
+	}
+
+	/**
+	 * 修改用户在空间的权限
+	 *
+	 * @param spaceUserEditRequest 空间用户编辑请求
+	 * @return 是否成功
+	 */
+	@PostMapping("/updateSpaceUserRole")
+	public BaseResponse<Boolean> updateSpaceUserRole(@RequestBody SpaceUserEditRequest spaceUserEditRequest) {
+		ThrowUtils.throwIf(spaceUserEditRequest == null, ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(spaceUserEditRequest.getSpaceId()), ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(spaceUserEditRequest.getUserId()), ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(StrUtil.isEmpty(spaceUserEditRequest.getSpaceRole()), ErrorCode.PARAMS_ERROR);
+		SpaceUser spaceUser = SpaceUserAssembler.toDomain(spaceUserEditRequest);
+		spaceApplicationService.updateSpaceUserRole(spaceUser);
+		return ResultUtils.success();
+	}
+
+	/**
+	 * 删除空间用户
+	 *
+	 * @param deleteRequest 删除请求
+	 * @return 是否成功
+	 */
+	@PostMapping("/deleteSpaceUser")
+	public BaseResponse<Boolean> deleteSpaceUser(@RequestBody DeleteRequest deleteRequest) {
+		ThrowUtils.throwIf(deleteRequest == null, ErrorCode.PARAMS_ERROR);
+		ThrowUtils.throwIf(ObjectUtil.isEmpty(deleteRequest.getId()), ErrorCode.PARAMS_ERROR);
+		spaceApplicationService.deleteSpaceUser(deleteRequest.getId());
+		return ResultUtils.success();
 	}
 }

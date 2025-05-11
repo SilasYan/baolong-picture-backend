@@ -37,4 +37,26 @@ public interface SpaceUserRepository {
 	 * @return 是否成功
 	 */
 	boolean addSpaceUser(SpaceUser spaceUser);
+
+	/**
+	 * 修改用户在空间的权限
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 */
+	boolean updateSpaceUserRole(SpaceUser spaceUser);
+
+	/**
+	 * 获取空间用户列表
+	 *
+	 * @param spaceUser 空间用户领域对象
+	 * @return 空间用户列表
+	 */
+	List<SpaceUser> getSpaceUserList(SpaceUser spaceUser);
+
+	/**
+	 * 删除空间用户
+	 *
+	 * @param spaceUserId 空间用户ID
+	 */
+	boolean deleteSpaceUser(Long spaceUserId);
 }
